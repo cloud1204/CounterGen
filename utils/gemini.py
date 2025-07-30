@@ -1,0 +1,21 @@
+import utils.common as common
+class Gemini_Agent:
+    def __init__(self, model_type='default'):
+        import google.generativeai as genai
+        import yaml
+        with open("./api_keys.yaml", "r") as stream:
+            config = yaml.load(stream, Loader=yaml.SafeLoader)
+        API_KEY = config['gemini']
+        genai.configure(api_key=API_KEY)
+        self.model = genai.GenerativeModel("gemini-2.5-flash")
+        self.chat = self.model.start_chat()
+    def instruct(self, prompt, code_only = False):
+        text = self.chat.send_message(prompt).text
+        if code_only:
+            return common.Code(text)
+        else:
+            return text
+
+if __name__ == '__main__':
+    ##
+    pass
