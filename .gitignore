@@ -1,4 +1,4 @@
 myenv/
 test_stuff/
 api_keys.yaml
-__pycache__
+__pycache__/
