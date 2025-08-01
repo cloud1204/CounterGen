@@ -1,3 +1,4 @@
 myenv/
 test_stuff/
 api_keys.yaml
+__pycache__
