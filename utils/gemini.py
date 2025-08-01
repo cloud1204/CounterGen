@@ -7,7 +7,10 @@ class Gemini_Agent:
             config = yaml.load(stream, Loader=yaml.SafeLoader)
         API_KEY = config['gemini']
         genai.configure(api_key=API_KEY)
-        self.model = genai.GenerativeModel("gemini-2.5-flash")
+        if model_type == '2.5-pro':
+            self.model = genai.GenerativeModel("gemini-2.5-pro")
+        elif model_type == 'default' or model_type == '2.5-flash':
+            self.model = genai.GenerativeModel("gemini-2.5-flash")
         self.chat = self.model.start_chat()
     def instruct(self, prompt, code_only = False):
         text = self.chat.send_message(prompt).text

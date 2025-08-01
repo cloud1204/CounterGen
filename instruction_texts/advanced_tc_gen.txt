@@ -1,0 +1,33 @@
+Update your code so it will read the args and control the upper bound of the input size. Like for this example code:
+import random
+def generate_testcase():
+    t = random.randInt(1, 100)
+    print(t)
+    for i in range(t):
+        n = random.randInt(2, 10000)
+        a = [random.randInt(1, 10**9) for _ in range(n)]
+        print(n)
+        for j in range(n):
+            print(a, end = " ")
+        print("")
+if __name__ == '__main__':
+    generate_testcase()
+
+It should be changed into:
+
+import random, sys
+def generate_testcase():
+    t = random.randInt(1, arg0)
+    print(t)
+    for i in range(t):
+        n = random.randInt(2, arg1)
+        a = [random.randInt(1, arg2) for _ in range(n)]
+        print(n)
+        for j in range(n):
+            print(a, end = " ")
+        print("")
+if __name__ == '__main__':
+    arg0 = sys.argv[1]
+    arg1 = sys.argv[2]
+    arg2 = sys.argv[3]
+    generate_testcase(arg0, arg1, arg2)
