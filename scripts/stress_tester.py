@@ -1,7 +1,8 @@
 from utils.common import Code
-from default_checker import check_match
-class optimizer:
-    def __init__(self, generator: Code, args_limits: list[tuple], AC_code: Code, failed_code: Code) -> None:
+from scripts.default_checker import check_match
+import math, random
+class Stress_Tester:
+    def __init__(self, generator: Code, args_limits: list[tuple[int, int]], AC_code: Code, failed_code: Code) -> None:
         self.generator = generator
         self.args_limits = args_limits
         self.AC_code = AC_code
@@ -46,7 +47,6 @@ class optimizer:
         print(f"Tried {cnt} testcases")
         return succeed
     def heatup(self):
-        import math, random
         current_vector = [arg[0] for arg in self.args_limits]
         for t in range(1000):
             target = t % len(self.args_limits)
@@ -58,15 +58,6 @@ class optimizer:
 
 
     def cooldown(self, current_vector):
-        import math, random
-        # current_vector = []
-        # for [lb, rb] in self.args_limits:
-        #     init_value = math.ceil(math.sqrt(rb))
-        #     if init_value < max(lb, 10):
-        #         init_value = max(lb, 10)
-        #     init_value = min(init_value, rb)
-        #     current_vector.append(init_value)
-
         num_iterations = 15
         for t in range(num_iterations):
             new_vector = current_vector.copy()
@@ -81,6 +72,6 @@ class optimizer:
         if self.current_best == '':
             print('Counter Example not found')
 
-    def optimize(self):
+    def work(self):
         heated_up = self.heatup()
         self.cooldown(heated_up)

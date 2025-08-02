@@ -1,11 +1,8 @@
 import utils.common as common
 class Gemini_Agent:
-    def __init__(self, model_type='default'):
+    def __init__(self, API_KEY: str, model_type : str ='default'):
         import google.generativeai as genai
         import yaml
-        with open("./api_keys.yaml", "r") as stream:
-            config = yaml.load(stream, Loader=yaml.SafeLoader)
-        API_KEY = config['gemini']
         genai.configure(api_key=API_KEY)
         if model_type == '2.5-pro':
             self.model = genai.GenerativeModel("gemini-2.5-pro")
@@ -18,7 +15,3 @@ class Gemini_Agent:
             return common.Code(text)
         else:
             return text
-
-if __name__ == '__main__':
-    ##
-    pass

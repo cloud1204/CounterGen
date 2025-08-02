@@ -14,4 +14,6 @@ def normalize_lines(text):
 def check_match(outputA, outputB):
     lines1 = normalize_lines(outputA)
     lines2 = normalize_lines(outputB)
+    if lines1 != lines2:
+        print(f"expected {str(lines2)}, found {str(lines1)}")
     return lines1 == lines2
