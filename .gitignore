@@ -3,3 +3,5 @@ test_stuff/
 __pycache__/
 api_keys.yaml
 Input_Cache/
+test.py 
+problem_info
