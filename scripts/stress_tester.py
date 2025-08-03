@@ -25,8 +25,8 @@ class Stress_Tester:
             if elapsed > total_TL:
                 break
             time_left = max(total_TL - elapsed, single_TL)
-            test_input = self.generator.execute(args=args).stdout
-            AC_output = self.AC_code.execute(input=test_input, timeout=time_left).stdout
+            test_input = self.generator.execute(args=args).stdout 
+            AC_output = self.AC_code.execute(input=test_input, timeout=time_left).stdout ## might timeout as well
             if AC_output == 'timeout':
                 print('AC Code TLEd')
                 break

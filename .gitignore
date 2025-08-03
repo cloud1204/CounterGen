@@ -5,3 +5,5 @@ api_keys.yaml
 Input_Cache/
 test.py 
 problem_info
+tmp_storage/*
+!tmp_storage/.gitkeep

@@ -1,12 +1,16 @@
-import os
+import os, time
 import ttkbootstrap as tb
 import threading
 from ttkbootstrap.constants import *
+import tkinter as tk
+from tkinter import messagebox
 
 from utils.parse_statement import parse_statement
 from scripts.CounterGen import CounterGen
+from utils.signal import Signal_Queue
 CACHE_PATH = "./Input_Cache"
 API_DICT = {}
+sq = Signal_Queue()
 
 def reset_entry(entry, placeholder):
     entry.delete(0, "end")
@@ -119,6 +123,12 @@ def long_running_task():
         print(f"Step {i}")
         time.sleep(0.1)  # simulate delay
     print("Done!")
+def check_signal(sq: Signal_Queue):
+    while True:
+        response = sq.check()
+        if response != None:
+            messagebox.showinfo("Info", response.msg)
+        time.sleep(1)
 def on_submit():
     API_Option = type_var.get()
     API_Key = entry.get() if entry.get() != "Enter API Key" else ""
@@ -137,92 +147,96 @@ def on_submit():
 
     store_cache(API_Option, API_Key, Statement, Input, Output, WA, AC)
     #CounterGen(API_Option, API_Key, Statement, Input, Output, WA, AC)
-    threading.Thread(target=CounterGen, args=(API_Option, API_Key, Statement, Input, Output, WA, AC), daemon=True).start()
+    threading.Thread(target=CounterGen, 
+                     args=(sq, API_Option, API_Key, Statement, Input, Output, WA, AC), daemon=True).start()
+    threading.Thread(target=check_signal, args=(sq,), daemon=True).start()
+
 
 # ----- Build UI -----
-if not os.path.exists(CACHE_PATH):
-    os.mkdir(CACHE_PATH)
+if __name__ == '__main__':
+    if not os.path.exists(CACHE_PATH):
+        os.mkdir(CACHE_PATH)
 
-load_api_info()
+    load_api_info()
 
-root = tb.Window(themename='darkly')
-root.title("CounterGen")
-root.geometry("700x750")
+    root = tb.Window(themename='darkly')
+    root.title("CounterGen")
+    root.geometry("700x750")
 
-# Top: dropdown + single-line input
-frame1 = tb.Frame(root)
-frame1.pack(pady=(15, 0), padx=15, anchor="w")
+    # Top: dropdown + single-line input
+    frame1 = tb.Frame(root)
+    frame1.pack(pady=(15, 0), padx=15, anchor="w")
 
-type_var = tb.StringVar(value="Gemini" if API_DICT["Last_Use"] == None else API_DICT["Last_Use"])
-type_menu = tb.Combobox(frame1, textvariable=type_var, values=["Gemini", "Claude", "ChatGPT"], width=10, bootstyle="info")
-type_menu.pack(side="left", padx=(0, 10))
+    type_var = tb.StringVar(value="Gemini" if API_DICT["Last_Use"] == None else API_DICT["Last_Use"])
+    type_menu = tb.Combobox(frame1, textvariable=type_var, values=["Gemini", "Claude", "ChatGPT"], width=10, bootstyle="info")
+    type_menu.pack(side="left", padx=(0, 10))
 
-entry = tb.Entry(frame1, width=50, bootstyle="primary")
-entry.pack(side="left")
-set_entry_placeholder(entry, "Enter API Key", value=None if API_DICT["Last_Use"] == None else API_DICT[API_DICT["Last_Use"]])
+    entry = tb.Entry(frame1, width=50, bootstyle="primary")
+    entry.pack(side="left")
+    set_entry_placeholder(entry, "Enter API Key", value=None if API_DICT["Last_Use"] == None else API_DICT[API_DICT["Last_Use"]])
 
-# Main input block: Input 2, 3, 4
-main_input_frame = tb.Frame(root)
-main_input_frame.pack(pady=20, padx=15, fill="x")
+    # Main input block: Input 2, 3, 4
+    main_input_frame = tb.Frame(root)
+    main_input_frame.pack(pady=20, padx=15, fill="x")
 
-# Input 2 (left side)
-left_frame = tb.Frame(main_input_frame)
-left_frame.pack(side="left", padx=(0, 10))
+    # Input 2 (left side)
+    left_frame = tb.Frame(main_input_frame)
+    left_frame.pack(side="left", padx=(0, 10))
 
-label2 = tb.Label(left_frame, text="Problem Info:", bootstyle="secondary")
-label2.pack(anchor="w")
-text2 = tb.Text(left_frame, height=15, width=40, wrap="word")
-text2.pack()
-set_text_placeholder(text2, "Paste problem description or link", load_file_content(f"{CACHE_PATH}/statement.txt"))
+    label2 = tb.Label(left_frame, text="Problem Info:", bootstyle="secondary")
+    label2.pack(anchor="w")
+    text2 = tb.Text(left_frame, height=15, width=40, wrap="word")
+    text2.pack()
+    set_text_placeholder(text2, "Paste problem description or link", load_file_content(f"{CACHE_PATH}/statement.txt"))
 
-# Input 3 and 4 (right stack)
-right_frame = tb.Frame(main_input_frame)
-right_frame.pack(side="left")
+    # Input 3 and 4 (right stack)
+    right_frame = tb.Frame(main_input_frame)
+    right_frame.pack(side="left")
 
-label3 = tb.Label(right_frame, text="Example Input:", bootstyle="secondary")
-label3.pack(anchor="w")
-text3 = tb.Text(right_frame, height=6, width=30, wrap="word")
-text3.pack(pady=(0, 19))
-set_text_placeholder(text3, "Paste Example Input", load_file_content(f"{CACHE_PATH}/example_input.txt"))
+    label3 = tb.Label(right_frame, text="Example Input:", bootstyle="secondary")
+    label3.pack(anchor="w")
+    text3 = tb.Text(right_frame, height=6, width=30, wrap="word")
+    text3.pack(pady=(0, 19))
+    set_text_placeholder(text3, "Paste Example Input", load_file_content(f"{CACHE_PATH}/example_input.txt"))
 
-label4 = tb.Label(right_frame, text="Example Output:", bootstyle="secondary")
-label4.pack(anchor="w")
-text4 = tb.Text(right_frame, height=6, width=30, wrap="word")
-text4.pack()
-set_text_placeholder(text4, "Paste Example Output", load_file_content(f"{CACHE_PATH}/example_output.txt"))
+    label4 = tb.Label(right_frame, text="Example Output:", bootstyle="secondary")
+    label4.pack(anchor="w")
+    text4 = tb.Text(right_frame, height=6, width=30, wrap="word")
+    text4.pack()
+    set_text_placeholder(text4, "Paste Example Output", load_file_content(f"{CACHE_PATH}/example_output.txt"))
 
-# Input 5 
-label5 = tb.Label(root, text="Incorrect Code:", bootstyle="secondary")
-label5.pack(anchor="w", padx=10, pady=(0, 0))
-text5 = tb.Text(root, height=4, width=70, wrap="word")
-text5.pack(padx=15)
-set_text_placeholder(text5, "Paste Failed Code", load_file_content(f"{CACHE_PATH}/WA.txt"))
+    # Input 5 
+    label5 = tb.Label(root, text="Incorrect Code:", bootstyle="secondary")
+    label5.pack(anchor="w", padx=10, pady=(0, 0))
+    text5 = tb.Text(root, height=4, width=70, wrap="word")
+    text5.pack(padx=15)
+    set_text_placeholder(text5, "Paste Failed Code", load_file_content(f"{CACHE_PATH}/WA.txt"))
 
-# Input 6 
-label6 = tb.Label(root, text="Correct Code:", bootstyle="secondary")
-label6.pack(anchor="w", padx=10, pady=(0, 0))
-text6 = tb.Text(root, height=4, width=70, wrap="word")
-text6.pack(padx=15)
-set_text_placeholder(text6, "Paste Correct Code (Optional)", load_file_content(f"{CACHE_PATH}/AC.txt"))
+    # Input 6 
+    label6 = tb.Label(root, text="Correct Code:", bootstyle="secondary")
+    label6.pack(anchor="w", padx=10, pady=(0, 0))
+    text6 = tb.Text(root, height=4, width=70, wrap="word")
+    text6.pack(padx=15)
+    set_text_placeholder(text6, "Paste Correct Code (Optional)", load_file_content(f"{CACHE_PATH}/AC.txt"))
 
-# Submit button
-button_frame = tb.Frame(root)
-button_frame.pack(pady=30)
+    # Submit button
+    button_frame = tb.Frame(root)
+    button_frame.pack(pady=30)
 
-submit_btn = tb.Button(button_frame, text="Submit", command=on_submit, bootstyle="success")
-submit_btn.pack(side="left", padx=10)
+    submit_btn = tb.Button(button_frame, text="Submit", command=on_submit, bootstyle="success")
+    submit_btn.pack(side="left", padx=10)
 
-clear_btn = tb.Button(button_frame, text="Reset", command=clear_all_inputs, bootstyle="danger")
-clear_btn.pack(side="left", padx=10)
+    clear_btn = tb.Button(button_frame, text="Reset", command=clear_all_inputs, bootstyle="danger")
+    clear_btn.pack(side="left", padx=10)
 
-# For use in submission logic
-texts = [text2, text3, text4, text5, text6]
-text_placeholders = [
-    "Paste problem description or link",
-    "Paste Example Input",
-    "Paste Example Output",
-    "Paste Failed Code",
-    "Paste Correct Code (Optional)"
-]
+    # For use in submission logic
+    texts = [text2, text3, text4, text5, text6]
+    text_placeholders = [
+        "Paste problem description or link",
+        "Paste Example Input",
+        "Paste Example Output",
+        "Paste Failed Code",
+        "Paste Correct Code (Optional)"
+    ]
 
-root.mainloop()
+    root.mainloop()
