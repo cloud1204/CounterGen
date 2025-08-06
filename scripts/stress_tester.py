@@ -36,7 +36,7 @@ class Stress_Tester:
                 self.update_best_CE(test_input)
                 succeed = True
                 break
-            if not check_match(AC_output, client_output):
+            if not check_match(client_output, AC_output):
                 print(f"Counter Example found, size = {len(test_input)}")
                 if len(test_input) < 50:
                     print(test_input)

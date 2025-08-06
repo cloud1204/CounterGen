@@ -15,7 +15,7 @@ class AC_Agent:
     def work(self) -> Code:
         start_time = time.time()
         print('AC Code not found, generating AC Code')
-        prompt = f"Now, please give me a correct python code to solve this problem:\n{self.problem_statement}\n\
+        prompt = f"Please give me a correct python code to solve this problem:\n{self.problem_statement}\n\
             you can suppose the constraint is much smaller than it said and use a super naive method (prioritize the correctness) to solve it. \
                 don't insert any comment in the code."
         self.AC_code = self.agent.instruct(prompt, code_only=True)

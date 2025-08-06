@@ -117,17 +117,17 @@ def set_text_placeholder(text, placeholder, value = None):
     text.bind("<FocusOut>", on_focus_out)
 
 # ----- Submit callback -----
-def long_running_task():
-    import time
-    for i in range(100):  # simulate long loop
-        print(f"Step {i}")
-        time.sleep(0.1)  # simulate delay
-    print("Done!")
 def check_signal(sq: Signal_Queue):
     while True:
         response = sq.check()
         if response != None:
-            messagebox.showinfo("Info", response.msg)
+            #messagebox.showinfo("Info", response.msg)
+            print(response.field, response.msg)
+
+            if response.field in subtask_names:
+                index = subtask_names.index(response.field)
+                subtask_labels[index].config(text=f"✅ {response.field}", bootstyle="success")
+                progressbar['value'] += 1
         time.sleep(1)
 def on_submit():
     API_Option = type_var.get()
@@ -161,7 +161,7 @@ if __name__ == '__main__':
 
     root = tb.Window(themename='darkly')
     root.title("CounterGen")
-    root.geometry("700x750")
+    root.geometry("700x950")
 
     # Top: dropdown + single-line input
     frame1 = tb.Frame(root)
@@ -218,6 +218,24 @@ if __name__ == '__main__':
     text6 = tb.Text(root, height=4, width=70, wrap="word")
     text6.pack(padx=15)
     set_text_placeholder(text6, "Paste Correct Code (Optional)", load_file_content(f"{CACHE_PATH}/AC.txt"))
+
+    progress_frame = tb.Frame(root)
+    progress_frame.pack(pady=10)
+
+    progress_label = tb.Label(progress_frame, text="Progress:", bootstyle="secondary")
+    progress_label.pack(anchor="w")
+
+    progressbar = tb.Progressbar(progress_frame, length=500, maximum=5)
+    progressbar.pack()
+
+    subtask_names = ["API", "Validator", "Generator", "AC Code", "Stress Test"]
+    subtask_labels = []
+
+    for name in subtask_names:
+        lbl = tb.Label(progress_frame, text=f"🔄 {name}", bootstyle="info")
+        lbl.pack(anchor="w", padx=20)
+        subtask_labels.append(lbl)
+
 
     # Submit button
     button_frame = tb.Frame(root)

@@ -13,6 +13,7 @@ class Code:
             if compile_result.returncode != 0:
                 print('Compile error')
                 print(compile_result.stderr)
+                raise ValueError("Compile Error")
             else:
                 print('Compile success')
         elif self.is_valid_python_code(text):
