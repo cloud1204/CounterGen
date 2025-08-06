@@ -225,7 +225,7 @@ if __name__ == '__main__':
     progress_label = tb.Label(progress_frame, text="Progress:", bootstyle="secondary")
     progress_label.pack(anchor="w")
 
-    progressbar = tb.Progressbar(progress_frame, length=500, maximum=5)
+    progressbar = tb.Progressbar(progress_frame, length=500, maximum=5, bootstyle='success')
     progressbar.pack()
 
     subtask_names = ["API", "Validator", "Generator", "AC Code", "Stress Test"]
@@ -239,7 +239,7 @@ if __name__ == '__main__':
 
     # Submit button
     button_frame = tb.Frame(root)
-    button_frame.pack(pady=30)
+    button_frame.pack(pady=10)
 
     submit_btn = tb.Button(button_frame, text="Submit", command=on_submit, bootstyle="success")
     submit_btn.pack(side="left", padx=10)
