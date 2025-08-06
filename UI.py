@@ -15,12 +15,12 @@ sq = Signal_Queue()
 def reset_entry(entry, placeholder):
     entry.delete(0, "end")
     entry.insert(0, placeholder)
-    entry.config(foreground="gray")
+    entry.config(foreground="#4f4d4d")
 
 def reset_text(text, placeholder):
     text.delete("1.0", "end")
     text.insert("1.0", placeholder)
-    text.config(foreground="gray")
+    text.config(foreground="#4f4d4d")
 
 
 def clear_all_inputs():
@@ -80,7 +80,7 @@ def set_entry_placeholder(entry, placeholder, value = None):
         entry.config(foreground="white")
     else:
         entry.insert(0, placeholder)
-        entry.config(foreground="gray")
+        entry.config(foreground="#4f4d4d")
 
     def on_focus_in(event):
         if entry.get() == placeholder:
@@ -90,7 +90,7 @@ def set_entry_placeholder(entry, placeholder, value = None):
     def on_focus_out(event):
         if entry.get() == "":
             entry.insert(0, placeholder)
-            entry.config(foreground="gray")
+            entry.config(foreground="#4f4d4d")
 
     entry.bind("<FocusIn>", on_focus_in)
     entry.bind("<FocusOut>", on_focus_out)
@@ -101,7 +101,7 @@ def set_text_placeholder(text, placeholder, value = None):
         text.config(foreground="white")
     else:
         text.insert("1.0", placeholder)
-        text.config(foreground="gray")
+        text.config(foreground="#4f4d4d")
 
     def on_focus_in(event):
         if text.get("1.0", "end-1c") == placeholder:
@@ -111,7 +111,7 @@ def set_text_placeholder(text, placeholder, value = None):
     def on_focus_out(event):
         if text.get("1.0", "end-1c").strip() == "":
             text.insert("1.0", placeholder)
-            text.config(foreground="gray")
+            text.config(foreground="#4f4d4d")
 
     text.bind("<FocusIn>", on_focus_in)
     text.bind("<FocusOut>", on_focus_out)
@@ -151,8 +151,17 @@ def on_submit():
                      args=(sq, API_Option, API_Key, Statement, Input, Output, WA, AC), daemon=True).start()
     threading.Thread(target=check_signal, args=(sq,), daemon=True).start()
 
+def create_text_frame(parent_frame, height, width, description, filename):
+    text_frame = tb.Frame(parent_frame)
+    text_frame.pack(fill="both", expand=True)
+    text_scrollbar = tb.Scrollbar(text_frame, orient="vertical")
+    text_scrollbar.pack(side="right", fill="y")
+    text = tb.Text(text_frame, height=height, width=width, wrap="word", yscrollcommand=text_scrollbar.set)
+    text.pack(fill="both", expand=True)
+    text_scrollbar.config(command=text.yview)
+    set_text_placeholder(text, description, load_file_content(f"{CACHE_PATH}/{filename}"))
+    return text
 
-# ----- Build UI -----
 if __name__ == '__main__':
     if not os.path.exists(CACHE_PATH):
         os.mkdir(CACHE_PATH)
@@ -161,7 +170,7 @@ if __name__ == '__main__':
 
     root = tb.Window(themename='darkly')
     root.title("CounterGen")
-    root.geometry("700x950")
+    root.geometry("700x800")
 
     # Top: dropdown + single-line input
     frame1 = tb.Frame(root)
@@ -177,52 +186,47 @@ if __name__ == '__main__':
 
     # Main input block: Input 2, 3, 4
     main_input_frame = tb.Frame(root)
-    main_input_frame.pack(pady=20, padx=15, fill="x")
+    main_input_frame.pack(pady=0, padx=15, fill="both", expand=True)
 
     # Input 2 (left side)
     left_frame = tb.Frame(main_input_frame)
-    left_frame.pack(side="left", padx=(0, 10))
+    left_frame.pack(side="left", padx=(0, 10), fill="both", expand=True)
 
-    label2 = tb.Label(left_frame, text="Problem Info:", bootstyle="secondary")
+    label2 = tb.Label(left_frame, text="Problem Info:", foreground="#878686")
     label2.pack(anchor="w")
-    text2 = tb.Text(left_frame, height=15, width=40, wrap="word")
-    text2.pack()
-    set_text_placeholder(text2, "Paste problem description or link", load_file_content(f"{CACHE_PATH}/statement.txt"))
+
+    text2 = create_text_frame(left_frame, 8, 40, "Paste problem description or link", 'statement.txt')
 
     # Input 3 and 4 (right stack)
     right_frame = tb.Frame(main_input_frame)
-    right_frame.pack(side="left")
+    right_frame.pack(side="left", fill="both", expand=True)
 
-    label3 = tb.Label(right_frame, text="Example Input:", bootstyle="secondary")
+
+    label3 = tb.Label(right_frame, text="Example Input:", foreground="#878686")
     label3.pack(anchor="w")
-    text3 = tb.Text(right_frame, height=6, width=30, wrap="word")
-    text3.pack(pady=(0, 19))
-    set_text_placeholder(text3, "Paste Example Input", load_file_content(f"{CACHE_PATH}/example_input.txt"))
+    text3 = create_text_frame(right_frame, 3, 30, "Paste Example Input", "example_input.txt")
 
-    label4 = tb.Label(right_frame, text="Example Output:", bootstyle="secondary")
+    label4 = tb.Label(right_frame, text="Example Output:", foreground="#878686")
     label4.pack(anchor="w")
-    text4 = tb.Text(right_frame, height=6, width=30, wrap="word")
-    text4.pack()
-    set_text_placeholder(text4, "Paste Example Output", load_file_content(f"{CACHE_PATH}/example_output.txt"))
+    text4 = create_text_frame(right_frame, 3, 30, "Paste Example Output", "example_output.txt")
 
+
+    code_input_frame = tb.Frame(root)
+    code_input_frame.pack(padx=15, pady=3, fill="both", expand=True)
     # Input 5 
-    label5 = tb.Label(root, text="Incorrect Code:", bootstyle="secondary")
+    label5 = tb.Label(code_input_frame, text="Incorrect Code:", foreground="#878686")
     label5.pack(anchor="w", padx=10, pady=(0, 0))
-    text5 = tb.Text(root, height=4, width=70, wrap="word")
-    text5.pack(padx=15)
-    set_text_placeholder(text5, "Paste Failed Code", load_file_content(f"{CACHE_PATH}/WA.txt"))
+    text5 = create_text_frame(code_input_frame, 2, 70, "Paste Failed Code", "WA.txt")
 
     # Input 6 
-    label6 = tb.Label(root, text="Correct Code:", bootstyle="secondary")
+    label6 = tb.Label(code_input_frame, text="Correct Code:", foreground="#878686")
     label6.pack(anchor="w", padx=10, pady=(0, 0))
-    text6 = tb.Text(root, height=4, width=70, wrap="word")
-    text6.pack(padx=15)
-    set_text_placeholder(text6, "Paste Correct Code (Optional)", load_file_content(f"{CACHE_PATH}/AC.txt"))
+    text6 = create_text_frame(code_input_frame, 2, 70, "Paste Correct Code (Optional)", "AC.txt")
 
-    progress_frame = tb.Frame(root)
+    progress_frame = tb.Frame(code_input_frame)
     progress_frame.pack(pady=10)
 
-    progress_label = tb.Label(progress_frame, text="Progress:", bootstyle="secondary")
+    progress_label = tb.Label(progress_frame, text="Progress:", foreground="#878686")
     progress_label.pack(anchor="w")
 
     progressbar = tb.Progressbar(progress_frame, length=500, maximum=5, bootstyle='success')
