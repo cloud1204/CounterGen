@@ -8,6 +8,7 @@ class Stress_Tester:
         self.AC_code = AC_code
         self.failed_code = failed_code
         self.current_best = ''
+        self.fail_reason = ''
         pass
     def update_best_CE(self, test_input):
         if self.current_best == '' or len(test_input) < len(self.current_best):
@@ -58,7 +59,7 @@ class Stress_Tester:
 
 
     def cooldown(self, current_vector):
-        num_iterations = 15
+        num_iterations = 10
         for t in range(num_iterations):
             new_vector = current_vector.copy()
             

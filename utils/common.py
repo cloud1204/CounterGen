@@ -18,6 +18,7 @@ class Code:
                 print('Compile success')
         elif self.is_valid_python_code(text):
             self.code = text
+            print(self.code)
         else:
             splited = text.split("```")
             self.code = splited[1]

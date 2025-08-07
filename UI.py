@@ -1,4 +1,4 @@
-import os, time
+import os, time, sys
 import ttkbootstrap as tb
 import threading
 from ttkbootstrap.constants import *
@@ -123,6 +123,10 @@ def check_signal(sq: Signal_Queue):
         if response != None:
             #messagebox.showinfo("Info", response.msg)
             print(response.field, response.msg)
+            if response.field == "Stress Test" and response.type == 'succ':
+                text_box_1.config(state="normal")  # enable writing
+                text_box_1.insert("1.0", response.msg)
+                text_box_1.config(state="disabled")
 
             if response.field in subtask_names:
                 index = subtask_names.index(response.field)
@@ -162,6 +166,19 @@ def create_text_frame(parent_frame, height, width, description, filename):
     set_text_placeholder(text, description, load_file_content(f"{CACHE_PATH}/{filename}"))
     return text
 
+class TextRedirector:
+    def __init__(self, text_widget):
+        self.text_widget = text_widget
+
+    def write(self, msg):
+        self.text_widget.config(state="normal")
+        self.text_widget.insert("end", msg)
+        self.text_widget.see("end")  # auto-scroll
+        self.text_widget.config(state="disabled")
+
+    def flush(self):
+        pass  # Needed for compatibility with sys.stdout
+
 if __name__ == '__main__':
     if not os.path.exists(CACHE_PATH):
         os.mkdir(CACHE_PATH)
@@ -170,7 +187,7 @@ if __name__ == '__main__':
 
     root = tb.Window(themename='darkly')
     root.title("CounterGen")
-    root.geometry("700x800")
+    root.geometry("1400x800")
 
     # Top: dropdown + single-line input
     frame1 = tb.Frame(root)
@@ -185,8 +202,15 @@ if __name__ == '__main__':
     set_entry_placeholder(entry, "Enter API Key", value=None if API_DICT["Last_Use"] == None else API_DICT[API_DICT["Last_Use"]])
 
     # Main input block: Input 2, 3, 4
-    main_input_frame = tb.Frame(root)
-    main_input_frame.pack(pady=0, padx=15, fill="both", expand=True)
+
+    container_frame = tb.Frame(root)
+    container_frame.pack(padx=15, pady=0, fill="both", expand=True)
+
+    left_stack_frame = tb.Frame(container_frame)
+    left_stack_frame.pack(side="left", fill="both", expand=True)
+
+    main_input_frame = tb.Frame(left_stack_frame)
+    main_input_frame.pack(fill="both", expand=True)
 
     # Input 2 (left side)
     left_frame = tb.Frame(main_input_frame)
@@ -195,7 +219,7 @@ if __name__ == '__main__':
     label2 = tb.Label(left_frame, text="Problem Info:", foreground="#878686")
     label2.pack(anchor="w")
 
-    text2 = create_text_frame(left_frame, 8, 40, "Paste problem description or link", 'statement.txt')
+    text2 = create_text_frame(left_frame, 8, 20, "Paste problem description or link", 'statement.txt')
 
     # Input 3 and 4 (right stack)
     right_frame = tb.Frame(main_input_frame)
@@ -211,17 +235,43 @@ if __name__ == '__main__':
     text4 = create_text_frame(right_frame, 3, 30, "Paste Example Output", "example_output.txt")
 
 
-    code_input_frame = tb.Frame(root)
-    code_input_frame.pack(padx=15, pady=3, fill="both", expand=True)
+    code_input_frame = tb.Frame(left_stack_frame)
+    code_input_frame.pack(fill="x", expand=True)
     # Input 5 
     label5 = tb.Label(code_input_frame, text="Incorrect Code:", foreground="#878686")
     label5.pack(anchor="w", padx=10, pady=(0, 0))
-    text5 = create_text_frame(code_input_frame, 2, 70, "Paste Failed Code", "WA.txt")
+    text5 = create_text_frame(code_input_frame, 4, 50, "Paste Failed Code", "WA.txt")
 
     # Input 6 
     label6 = tb.Label(code_input_frame, text="Correct Code:", foreground="#878686")
     label6.pack(anchor="w", padx=10, pady=(0, 0))
-    text6 = create_text_frame(code_input_frame, 2, 70, "Paste Correct Code (Optional)", "AC.txt")
+    text6 = create_text_frame(code_input_frame, 4, 50, "Paste Correct Code (Optional)", "AC.txt")
+
+    # Log Frame
+    right_output_frame = tb.Frame(container_frame)
+    right_output_frame.pack(side="left", fill="both", expand=True)
+    tb.Label(right_output_frame, text="Terminal Log", foreground="#878686").pack(pady=0)
+    output_box = tb.Text(right_output_frame, height=7, width=30, wrap="word")
+    output_box.pack(fill="both", expand=True, padx=10, pady=(0,20))
+    output_box.insert("1.0", "The terminal logs will show here\n")
+    output_box.config(state="disabled", background="#1e1e1e", foreground="#666563")
+    sys.stdout = TextRedirector(output_box)
+    sys.stderr = TextRedirector(output_box)
+
+    #
+    bottom_text_frame = tb.Frame(right_output_frame)
+    bottom_text_frame.pack(fill="both", expand=False, padx=10, pady=(0, 5))
+
+    # First box (left)
+    text_box_1 = tb.Text(bottom_text_frame, height=17, width=30, wrap="word")
+    text_box_1.config(state="disabled", background="#1e1e1e", foreground="#666563")
+    text_box_1.pack(side="left", fill="both", expand=True, padx=(0, 5), pady=(0, 10))
+
+    # Second box (right)
+    text_box_2 = tb.Text(bottom_text_frame, height=17, width=30, wrap="word")
+    text_box_2.config(state="disabled", background="#1e1e1e", foreground="#666563")
+    text_box_2.pack(side="left", fill="both", expand=True, padx=(5, 0), pady=(0, 10))
+
 
     progress_frame = tb.Frame(code_input_frame)
     progress_frame.pack(pady=10)
@@ -242,7 +292,7 @@ if __name__ == '__main__':
 
 
     # Submit button
-    button_frame = tb.Frame(root)
+    button_frame = tb.Frame(code_input_frame)
     button_frame.pack(pady=10)
 
     submit_btn = tb.Button(button_frame, text="Submit", command=on_submit, bootstyle="success")
