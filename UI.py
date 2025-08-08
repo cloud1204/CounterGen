@@ -127,6 +127,10 @@ def check_signal(sq: Signal_Queue):
                 text_box_1.config(state="normal")  # enable writing
                 text_box_1.insert("1.0", response.msg)
                 text_box_1.config(state="disabled")
+            if response.field == "Stress Test_cont" and response.type == 'succ':
+                text_box_2.config(state="normal")  # enable writing
+                text_box_2.insert("1.0", response.msg)
+                text_box_2.config(state="disabled")
 
             if response.field in subtask_names:
                 index = subtask_names.index(response.field)
@@ -264,12 +268,12 @@ if __name__ == '__main__':
 
     # First box (left)
     text_box_1 = tb.Text(bottom_text_frame, height=17, width=30, wrap="word")
-    text_box_1.config(state="disabled", background="#1e1e1e", foreground="#666563")
+    text_box_1.config(state="disabled", background="#1e1e1e", foreground="white")
     text_box_1.pack(side="left", fill="both", expand=True, padx=(0, 5), pady=(0, 10))
 
     # Second box (right)
     text_box_2 = tb.Text(bottom_text_frame, height=17, width=30, wrap="word")
-    text_box_2.config(state="disabled", background="#1e1e1e", foreground="#666563")
+    text_box_2.config(state="disabled", background="#1e1e1e", foreground="white")
     text_box_2.pack(side="left", fill="both", expand=True, padx=(5, 0), pady=(0, 10))
 
 
@@ -279,10 +283,10 @@ if __name__ == '__main__':
     progress_label = tb.Label(progress_frame, text="Progress:", foreground="#878686")
     progress_label.pack(anchor="w")
 
-    progressbar = tb.Progressbar(progress_frame, length=500, maximum=5, bootstyle='success')
+    progressbar = tb.Progressbar(progress_frame, length=500, maximum=6, bootstyle='success')
     progressbar.pack()
 
-    subtask_names = ["API", "Validator", "Generator", "AC Code", "Stress Test"]
+    subtask_names = ["API", "Validator", "Generator", "Checker", "AC Code", "Stress Test"]
     subtask_labels = []
 
     for name in subtask_names:

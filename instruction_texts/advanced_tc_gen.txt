@@ -1,4 +1,6 @@
-Update your code so it will read the args and control the upper bound of the input size. Like for this example code:
+Update your code so it will read the args and control the upper bound of the input size and value ranges. 
+If the problem is about strings, please use a arg to control the number of distinct alphabets used as well.
+Like for this example code:
 import random
 def generate_testcase():
     t = random.randInt(1, 100)

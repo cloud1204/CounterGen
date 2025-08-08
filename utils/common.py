@@ -1,4 +1,4 @@
-import subprocess, os, random, tempfile
+import subprocess, random, re
 class Code:
     def __init__(self, text):
         self.language = 'python'
@@ -20,8 +20,8 @@ class Code:
             self.code = text
             print(self.code)
         else:
-            splited = text.split("```")
-            self.code = splited[1]
+            matches = re.findall(r"```(.*?)```", text, re.DOTALL)
+            self.code = matches[0]
             if self.code[:7] == 'python\n':
                 self.code = self.code[7:]
             print(self.code)

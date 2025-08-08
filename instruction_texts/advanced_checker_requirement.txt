@@ -1,0 +1,49 @@
+Tell me if this problem needs a customized checker. simply response "No" if it is like the example below and the default checker can work, or "Yes" otherwise.
+
+## this is the default checker
+
+def normalize_lines(text):
+
+    # Strip trailing spaces, remove trailing empty lines (common feature in Codeforces problems)
+
+    lines = [line.rstrip() for line in text.splitlines()]
+
+    while lines and lines[-1] == '':
+
+        lines.pop()
+
+    # Normalize YES/NO into lowercase (common feature in Codeforces problems)
+
+    normalized = []
+
+    for line in lines:
+
+        if line.strip().lower() in ('yes', 'no'):
+
+            normalized.append(line.strip().lower())
+
+        else:
+
+            normalized.append(line)
+
+    return "\n".join(normalized)
+
+import sys
+
+if __name__ == '__main__':
+
+    problem_input = sys.argv[1]
+
+    output_user = sys.argv[2]
+
+    output_judge = sys.argv[3]
+
+    # problem input is not important, we can directly check if the outputs match
+
+    if normalized(output_judge)== normalized(output_user):
+
+    print('AC')
+
+    else:
+
+        print(f"Incorrect. Expected {output_judge}, found{output_user}")

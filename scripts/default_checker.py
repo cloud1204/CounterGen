@@ -1,5 +1,5 @@
 def normalize_lines(text):
-    # strip trailing spaces, remove trailing empty lines
+    # Strip trailing spaces, remove trailing empty lines
     lines = [line.rstrip() for line in text.splitlines()]
     while lines and lines[-1] == '':
         lines.pop()
@@ -10,10 +10,10 @@ def normalize_lines(text):
             normalized.append(line.strip().lower())
         else:
             normalized.append(line)
-    return normalized
+    return "\n".join(normalized)
 def check_match(outputA, outputB):
     lines1 = normalize_lines(outputA)
     lines2 = normalize_lines(outputB)
     if lines1 != lines2:
-        print(f"expected {str(lines2)}, found {str(lines1)}")
-    return lines1 == lines2
+        return f"expected:\n{str(lines2)}\nfound:\n{str(lines1)}"
+    return "AC"
