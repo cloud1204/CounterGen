@@ -1,4 +1,4 @@
-import utils.common as common
+import utils.code as code
 class Gemini_Agent:
     def __init__(self, API_KEY: str, model_type : str ='default'):
         import google.generativeai as genai
@@ -12,6 +12,6 @@ class Gemini_Agent:
     def instruct(self, prompt, code_only = False):
         text = self.chat.send_message(prompt).text
         if code_only:
-            return common.Code(text)
+            return code.Code(text)
         else:
             return text

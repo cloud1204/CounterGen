@@ -1,5 +1,5 @@
 from scripts import default_checker
-from utils.common import Code
+from utils.code import Code
 from utils.agent import Agent
 import re
 def has_invalid_control_chars(s):

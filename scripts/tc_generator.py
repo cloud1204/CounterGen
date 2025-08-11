@@ -1,8 +1,8 @@
 from utils.agent import Agent
-from utils.common import Code
+from utils.code import Code
 import time
 class TC_Generator_Agent:
-    def __init__(self, agent : Agent, problem_statement: str, validator: Code):
+    def __init__(self, agent: Agent, problem_statement: str, validator: Code):
         self.problem_statement = problem_statement
         self.validator = validator
 

@@ -1,5 +1,5 @@
 from utils.agent import Agent
-from utils.common import Code
+from utils.code import Code
 from scripts.tc_validator import TC_Validator_Agent
 from scripts.tc_generator import TC_Generator_Agent
 from scripts.stress_tester import Stress_Tester

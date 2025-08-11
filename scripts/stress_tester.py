@@ -1,6 +1,7 @@
-from utils.common import Code
+from utils.code import Code
 from scripts.checker import Checker
-import math, random
+import math, random, time, os
+import concurrent.futures as cf
 class Stress_Tester:
     def __init__(self, generator: Code, args_limits: list[tuple[int, int]], AC_code: Code, failed_code: Code, checker: Checker) -> None:
         self.generator = generator
@@ -15,8 +16,8 @@ class Stress_Tester:
         if self.current_best == '' or len(test_input) < len(self.current_best):
             self.current_best = test_input
             self.fail_reason = fail_reason
+
     def stress_test(self, args):
-        import time
         start_time = time.time()
         total_TL = 1
         single_TL = 1
@@ -67,7 +68,7 @@ class Stress_Tester:
             new_value = current_vector[target] * 2 if current_vector[target] >= 5 else current_vector[target] + 1
             current_vector[target] = min(new_value, self.args_limits[target][1])
 
-            if self.stress_test(current_vector):
+            if self.stress_test_parallel(current_vector):
                 return current_vector
 
 
@@ -80,7 +81,7 @@ class Stress_Tester:
             new_value = new_vector[target] // 2 if new_vector[target] >= 10 else new_vector[target] - 1
             new_vector[target] = max(new_value, self.args_limits[target][0])
 
-            if self.stress_test(new_vector):
+            if self.stress_test_parallel(new_vector):
                 current_vector = new_vector
 
         if self.current_best == '':
