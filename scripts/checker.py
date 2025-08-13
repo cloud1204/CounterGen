@@ -1,4 +1,3 @@
-from scripts import default_checker
 from utils.code import Code, split_output
 from utils.agent import Agent
 import re
@@ -6,7 +5,7 @@ def has_invalid_control_chars(s):
     # Control characters: ASCII 0–31, exclude \n (10) and optionally \t (9)
     return bool(re.search(r'[\x00-\x08\x0B-\x0C\x0E-\x1F]', s))
 
-def normalize_lines(text):
+def normalize_lines(text: str):
     # Strip trailing spaces, keep exact 1 trailing empty lines
     lines = [line.rstrip() for line in text.splitlines()]
     while lines and lines[-1] == '':
@@ -21,7 +20,7 @@ def normalize_lines(text):
             normalized.append(line)
     return "\n".join(normalized)
 
-def check_match(outputA, outputB):
+def check_match(Input, outputA, outputB):
     if has_invalid_control_chars(outputA):
         return "Contains invalid characters"
     lines1 = normalize_lines(outputA)
@@ -31,29 +30,17 @@ def check_match(outputA, outputB):
     return "AC"
 
 class Checker:
-    def __init__(self, checker_code : Code = None):
-        self.checker_code = checker_code
+    def __init__(self):
+        self.checker_func = None
+        self.namespace = {}
     def check(self, Input: str, outA: str, outB: str) -> str: # suppose outB is correct
-        if self.checker_code == None:
-            return default_checker.check_match(outputA=outA, outputB=outB)
-        else:
-            if has_invalid_control_chars(outA):
-                return "Contains invalid characters"
-            outA = default_checker.normalize_lines(outA)
-            outA = default_checker.normalize_lines(outB)
-            return self.checker_code.execute(args=[Input, outA, outB]).stdout.rstrip()
+        return self.checker_func(Input, outA, outB)
 
     def check_multi(self, Input: list[str], outA: list[str], outB: list[str]) -> list[str]: # returns result, failed testcase
+        assert self.checker_func != None
+        assert len(outA) == len(outB) == len(Input)
         T = len(Input)
-        if self.checker_code == None:
-            return [default_checker.check_match(outA[i], outB[i]) for i in range(T)]
-        else:
-            outA_combined, outB_combined = f"{T}\n", f"{T}\n"
-            Input_combined = f"{T}\n" + ''.join(Input)
-            for i in range(T):
-                outA_combined += normalize_lines(outA[i])
-                outB_combined += normalize_lines(outB[i])
-            return split_output(self.checker_code.execute(args=[Input_combined, outA_combined, outB_combined]).stdout)
+        return [self.checker_func(Input[i], outA[i], outB[i]) for i in range(T)]
     
     def customize_checker_if_needed(self, agent: Agent, statement: str) -> None:
         with open("instruction_texts/advanced_checker_requirement.txt", "r") as file:
@@ -61,9 +48,12 @@ class Checker:
         responce = agent.instruct(f"{statement}\n{requirement_query}")
         if "No" in responce[:10]:
             # Advanced checker is not needed
+            self.checker_func = check_match
             return
         else:
             with open("instruction_texts/advanced_checker_gen.txt", "r") as file:
                 prompt = file.read()
-            self.checker_code = agent.instruct(prompt=prompt, code_only=True)
+            checker_code = agent.instruct(prompt=prompt, code_only=True)
+            exec(checker_code.code, self.namespace)
+            self.checker_func = self.namespace['check']
                 

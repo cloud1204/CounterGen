@@ -1,18 +1,16 @@
-Ok, then give me a customized checker like the below example (read problem_input, output_user, output_judge from sys.argv), but for this problem.
-Note 0: The problem input, and both user's and judge's output would be passed as full text (string) in args.
-Note 1: If the statement says that it has multiple testcase, you should read them all.
+Ok, then give me a customized checker code like the below example 2, but for this problem.
+Note 0: The problem input, and both user's and judge's output would be passed as full text (string) in args. You must name the main checking function 'check', and its format should follow (problem_input : str, output_user : str, output_judge : str) -> str
+Note 1: If the statement says that it has multiple testcase, the Input/Outputs of all testcases would be passed all at once.
 Note 2: We know that output_judge is a 100% correct output (You can use it to simplify your code and save time implementing the solution yourself).
-Note 3: You should print ("AC") (without redundant outputs) if the test is passed, and print the fail reason if it fail.
+Note 3: You should return ("AC") (without redundant characters) if the test is passed, and return the fail reason if it fail.
+
 # Example 2 (customized checker): Input C, output A, B such that A+B=C
 import sys
-if __name__ == '__main__':
-    problem_input = sys.argv[1]
-    output_user = sys.argv[2]
-    output_judge = sys.argv[3]
+def check(problem_input : str, output_user : str, output_judge : str) -> str:
     # output_judge is not important, we can directly check if the input satisfy
     C = int(problem_input)
     A, B = int(output_user.split())
     if A + B == C:
-        print('AC')
+        return 'AC' # simply return 'AC' if it's correct
     else:
-        print(f"Incorrect. Sum is {A+B}, not{C}")
+        return f"Incorrect. Sum is {A+B}, not{C}" # otherwise, return the reason that it fail

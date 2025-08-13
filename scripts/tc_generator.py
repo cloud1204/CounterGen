@@ -52,14 +52,14 @@ class TC_Generator_Agent:
         self.generator = self.agent.instruct(prompt, code_only=True)
         prompt = "Now, give me a list of the args limits (tuples of ranges) that satisfy this problem's input constraints, \
             like [(1, 100), (1, 10000), (1, 1000000000)] for my example above. Give me the python list only, \
-                do not include any explanation or extra text."
+                do not include any explanation or extra text. Please ensure that the args would satisfy the problem constraint"
         self.args_limit = eval(self.agent.instruct(prompt, code_only=True).code)
 
         while True:
             succeed_flag = True
             for t in range(GEN_TEST):
                 import random
-                test_args = [random.randint(self.args_limit[i][0], min(100, self.args_limit[i][1])) \
+                test_args = [random.randint(self.args_limit[i][0], self.args_limit[i][1]) \
                              for i in range(len(self.args_limit))]
                 print('testing', test_args)
                 generated_tc = self.generator.execute(args=test_args)

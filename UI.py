@@ -31,6 +31,28 @@ def clear_all_inputs():
     reset_text(text5, "Paste Failed Code")
     reset_text(text6, "Paste Correct Code (Optional)")
 
+def reset_outputs():
+    progressbar['value'] = 0
+    for name in subtask_names:
+        index = subtask_names.index(name)
+        subtask_labels[index].config(text=f"🔄 {name}", bootstyle="info")
+    # reset terminal logs
+    output_box.config(state="normal")
+    output_box.delete("1.0", "end")
+    output_box.insert("1.0", "The terminal logs will show here\n")
+    output_box.config(state="disabled")
+    # reset output logs
+    text_box_1.config(state="normal") 
+    text_box_1.delete("1.0", "end") 
+    text_box_1.config(state="disabled")
+    text_box_2.config(state="normal") 
+    text_box_2.delete("1.0", "end") 
+    text_box_2.config(state="disabled")
+
+def reset():
+    clear_all_inputs()
+    reset_outputs()
+
 def load_api_info():
     try:
         import yaml
@@ -138,6 +160,8 @@ def check_signal(sq: Signal_Queue):
                 progressbar['value'] += 1
         time.sleep(1)
 def on_submit():
+    reset_outputs()
+
     API_Option = type_var.get()
     API_Key = entry.get() if entry.get() != "Enter API Key" else ""
 
@@ -302,7 +326,7 @@ if __name__ == '__main__':
     submit_btn = tb.Button(button_frame, text="Submit", command=on_submit, bootstyle="success")
     submit_btn.pack(side="left", padx=10)
 
-    clear_btn = tb.Button(button_frame, text="Reset", command=clear_all_inputs, bootstyle="danger")
+    clear_btn = tb.Button(button_frame, text="Reset", command=reset, bootstyle="danger")
     clear_btn.pack(side="left", padx=10)
 
     # For use in submission logic

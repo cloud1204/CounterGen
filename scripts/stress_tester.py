@@ -50,6 +50,7 @@ class Stress_Tester:
                 print(client_output)
                 raise ValueError(f"client's program early exited during multi-test:\n{test_inputs[len(client_output)]}\n")
             test_result = self.checker.check_multi(test_inputs, client_output, AC_output)
+            
             for i in range(T):
                 if test_result[i] != 'AC':
                     #print(f"Counter Example found, size = {len(test_inputs[i])}, {test_result[i]}")
