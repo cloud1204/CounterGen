@@ -1,4 +1,4 @@
-from utils.code import Code
+from utils.code import Code, split_output
 from scripts.checker import Checker
 import math, random, time, os
 import concurrent.futures as cf
@@ -19,56 +19,60 @@ class Stress_Tester:
 
     def stress_test(self, args):
         start_time = time.time()
-        total_TL = 1
-        single_TL = 1
+        total_TL = 2
         cnt = 0
+        T = 10
         succeed = False
         while True:
-            cnt += 1
+            cnt += T
             elapsed = time.time() - start_time
             if elapsed > total_TL:
                 break
-            time_left = max(total_TL - elapsed, single_TL)
-            test_input = self.generator.execute(args=args).stdout 
-            print("------\n" + test_input)
+            test_inputs = split_output(self.generator.execute(args=args, input=f"{T}\n").stdout) 
+            test_input_combined = f"{T}\n" + ''.join(test_inputs)
+            # print("testcase\n" + test_input_combined)
             
-            AC_output = self.AC_code.execute(input=test_input, timeout=time_left).stdout ## might timeout as well
+            AC_output = self.AC_code.execute(input=test_input_combined, timeout=total_TL) ## might timeout as well
             if AC_output == 'timeout':
                 print('AC Code TLEd')
                 break
-            try:
-                client_output = self.failed_code.execute(input=test_input, timeout=time_left).stdout
-                if client_output == 'timeout':
-                    print('AC Code TLEd')
-                    self.update_best_CE(test_input, "Time limit exceeded")
-                    succeed = True
-                    break
-                test_result = 'Something went wrong.'
-                test_result = self.checker.check(test_input, client_output, AC_output)
-                print("test result:", test_result)
-                if test_result != 'AC':
-                    print(f"Counter Example found, size = {len(test_input)}, {test_result}")
-                    if len(test_input) < 50:
-                        print(test_input)
-                    self.update_best_CE(test_input, test_result)
-                    succeed = True
-                    break
-            except Exception as e:
-                print(f"Counter Example found, size = {len(test_input)}, {test_result}")
-                self.update_best_CE(test_input, str(e))
-                succeed = True
+            else:
+                AC_output = split_output(AC_output.stdout)
+
+            client_output = self.failed_code.execute(input=test_input_combined, timeout=total_TL)
+            if client_output == 'timeout':
+                print('client code tled')
                 break
+            else:
+                client_output = split_output(client_output.stdout)
+
+            if len(client_output) < T:
+                print(client_output)
+                raise ValueError(f"client's program early exited during multi-test:\n{test_inputs[len(client_output)]}\n")
+            test_result = self.checker.check_multi(test_inputs, client_output, AC_output)
+            for i in range(T):
+                if test_result[i] != 'AC':
+                    #print(f"Counter Example found, size = {len(test_inputs[i])}, {test_result[i]}")
+                    # if len(test_inputs[i]) < 50:
+                    #     print(test_inputs[i])
+                    self.update_best_CE(test_inputs[i], test_result[i])
+                    succeed = True
+            # if succeed:
+            #     break
+            T *= 2
+
         print(args)
         print(f"Tried {cnt} testcases")
+        print("Successfully found counter example" if succeed else "Counter not found")
         return succeed
     def heatup(self):
         current_vector = [arg[0] for arg in self.args_limits]
-        for t in range(20): #
+        for t in range(15): #
             target = t % len(self.args_limits)
             new_value = current_vector[target] * 2 if current_vector[target] >= 5 else current_vector[target] + 1
             current_vector[target] = min(new_value, self.args_limits[target][1])
 
-            if self.stress_test_parallel(current_vector):
+            if self.stress_test(current_vector):
                 return current_vector
 
 
@@ -81,7 +85,7 @@ class Stress_Tester:
             new_value = new_vector[target] // 2 if new_vector[target] >= 10 else new_vector[target] - 1
             new_vector[target] = max(new_value, self.args_limits[target][0])
 
-            if self.stress_test_parallel(new_vector):
+            if self.stress_test(new_vector):
                 current_vector = new_vector
 
         if self.current_best == '':

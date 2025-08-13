@@ -15,8 +15,7 @@ class AC_Agent:
         start_time = time.time()
         print('AC Code not found, generating AC Code')
         prompt = f"Please give me a correct python code to solve this problem:\n{self.problem_statement}\n\
-            you can suppose the constraint is much smaller than it said and use a super naive method (prioritize the correctness) to solve it. \
-                don't insert any comment in the code."
+            you can use a brute-force method (prioritize the correctness) to solve it. Don't insert any comment in the code.\n"
         self.AC_code = self.agent.instruct(prompt, code_only=True)
         print(f"AC code first edition generated. Time spent: {time.time() - start_time} sec")
         return True

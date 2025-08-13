@@ -1,8 +1,9 @@
 def normalize_lines(text):
-    # Strip trailing spaces, remove trailing empty lines
+    # Strip trailing spaces, keep exact 1 trailing empty lines
     lines = [line.rstrip() for line in text.splitlines()]
     while lines and lines[-1] == '':
         lines.pop()
+    lines.append('')
     # Normalize YES/NO into lowercase (common feature in Codeforces problems)
     normalized = []
     for line in lines:

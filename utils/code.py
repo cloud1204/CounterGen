@@ -1,42 +1,38 @@
 import subprocess, random, re
 
-def split_output(output: str, separate_pattern : str = "!@#s_p&^%") -> str:
-    return output.split(separate_pattern)
+def split_output(output: str, separate_pattern : str = "!@#s_p&^%") -> list[str]:
+    return output.split(separate_pattern)[:-1]
 
 class Code:
-    def __init__(self, text, wrap=False):
+    def __init__(self, text):
         self.language = 'python'
         self.filename = ''
         if self.is_cpp_code(text):
             self.language = 'cpp'
             self.code = text
-            if wrap:
-                self.cpp_wrap()
-            self.filename = 'tmp' + str(random.randint(10000, 99999))
-            with open(f"tmp_storage/{self.filename}.cpp", "w", encoding="utf-8") as f:
-                f.write(self.code)
-            compile_cmd = ["g++", f"tmp_storage/{self.filename}.cpp", "-o", f"tmp_storage/{self.filename}"]
-            compile_result = subprocess.run(compile_cmd, capture_output=True, text=True)
-            if compile_result.returncode != 0:
-                print('Compile error')
-                print(compile_result.stderr)
-                raise ValueError("Compile Error")
-            else:
-                print('Compile success')
+            self.compile_cpp()
         elif self.is_valid_python_code(text):
             self.code = text
-            if wrap:
-                self.python_wrap()
             print(self.code)
         else: # Default: python code
             matches = re.findall(r"```(.*?)```", text, re.DOTALL)
             self.code = matches[0]
             if self.code[:7] == 'python\n':
                 self.code = self.code[7:]
-            if wrap:
-                self.python_wrap()
             print(self.code)
             assert self.is_valid_python_code(self.code)
+    def compile_cpp(self):
+        self.filename = 'tmp' + str(random.randint(10000, 99999))
+        with open(f"tmp_storage/{self.filename}.cpp", "w", encoding="utf-8") as f:
+            f.write(self.code)
+        compile_cmd = ["g++", f"tmp_storage/{self.filename}.cpp", "-o", f"tmp_storage/{self.filename}"]
+        compile_result = subprocess.run(compile_cmd, capture_output=True, text=True)
+        if compile_result.returncode != 0:
+            print('Compile error')
+            print(compile_result.stderr)
+            raise ValueError("Compile Error")
+        else:
+            print('Compile success')
     def is_cpp_code(self, code: str) -> bool:
         cpp_keywords = [
             "#include", "# include", "std::", "using namespace std", "int main(", "int main ("
@@ -73,20 +69,29 @@ class Code:
             except subprocess.TimeoutExpired:
                 result = "timeout"
             return result
+        else:
+            raise ValueError("Code language not defined")
+    def wrap(self):
+        if self.language == 'cpp':
+            self.cpp_wrap()
+            self.compile_cpp()
+        if self.language == 'python':
+            self.python_wrap()
+    
     def cpp_wrap(self, separate_pattern = "!@#s_p&^%"):
         new_code = f"#define main user_main\n{self.code}\n#undef main\n"
         new_code += "#include <bits/stdc++.h>\nusing namespace std;\n"
         new_code += f'''
-        int main() {{
-        ios::sync_with_stdio(false);
+        signed main() {{
+            ios::sync_with_stdio(false);
             cin.tie(nullptr);
             int T;
             if (!(cin >> T)) return 0;
-            
             while (T--) {{
-                user_main(); // Call the renamed user's main
-                if (T) cout << "{separate_pattern}";
+                user_main();
+                cout << "{separate_pattern}";
             }}
+            return 0;
         }}
         '''
         self.code = new_code
@@ -134,8 +139,7 @@ def main():
         T = 0
     for _ in range(T):
         user_main()
-        if _ < T - 1:
-            sys.stdout.write("{separate_pattern}")
+        sys.stdout.write("{separate_pattern}")
         sys.stdout.flush()
 
 if __name__ == "__main__":

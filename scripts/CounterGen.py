@@ -36,9 +36,15 @@ def AC_Code_test(signal_queue: Signal_Queue, AC_agent: AC_Agent):
 
 def CounterGen(signal_queue: Signal_Queue, API_Option: str, API_Key: str, Statement: str, \
                Input: str, Output: str, WA: str, AC: str) -> None:
-    
+    for filename in os.listdir("./tmp_storage"):
+        file_path = os.path.join("./tmp_storage", filename)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
 
     failed_Code = Code(WA)
+
+    failed_Code.wrap()
+    #print(failed_Code.code)
     # checker = checker_gen(Agent('Gemini', API_KEY=API_Key, model_type='2.5-flash'), Statement)
     # print('checker finished\n', checker.checker_code)
     # return
@@ -68,7 +74,11 @@ def CounterGen(signal_queue: Signal_Queue, API_Option: str, API_Key: str, Statem
         if AC == None or AC == '':
             if API_Option == 'Gemini':
                 # Use stronger model for correct solution code
-                agent2 = Agent('Gemini', API_KEY=API_Key, model_type='2.5-pro')
+                try:
+                    agent2 = Agent('Gemini', API_KEY=API_Key, model_type='2.5-flash')
+                except Exception as e:
+                    signal_queue.push(type='fail', msg=f"{e}\nTry again.", field="API")
+                    return
             else:
                 raise InvalidInputError('Unsupported API Type.')
             
@@ -89,6 +99,9 @@ def CounterGen(signal_queue: Signal_Queue, API_Option: str, API_Key: str, Statem
         if AC == None or AC == '':
             AC_Code = fAC.result()
         
+    generator.wrap()
+    AC_Code.wrap()
+    print(failed_Code)
 
     tester = Stress_Tester(generator=generator, args_limits=args_limit, AC_code=AC_Code, failed_code=failed_Code, checker=checker) 
     tester.work()

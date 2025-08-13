@@ -10,7 +10,10 @@ class Gemini_Agent:
             self.model = genai.GenerativeModel("gemini-2.5-flash")
         self.chat = self.model.start_chat()
     def instruct(self, prompt, code_only = False):
-        text = self.chat.send_message(prompt).text
+        response = self.chat.send_message(prompt)
+        if not response.candidates[0].content.parts:
+            raise ValueError(f"response empty: {str(response)}")
+        text = response.text
         if code_only:
             return code.Code(text)
         else:
