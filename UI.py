@@ -35,7 +35,7 @@ def reset_outputs():
     progressbar['value'] = 0
     for name in subtask_names:
         index = subtask_names.index(name)
-        subtask_labels[index].config(text=f"🔄 {name}", bootstyle="info")
+        subtask_labels[index].config(text=f"⏳ {name}", bootstyle="info")
     # reset terminal logs
     output_box.config(state="normal")
     output_box.delete("1.0", "end")
@@ -144,23 +144,39 @@ def check_signal(sq: Signal_Queue):
         response = sq.check()
         if response != None:
             #messagebox.showinfo("Info", response.msg)
-            print(response.field, response.msg)
+            print(response.msg)
             if response.field == "Stress Test" and response.type == 'succ':
+                testcase, fail_reason = response.msg
                 text_box_1.config(state="normal")  # enable writing
-                text_box_1.insert("1.0", response.msg)
+                text_box_1.insert("1.0", testcase)
                 text_box_1.config(state="disabled")
-            if response.field == "Stress Test_cont" and response.type == 'succ':
-                text_box_2.config(state="normal")  # enable writing
-                text_box_2.insert("1.0", response.msg)
+                text_box_2.config(state="normal") 
+                text_box_2.insert("1.0", fail_reason)
                 text_box_2.config(state="disabled")
 
-            if response.field in subtask_names:
+            if response.type == 'fail':
+                sq.shutdown()
+            
+            if response.type == 'start' and response.field in subtask_names:
                 index = subtask_names.index(response.field)
-                subtask_labels[index].config(text=f"✅ {response.field}", bootstyle="success")
+                subtask_labels[index].config(text=f"🔄 {response.field}", bootstyle="warning", font=("Segoe UI Emoji", 9))
+            if response.type == 'succ' and response.field in subtask_names:
+                index = subtask_names.index(response.field)
+                subtask_labels[index].config(text=f"✅ {response.field}", bootstyle="success", font=("Segoe UI Emoji", 9))
                 progressbar['value'] += 1
-        time.sleep(1)
+        if not sq.main_thread.is_alive():
+            submit_btn.config(
+                text="Submit", command=on_submit, bootstyle="success"
+            )
+            sq.reset()
+        time.sleep(0.3)
 def on_submit():
     reset_outputs()
+    submit_btn.config(
+        text=" Stop ",
+        command=on_stop,
+        bootstyle="danger"
+    )
 
     API_Option = type_var.get()
     API_Key = entry.get() if entry.get() != "Enter API Key" else ""
@@ -179,9 +195,16 @@ def on_submit():
 
     store_cache(API_Option, API_Key, Statement, Input, Output, WA, AC)
     #CounterGen(API_Option, API_Key, Statement, Input, Output, WA, AC)
-    threading.Thread(target=CounterGen, 
-                     args=(sq, API_Option, API_Key, Statement, Input, Output, WA, AC), daemon=True).start()
+    sq.main_thread = threading.Thread(target=CounterGen, 
+                     args=(sq, API_Option, API_Key, Statement, Input, Output, WA, AC), daemon=True)
+    sq.main_thread.start()
     threading.Thread(target=check_signal, args=(sq,), daemon=True).start()
+
+def on_stop():
+    sq.shutdown()
+    # while sq.main_thread.is_alive():
+    #     time.sleep(3)
+    time.sleep(5)
 
 def create_text_frame(parent_frame, height, width, description, filename):
     text_frame = tb.Frame(parent_frame)
@@ -314,7 +337,7 @@ if __name__ == '__main__':
     subtask_labels = []
 
     for name in subtask_names:
-        lbl = tb.Label(progress_frame, text=f"🔄 {name}", bootstyle="info")
+        lbl = tb.Label(progress_frame, text=f"⏳ {name}", bootstyle="info", font=("Segoe UI Emoji", 9))
         lbl.pack(anchor="w", padx=20)
         subtask_labels.append(lbl)
 
@@ -326,7 +349,7 @@ if __name__ == '__main__':
     submit_btn = tb.Button(button_frame, text="Submit", command=on_submit, bootstyle="success")
     submit_btn.pack(side="left", padx=10)
 
-    clear_btn = tb.Button(button_frame, text="Reset", command=reset, bootstyle="danger")
+    clear_btn = tb.Button(button_frame, text=" Reset ", command=reset, bootstyle="warning")
     clear_btn.pack(side="left", padx=10)
 
     # For use in submission logic

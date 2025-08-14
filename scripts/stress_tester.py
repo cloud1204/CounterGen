@@ -1,21 +1,27 @@
 from utils.code import Code, split_output
+from utils.signal import Signal_Queue
 from scripts.checker import Checker
 import math, random, time, os
 import concurrent.futures as cf
 class Stress_Tester:
-    def __init__(self, generator: Code, args_limits: list[tuple[int, int]], AC_code: Code, failed_code: Code, checker: Checker) -> None:
+    def __init__(self, generator: Code, args_limits: list[tuple[int, int]], AC_code: Code,
+                 failed_code: Code, checker: Checker, signal_queue: Signal_Queue) -> None:
         self.generator = generator
         self.args_limits = args_limits
         self.AC_code = AC_code
         self.failed_code = failed_code
         self.checker = checker
+        self.signal_queue = signal_queue
         self.current_best = ''
         self.fail_reason = ''
         pass
-    def update_best_CE(self, test_input, fail_reason):
+    def update_best_CE(self, test_input, fail_reason) -> bool:
         if self.current_best == '' or len(test_input) < len(self.current_best):
             self.current_best = test_input
             self.fail_reason = fail_reason
+            return True
+        else:
+            return False
 
     def stress_test(self, args):
         start_time = time.time()
@@ -24,6 +30,9 @@ class Stress_Tester:
         T = 10
         succeed = False
         while True:
+            if self.signal_queue.shutdown_is_set():
+                raise TimeoutError("Stress Tester shutting down")
+
             cnt += T
             elapsed = time.time() - start_time
             if elapsed > total_TL:
@@ -53,22 +62,19 @@ class Stress_Tester:
             
             for i in range(T):
                 if test_result[i] != 'AC':
-                    #print(f"Counter Example found, size = {len(test_inputs[i])}, {test_result[i]}")
-                    # if len(test_inputs[i]) < 50:
-                    #     print(test_inputs[i])
-                    self.update_best_CE(test_inputs[i], test_result[i])
-                    succeed = True
-            # if succeed:
-            #     break
+                    is_best = self.update_best_CE(test_inputs[i], test_result[i])
+                    succeed |= is_best
+                    if is_best:
+                        print('Current Best CE:\n' + test_inputs[i] + '\n' + test_result[i])
             T *= 2
 
         print(args)
         print(f"Tried {cnt} testcases")
-        print("Successfully found counter example" if succeed else "Counter not found")
+        print("Successfully found counter example" if succeed else "Counter example not updated")
         return succeed
     def heatup(self):
         current_vector = [arg[0] for arg in self.args_limits]
-        for t in range(15): #
+        for t in range(30): #
             target = t % len(self.args_limits)
             new_value = current_vector[target] * 2 if current_vector[target] >= 5 else current_vector[target] + 1
             current_vector[target] = min(new_value, self.args_limits[target][1])
@@ -78,7 +84,8 @@ class Stress_Tester:
 
 
     def cooldown(self, current_vector):
-        num_iterations = 10
+        num_iterations = 15
+        chances = 5
         for t in range(num_iterations):
             new_vector = current_vector.copy()
             
@@ -88,10 +95,15 @@ class Stress_Tester:
 
             if self.stress_test(new_vector):
                 current_vector = new_vector
-
-        if self.current_best == '':
-            print('Counter Example not found')
+                chances = 5
+            else:
+                chances -= 1
+            if chances == 0: # Early stop
+                break
 
     def work(self):
         heated_up = self.heatup()
+        if self.current_best == '':
+            print('Counter Example not found')
+            return
         self.cooldown(heated_up)

@@ -6,13 +6,14 @@ from scripts.stress_tester import Stress_Tester
 from scripts.checker import Checker
 from scripts.AC_generator import AC_Agent
 from utils.signal import Signal_Queue
-import os
+import os, time
 from concurrent.futures import ThreadPoolExecutor
 
 class InvalidInputError(Exception):
     pass
 
 def checker_gen(signal_queue: Signal_Queue, agent, Statement) -> Checker:
+    signal_queue.push(type='start', msg="Start Generating Checker", field="Checker")
     checker = Checker()
     checker.customize_checker_if_needed(agent=agent, statement=Statement)
     print('Checker finished')
@@ -20,14 +21,17 @@ def checker_gen(signal_queue: Signal_Queue, agent, Statement) -> Checker:
     return checker
 
 def validator_gen(signal_queue: Signal_Queue, agent, Statement, Input, Output):
+    signal_queue.push(type='start', msg="Start generating validator", field="Validator")
     validator = TC_Validator_Agent(agent, Statement, Input, Output).work()
     signal_queue.push(type='succ', msg="Successfully generated and tested validator", field="Validator")
     return validator
 def generator_gen(signal_queue: Signal_Queue, agent, Statement, validator):
+    signal_queue.push(type='start', msg="Start generating generator", field="Generator")
     generator, args_limit = TC_Generator_Agent(agent, Statement, validator).work()
     signal_queue.push(type='succ', msg="Successfully generated and tested generator", field="Generator")
     return generator, args_limit
 def AC_Code_gen(signal_queue: Signal_Queue, AC_agent: AC_Agent):
+    signal_queue.push(type='start', msg="Start generating AC Code", field="AC Code")
     return AC_agent.generate_first_edition()
 def AC_Code_test(signal_queue: Signal_Queue, AC_agent: AC_Agent):
     result = AC_agent.test()
@@ -40,6 +44,8 @@ def CounterGen(signal_queue: Signal_Queue, API_Option: str, API_Key: str, Statem
         file_path = os.path.join("./tmp_storage", filename)
         if os.path.isfile(file_path):
             os.remove(file_path)
+
+    start_time = time.time()
 
     failed_Code = Code(WA)
 
@@ -59,7 +65,7 @@ def CounterGen(signal_queue: Signal_Queue, API_Option: str, API_Key: str, Statem
     try:
         if API_Option == 'Gemini':
             # Use cheaper model for validator/generator (easier task)
-            agent1 = Agent('Gemini', API_KEY=API_Key, model_type='2.5-flash')
+            agent1 = Agent(signal_queue=signal_queue, model_name='Gemini', API_KEY=API_Key, model_type='2.5-flash')
         else:
             raise InvalidInputError('Unsupported API Type.')
     except Exception as e:
@@ -75,7 +81,7 @@ def CounterGen(signal_queue: Signal_Queue, API_Option: str, API_Key: str, Statem
             if API_Option == 'Gemini':
                 # Use stronger model for correct solution code
                 try:
-                    agent2 = Agent('Gemini', API_KEY=API_Key, model_type='2.5-flash')
+                    agent2 = Agent(signal_queue=signal_queue, model_name='Gemini', API_KEY=API_Key, model_type='2.5-flash')
                 except Exception as e:
                     signal_queue.push(type='fail', msg=f"{e}\nTry again.", field="API")
                     return
@@ -101,13 +107,15 @@ def CounterGen(signal_queue: Signal_Queue, API_Option: str, API_Key: str, Statem
         
     generator.wrap()
     AC_Code.wrap()
-    print(failed_Code)
+    
+    signal_queue.push(type='start', msg='Start Stress Testing', field="Stress Test")
 
-    tester = Stress_Tester(generator=generator, args_limits=args_limit, AC_code=AC_Code, failed_code=failed_Code, checker=checker) 
+    tester = Stress_Tester(generator=generator, args_limits=args_limit, AC_code=AC_Code,
+                           failed_code=failed_Code, checker=checker, signal_queue=signal_queue) 
     tester.work()
 
-    signal_queue.push(type='succ', msg=tester.current_best, field="Stress Test")
-    signal_queue.push(type='succ', msg=tester.fail_reason, field="Stress Test_cont")
+    print(f"Successfully found counter example. Total time spent: {time.time() - start_time} sec")
+    signal_queue.push(type='succ', msg=(tester.current_best, tester.fail_reason), field="Stress Test")
     for filename in os.listdir("./tmp_storage"):
         file_path = os.path.join("./tmp_storage", filename)
         if os.path.isfile(file_path):
