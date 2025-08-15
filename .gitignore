@@ -1,10 +1,11 @@
 myenv/
 test_stuff/
 __pycache__/
-api_keys.yaml
+API_config.yaml
 Input_Cache/
 test.py 
 problem_info
 tmp_storage/*
 !tmp_storage/.gitkeep
 script.py
+settings.yaml

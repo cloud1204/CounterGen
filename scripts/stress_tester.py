@@ -5,13 +5,14 @@ import math, random, time, os
 import concurrent.futures as cf
 class Stress_Tester:
     def __init__(self, generator: Code, args_limits: list[tuple[int, int]], AC_code: Code,
-                 failed_code: Code, checker: Checker, signal_queue: Signal_Queue) -> None:
+                 failed_code: Code, checker: Checker, signal_queue: Signal_Queue, TL_batch = 2) -> None:
         self.generator = generator
         self.args_limits = args_limits
         self.AC_code = AC_code
         self.failed_code = failed_code
         self.checker = checker
         self.signal_queue = signal_queue
+        self.TL_batch = TL_batch
         self.current_best = ''
         self.fail_reason = ''
         pass
@@ -25,7 +26,7 @@ class Stress_Tester:
 
     def stress_test(self, args):
         start_time = time.time()
-        total_TL = 2
+        total_TL = self.TL_batch
         cnt = 0
         T = 10
         succeed = False
@@ -55,6 +56,9 @@ class Stress_Tester:
             else:
                 client_output = split_output(client_output.stdout)
 
+            if len(AC_output) < T:
+                print(client_output)
+                raise ValueError(f"Judge's program early exited during multi-test:\n{test_inputs[len(client_output)]}\n")
             if len(client_output) < T:
                 print(client_output)
                 raise ValueError(f"client's program early exited during multi-test:\n{test_inputs[len(client_output)]}\n")
@@ -70,7 +74,10 @@ class Stress_Tester:
 
         print(args)
         print(f"Tried {cnt} testcases")
-        print("Successfully found counter example" if succeed else "Counter example not updated")
+        if succeed:
+            print("Successfully updated counter example")
+        else:
+            print("Counter example not updated" if self.current_best != '' else "Counter example not found")
         return succeed
     def heatup(self):
         current_vector = [arg[0] for arg in self.args_limits]

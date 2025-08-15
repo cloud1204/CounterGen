@@ -38,8 +38,10 @@ def AC_Code_test(signal_queue: Signal_Queue, AC_agent: AC_Agent):
     signal_queue.push(type='succ', msg="Successfully Generated and tested AC Code", field="AC Code")
     return result
 
-def CounterGen(signal_queue: Signal_Queue, API_Option: str, API_Key: str, Statement: str, \
+def CounterGen(signal_queue: Signal_Queue, settings: dict, Statement: str, \
                Input: str, Output: str, WA: str, AC: str) -> None:
+    if not os.path.exists("./tmp_storage"):
+        os.makedirs("./tmp_storage")
     for filename in os.listdir("./tmp_storage"):
         file_path = os.path.join("./tmp_storage", filename)
         if os.path.isfile(file_path):
@@ -47,13 +49,16 @@ def CounterGen(signal_queue: Signal_Queue, API_Option: str, API_Key: str, Statem
 
     start_time = time.time()
 
-    failed_Code = Code(WA)
+    try:
+        failed_Code = Code(WA)
+        failed_Code.wrap()
+        print("User's code successfully compiled.")
+    except Exception as e:
+        print(e)
+        print("User's code compilation failed. We now only supports c++/python.")
 
-    failed_Code.wrap()
-    #print(failed_Code.code)
-    # checker = checker_gen(Agent('Gemini', API_KEY=API_Key, model_type='2.5-flash'), Statement)
-    # print('checker finished\n', checker.checker_code)
-    # return
+    model_name = settings['Last_Use']
+    API_Key = settings[model_name]['API_KEY']
     
     if AC != None and AC != '':
         try:
@@ -63,32 +68,39 @@ def CounterGen(signal_queue: Signal_Queue, API_Option: str, API_Key: str, Statem
             signal_queue.push(type='fail', msg=f"{e}\nTry again.", field="AC Code")
             return
     try:
-        if API_Option == 'Gemini':
-            # Use cheaper model for validator/generator (easier task)
-            agent1 = Agent(signal_queue=signal_queue, model_name='Gemini', API_KEY=API_Key, model_type='2.5-flash')
-        else:
-            raise InvalidInputError('Unsupported API Type.')
+        model_type = settings[model_name]['val/gen']
+        agent1 = Agent(signal_queue=signal_queue, model_name=model_name, 
+                       API_KEY=API_Key, model_type=model_type, desctiption="Validator/Generator Agent")
     except Exception as e:
         signal_queue.push(type='fail', msg=f"{e}\nTry again.", field="API")
         return
-
-    signal_queue.push(type='succ', msg="successfully initalized chat", field="API")
+    
+    try:
+        model_type = settings[model_name]['checker']
+        agent2 = Agent(signal_queue=signal_queue, model_name=model_name, 
+                       API_KEY=API_Key, model_type=model_type, desctiption="Checker Agent")
+    except Exception as e:
+        signal_queue.push(type='fail', msg=f"{e}\nTry again.", field="API")
+        return
+    
+    if AC != None and AC != '':
+        signal_queue.push(type='succ', msg="successfully initalized chat", field="API")
 
     with ThreadPoolExecutor() as executor:
         fVAL = executor.submit(validator_gen, signal_queue, agent1, Statement, Input, Output)
-        fCHE = executor.submit(checker_gen, signal_queue, agent1, Statement)
+        fCHE = executor.submit(checker_gen, signal_queue, agent2, Statement)
         if AC == None or AC == '':
-            if API_Option == 'Gemini':
-                # Use stronger model for correct solution code
-                try:
-                    agent2 = Agent(signal_queue=signal_queue, model_name='Gemini', API_KEY=API_Key, model_type='2.5-flash')
-                except Exception as e:
-                    signal_queue.push(type='fail', msg=f"{e}\nTry again.", field="API")
-                    return
-            else:
-                raise InvalidInputError('Unsupported API Type.')
+            model_type = settings[model_name]['AC']
+            try:
+                agent3 = Agent(signal_queue=signal_queue, model_name=model_name, 
+                               API_KEY=API_Key, model_type=model_type, desctiption="AC Agent")
+            except Exception as e:
+                signal_queue.push(type='fail', msg=f"{e}\nTry again.", field="API")
+                return
             
-            AC_agent = AC_Agent(agent2, Statement, Input, Output)
+            signal_queue.push(type='succ', msg="successfully initalized chat", field="API")
+            
+            AC_agent = AC_Agent(agent3, Statement, Input, Output)
             fAC = executor.submit(AC_Code_gen, signal_queue, AC_agent)
 
         validator = fVAL.result()
@@ -110,8 +122,8 @@ def CounterGen(signal_queue: Signal_Queue, API_Option: str, API_Key: str, Statem
     
     signal_queue.push(type='start', msg='Start Stress Testing', field="Stress Test")
 
-    tester = Stress_Tester(generator=generator, args_limits=args_limit, AC_code=AC_Code,
-                           failed_code=failed_Code, checker=checker, signal_queue=signal_queue) 
+    tester = Stress_Tester(generator=generator, args_limits=args_limit, AC_code=AC_Code, failed_code=failed_Code,
+                            checker=checker, signal_queue=signal_queue, TL_batch=settings['Time_Limit_Per_Batch']) 
     tester.work()
 
     print(f"Successfully found counter example. Total time spent: {time.time() - start_time} sec")

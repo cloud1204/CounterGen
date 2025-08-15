@@ -31,8 +31,6 @@ class Code:
             print('Compile error')
             print(compile_result.stderr)
             raise ValueError("Compile Error")
-        else:
-            print('Compile success')
     def is_cpp_code(self, code: str) -> bool:
         cpp_keywords = [
             "#include", "# include", "std::", "using namespace std", "int main(", "int main ("

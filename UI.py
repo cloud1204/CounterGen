@@ -1,4 +1,5 @@
 import os, time, sys
+import yaml
 import ttkbootstrap as tb
 import threading
 from ttkbootstrap.constants import *
@@ -9,7 +10,7 @@ from utils.parse_statement import parse_statement
 from scripts.CounterGen import CounterGen
 from utils.signal import Signal_Queue
 CACHE_PATH = "./Input_Cache"
-API_DICT = {}
+SETTINGS = {}
 sq = Signal_Queue()
 
 def reset_entry(entry, placeholder):
@@ -54,20 +55,12 @@ def reset():
     reset_outputs()
 
 def load_api_info():
-    try:
-        import yaml
-        with open(f"{CACHE_PATH}/api_keys.yaml", "r") as stream:
-            config = yaml.load(stream, Loader=yaml.SafeLoader)
-            API_DICT['Gemini'] = config['Gemini']
-            API_DICT['Claude'] = config['Claude']
-            API_DICT['ChatGPT'] = config['ChatGPT']
-            API_DICT['Last_Use'] = config['Last_Use']
-    except FileNotFoundError:
-        API_DICT['Gemini'] = None
-        API_DICT['Claude'] = None
-        API_DICT['ChatGPT'] = None
-        API_DICT['Last_Use'] = None
-        return
+    global SETTINGS
+    if not os.path.exists(f"{CACHE_PATH}/settings.yaml"):
+        import shutil
+        shutil.copy(f"{CACHE_PATH}/settings_template.yaml", f"{CACHE_PATH}/settings.yaml")
+    with open(f"{CACHE_PATH}/settings.yaml", "r") as stream:
+        SETTINGS = yaml.load(stream, Loader=yaml.SafeLoader)
 
 def load_file_content(filepath):
     try:
@@ -78,12 +71,11 @@ def load_file_content(filepath):
         return None
     
 def store_cache(API_Option, API_Key, Statement, Input, Output, WA, AC):
-    API_DICT['Last_Use'] = API_Option
-    API_DICT[API_Option] = API_Key
-    with open(f"{CACHE_PATH}/api_keys.yaml", "w", encoding="utf-8") as f:
-        content = f"Gemini: {API_DICT['Gemini']}\nClaude: {API_DICT['Claude']}\n" + \
-        f"ChatGPT: {API_DICT['ChatGPT']}\nLast_Use: {API_DICT['Last_Use']}\n"
-        f.write(content)
+    SETTINGS['Last_Use'] = API_Option
+    SETTINGS[API_Option]['API_KEY'] = API_Key
+
+    with open(f"{CACHE_PATH}/settings.yaml", "w") as f:
+        yaml.dump(SETTINGS, f, default_flow_style=False)
     with open(f"{CACHE_PATH}/statement.txt", "w", encoding="utf-8") as f:
         f.write(Statement) 
     with open(f"{CACHE_PATH}/example_input.txt", "w", encoding="utf-8") as f:
@@ -144,7 +136,11 @@ def check_signal(sq: Signal_Queue):
         response = sq.check()
         if response != None:
             #messagebox.showinfo("Info", response.msg)
-            print(response.msg)
+            if response.type != 'start':
+                if response.field == "Stress Test" and response.type == 'succ':
+                    pass
+                else:
+                    print(response.msg)
             if response.field == "Stress Test" and response.type == 'succ':
                 testcase, fail_reason = response.msg
                 text_box_1.config(state="normal")  # enable writing
@@ -194,17 +190,115 @@ def on_submit():
     AC = inputs[4]
 
     store_cache(API_Option, API_Key, Statement, Input, Output, WA, AC)
-    #CounterGen(API_Option, API_Key, Statement, Input, Output, WA, AC)
     sq.main_thread = threading.Thread(target=CounterGen, 
-                     args=(sq, API_Option, API_Key, Statement, Input, Output, WA, AC), daemon=True)
+                     args=(sq, SETTINGS.copy(), Statement, Input, Output, WA, AC), daemon=True)
     sq.main_thread.start()
     threading.Thread(target=check_signal, args=(sq,), daemon=True).start()
 
 def on_stop():
     sq.shutdown()
-    # while sq.main_thread.is_alive():
-    #     time.sleep(3)
     time.sleep(5)
+
+def open_settings():
+    if hasattr(root, "settings_window") and root.settings_window.winfo_exists():
+        root.settings_window.lift()
+        return
+
+    settings = tb.Toplevel(root)
+    settings.title("Advanced Settings")
+
+    root.update_idletasks()
+    root_x = root.winfo_x()
+    root_y = root.winfo_y()
+    root_width = root.winfo_width()
+    settings_x = root_x + root_width - 450  
+    settings_y = root_y + 35                
+
+    settings.geometry(f"450x350+{settings_x}+{settings_y}")
+
+    settings.resizable(False, False)
+    settings.attributes("-topmost", True)
+
+    root.settings_window = settings
+
+    model_name = SETTINGS['Last_Use']
+    if model_name == 'Gemini':
+        model_options = ['2.5-flash', '2.5-pro']
+    elif model_name == 'Claude':
+        model_options = ['A', 'B']
+    elif model_name == 'OpenAI':
+        model_options = ['C', 'D']
+    else:
+        model_options = []
+
+    # Utility: create labeled combo rows
+    def add_combobox_row(parent, label_text, values, default_value, readonly=True, index=''):
+        row = tb.Frame(parent)
+        row.pack(fill="x", padx=10, pady=5)
+
+        label = tb.Label(row, text=label_text, width=30, anchor="w")
+        label.pack(side="left")
+
+        var = tb.StringVar()
+        combo = tb.Combobox(row, textvariable=var, values=values, width=20)
+        combo.pack(side="left", fill="x", expand=True)
+
+        combo.bind("<<ComboboxSelected>>", lambda e, n=index: on_selected(e, n))
+
+        if readonly:
+            combo.config(state="readonly")
+
+        settings.after(10, combo.set, default_value)
+        return var
+
+    # Section title
+    tb.Label(settings, text="Model Options", font=("Segoe UI", 12, "bold")).pack(pady=(10, 5))
+
+    def on_selected(event, index):
+        value = event.widget.get()
+        if index == 'TL':
+            SETTINGS['Time_Limit_Per_Batch'] = int(value)
+        else:
+            SETTINGS[model_name][index] = value
+
+    val_gen_var = add_combobox_row(
+        settings,
+        "Validator/Generator Model:",
+        model_options,
+        SETTINGS[model_name]['val/gen'],
+        index='val/gen'
+    )
+
+    checker_var = add_combobox_row(
+        settings,
+        "Output Checker Model:",
+        model_options,
+        SETTINGS[model_name]['checker'],
+        index='checker'
+    )
+
+    ac_var = add_combobox_row(
+        settings,
+        "AC Code Model:",
+        model_options,
+        SETTINGS[model_name]['AC'],
+        index='AC'
+    )
+
+    tb.Label(settings, text="Execution Settings", font=("Segoe UI", 12, "bold")).pack(pady=(15, 5))
+
+    time_limit_var = add_combobox_row(
+        settings,
+        "Time Limit Per Batch (s):",
+        [1, 2, 3, 5, 8, 10, 15, 30],
+        SETTINGS['Time_Limit_Per_Batch'],
+        index='TL'
+    )
+
+    # Close button
+    tb.Button(settings, text="Close", bootstyle="secondary", command=settings.destroy).pack(pady=20)
+
+    
 
 def create_text_frame(parent_frame, height, width, description, filename):
     text_frame = tb.Frame(parent_frame)
@@ -241,16 +335,25 @@ if __name__ == '__main__':
     root.geometry("1400x800")
 
     # Top: dropdown + single-line input
-    frame1 = tb.Frame(root)
-    frame1.pack(pady=(15, 0), padx=15, anchor="w")
+    topbar = tb.Frame(root)
+    topbar.pack(fill="x", pady=(15, 0), padx=15)
 
-    type_var = tb.StringVar(value="Gemini" if API_DICT["Last_Use"] == None else API_DICT["Last_Use"])
-    type_menu = tb.Combobox(frame1, textvariable=type_var, values=["Gemini", "Claude", "ChatGPT"], width=10, bootstyle="info")
+    # Left side: API selection and key input
+    frame1 = tb.Frame(topbar)
+    frame1.pack(side="left", anchor="w")
+
+    # Right side: Settings button
+    settings_btn = tb.Button(topbar, text="⚙️ Advanced Settings", bootstyle="secondary", command=open_settings)
+    settings_btn.pack(side="right")
+
+    type_var = tb.StringVar(value="Gemini" if SETTINGS["Last_Use"] == None else SETTINGS["Last_Use"])
+    type_menu = tb.Combobox(frame1, textvariable=type_var, values=["Gemini", "Claude", "OpFenAI"], width=10, bootstyle="info")
     type_menu.pack(side="left", padx=(0, 10))
+    type_menu.config(state='readonly')
 
     entry = tb.Entry(frame1, width=50, bootstyle="primary")
     entry.pack(side="left")
-    set_entry_placeholder(entry, "Enter API Key", value=None if API_DICT["Last_Use"] == None else API_DICT[API_DICT["Last_Use"]])
+    set_entry_placeholder(entry, "Enter API Key", SETTINGS[SETTINGS["Last_Use"]]['API_KEY'])
 
     # Main input block: Input 2, 3, 4
 
@@ -314,9 +417,33 @@ if __name__ == '__main__':
     bottom_text_frame.pack(fill="both", expand=False, padx=10, pady=(0, 5))
 
     # First box (left)
-    text_box_1 = tb.Text(bottom_text_frame, height=17, width=30, wrap="word")
+    box1_frame = tb.Frame(bottom_text_frame)
+    box1_frame.pack(side="left", fill="both", expand=True, padx=(0, 5), pady=(0, 10))
+
+    # Create the Text box
+    text_box_1 = tb.Text(box1_frame, height=17, width=30, wrap="word")
     text_box_1.config(state="disabled", background="#1e1e1e", foreground="white")
-    text_box_1.pack(side="left", fill="both", expand=True, padx=(0, 5), pady=(0, 10))
+    text_box_1.pack(fill="both", expand=True)
+
+    # Copy function
+    def copy_text_box_1():
+        text_box_1.config(state="normal")
+        content = text_box_1.get("1.0", "end-1c")
+        text_box_1.config(state="disabled")
+        root.clipboard_clear()
+        root.clipboard_append(content)
+        root.update()
+
+    # Create the button and overlay it inside top-right of the Text widget
+    copy_btn_1 = tb.Button(
+        box1_frame,
+        text="📋",
+        width=2,
+        command=copy_text_box_1,
+        bootstyle="secondary-link",
+        #font=("Segoe UI", 5)
+    )
+    copy_btn_1.place(relx=1.0, x=-3, y=3, anchor="ne")  # top right corner with small padding
 
     # Second box (right)
     text_box_2 = tb.Text(bottom_text_frame, height=17, width=30, wrap="word")
