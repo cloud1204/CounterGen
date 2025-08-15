@@ -55,7 +55,8 @@ def CounterGen(signal_queue: Signal_Queue, settings: dict, Statement: str, \
         print("User's code successfully compiled.")
     except Exception as e:
         print(e)
-        print("User's code compilation failed. We now only supports c++/python.")
+        print("User's code compilation failed. Please make sure it is valid c++/python code.")
+        return
 
     model_name = settings['Last_Use']
     API_Key = settings[model_name]['API_KEY']

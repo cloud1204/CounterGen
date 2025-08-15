@@ -26,11 +26,8 @@ class AC_Agent:
         assert self.AC_code != None and self.checker != None
         start_time = time.time()
         print('AC Code not found, generating AC Code')
-        # prompt = f"Please give me a correct python code to solve this problem:\n{self.problem_statement}\n\
-        #     you can suppose the constraint is much smaller than it said and use a super naive method (prioritize the correctness) to solve it. \
-        #         don't insert any comment in the code."
-        # self.AC_code = self.agent.instruct(prompt, code_only=True)
-        while True:
+        succeed = False
+        for _ in range(5):
             test_output = self.AC_code.execute(self.example_input)
             if test_output.stderr != '':
                 print("AC Code went wrong. Try again.")
@@ -45,6 +42,9 @@ class AC_Agent:
                     give me the correct whole python code."
                 self.AC_code = self.agent.instruct(prompt, code_only=True)
             else:
+                succeed = True
                 break
+        if not succeed:
+            raise RuntimeError("Failed to generate AC Code in 6 tries.")
         print(f"AC code finished and tested. Time spent: {time.time() - start_time} sec")
         return self.AC_code

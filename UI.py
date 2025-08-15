@@ -89,6 +89,7 @@ def store_cache(API_Option, API_Key, Statement, Input, Output, WA, AC):
 
 
 def set_entry_placeholder(entry, placeholder, value = None):
+    entry.delete(0, "end")
     if value:
         entry.insert(0, value)
         entry.config(foreground="white")
@@ -203,18 +204,27 @@ def open_settings():
     if hasattr(root, "settings_window") and root.settings_window.winfo_exists():
         root.settings_window.lift()
         return
+    
+    overlay = tk.Toplevel(root)
+    overlay.overrideredirect(True)  # remove window decorations
+    overlay.attributes("-alpha", 0.3)  # set transparency (0.0 to 1.0)
+    overlay.configure(bg='black')
+    overlay.geometry(f"{root.winfo_width()}x{root.winfo_height()}+{root.winfo_x()}+{root.winfo_y()}")
+    overlay.lift()
+    overlay.transient(root)
 
     settings = tb.Toplevel(root)
     settings.title("Advanced Settings")
+    settings.grab_set()
 
     root.update_idletasks()
     root_x = root.winfo_x()
     root_y = root.winfo_y()
     root_width = root.winfo_width()
-    settings_x = root_x + root_width - 450  
+    settings_x = root_x + root_width - 500  
     settings_y = root_y + 35                
 
-    settings.geometry(f"450x350+{settings_x}+{settings_y}")
+    settings.geometry(f"500x350+{settings_x}+{settings_y}")
 
     settings.resizable(False, False)
     settings.attributes("-topmost", True)
@@ -225,7 +235,7 @@ def open_settings():
     if model_name == 'Gemini':
         model_options = ['2.5-flash', '2.5-pro']
     elif model_name == 'Claude':
-        model_options = ['A', 'B']
+        model_options = ['claude-3-7-sonnet-latest', 'claude-sonnet-4-0', 'claude-opus-4-0', 'claude-opus-4-1']
     elif model_name == 'OpenAI':
         model_options = ['C', 'D']
     else:
@@ -295,8 +305,13 @@ def open_settings():
         index='TL'
     )
 
+    def on_close():
+        overlay.destroy()
+        settings.destroy()
+
+    settings.protocol("WM_DELETE_WINDOW", on_close)
     # Close button
-    tb.Button(settings, text="Close", bootstyle="secondary", command=settings.destroy).pack(pady=20)
+    tb.Button(settings, text="Close", bootstyle="secondary", command=on_close).pack(pady=20)
 
     
 
@@ -346,10 +361,17 @@ if __name__ == '__main__':
     settings_btn = tb.Button(topbar, text="⚙️ Advanced Settings", bootstyle="secondary", command=open_settings)
     settings_btn.pack(side="right")
 
+
+    def on_model_selected(event):
+        selected = type_var.get()
+        SETTINGS["Last_Use"] = selected
+        set_entry_placeholder(entry, "Enter API Key", SETTINGS[SETTINGS["Last_Use"]]['API_KEY'])
+
     type_var = tb.StringVar(value="Gemini" if SETTINGS["Last_Use"] == None else SETTINGS["Last_Use"])
-    type_menu = tb.Combobox(frame1, textvariable=type_var, values=["Gemini", "Claude", "OpFenAI"], width=10, bootstyle="info")
+    type_menu = tb.Combobox(frame1, textvariable=type_var, values=["Gemini", "Claude", "OpenAI"], width=10, bootstyle="info")
     type_menu.pack(side="left", padx=(0, 10))
     type_menu.config(state='readonly')
+    type_menu.bind("<<ComboboxSelected>>", on_model_selected)
 
     entry = tb.Entry(frame1, width=50, bootstyle="primary")
     entry.pack(side="left")
@@ -433,17 +455,20 @@ if __name__ == '__main__':
         root.clipboard_clear()
         root.clipboard_append(content)
         root.update()
+        copy_msg_label.config(text="✓ Copied to clipboard")
+        root.after(2000, lambda: copy_msg_label.config(text=""))
 
-    # Create the button and overlay it inside top-right of the Text widget
+
     copy_btn_1 = tb.Button(
         box1_frame,
-        text="📋",
-        width=2,
+        text="Copy",
+        width=4,
         command=copy_text_box_1,
         bootstyle="secondary-link",
-        #font=("Segoe UI", 5)
     )
-    copy_btn_1.place(relx=1.0, x=-3, y=3, anchor="ne")  # top right corner with small padding
+    copy_btn_1.place(relx=1.0, x=-3, y=3, anchor="ne") 
+    copy_msg_label = tb.Label(box1_frame, text="", bootstyle="success")
+    copy_msg_label.place(relx=0.5, x=0, y=5, anchor="n")
 
     # Second box (right)
     text_box_2 = tb.Text(bottom_text_frame, height=17, width=30, wrap="word")

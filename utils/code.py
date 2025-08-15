@@ -16,6 +16,9 @@ class Code:
             print(self.code)
         else: # Default: python code
             matches = re.findall(r"```(.*?)```", text, re.DOTALL)
+            if matches == []:
+                print(text)
+                raise ValueError("Not valid python code")
             self.code = matches[0]
             if self.code[:7] == 'python\n':
                 self.code = self.code[7:]
@@ -42,7 +45,7 @@ class Code:
             return True
         except SyntaxError:
             return False
-    def execute(self, input = "", args = [], timeout = -1):
+    def execute(self, input = "", args = [], timeout = 30):
         if self.language == 'python':
             command = ["python", "-c", self.code] + [str(arg) for arg in args]
             if timeout == -1:

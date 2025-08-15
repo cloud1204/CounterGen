@@ -62,20 +62,24 @@ class TC_Generator_Agent:
                 test_args = [random.randint(self.args_limit[i][0], self.args_limit[i][1]) \
                              for i in range(len(self.args_limit))]
                 print('testing', test_args)
-                generated_tc = self.generator.execute(args=test_args)
+                generated_tc = self.generator.execute(args=test_args, timeout=5)
+                if generated_tc == 'timeout':
+                    prompt = f"The generator timeouted with this args: {test_args}\nGive me the generator code that generate valid testcases for any args satisfying the ranges."
+                    succeed_flag = False
+                    break
                 if generated_tc.stderr:
                     prompt = f"something went wrong when generating with this args: {str(test_args)}\n:{generated_tc.stderr}. Please give me the correct generator code."
                     succeed_flag = False
                     break
                 validator_result = self.validator.execute(generated_tc.stdout)
                 if validator_result.stderr:
-                    prompt = f"with this args: {str(test_args)}, the validating result says the testcase format is invalid. please give me the correct testcase generator code.\n\
-                        {validator_result.stderr}"
+                    prompt = f"with this args: {str(test_args)}, the validating result says the testcase format is invalid.\
+                        Give me the generator code that generate valid testcases for any args satisfying the ranges.\n{validator_result.stderr}"
                     succeed_flag = False
                     break
                 elif validator_result.stdout.strip() != 'valid':
-                    prompt = f"with this args: {str(test_args)}, the validating result says the testcase format is invalid. please give me the correct testcase generator code.\
-                        \n{validator_result.stdout}"
+                    prompt = f"with this args: {str(test_args)}, the validating result says the testcase format is invalid.\
+                        Give me the generator code that generate valid testcases for any args satisfying the ranges.\n{validator_result.stdout}"
                     succeed_flag = False
                     break
             if succeed_flag:

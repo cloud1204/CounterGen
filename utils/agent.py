@@ -6,11 +6,10 @@ class Agent:
             from utils.gemini import Gemini_Agent
             self.Agent = Gemini_Agent(signal_queue=signal_queue, model_type=model_type, API_KEY=API_KEY)
         elif model_name == 'Chatgpt':
-            # TODO
-            pass
+            raise ValueError(f'{model_name} is an unsupported model.')
         elif model_name == 'Claude':
-            # TODO
-            pass
+            from utils.claude import Claude_Agent
+            self.Agent = Claude_Agent(signal_queue=signal_queue, model_type=model_type, API_KEY=API_KEY)
         else:
             raise ValueError(f'{model_name} is an unsupported model.')
         

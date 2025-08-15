@@ -24,16 +24,17 @@ class Stress_Tester:
         else:
             return False
 
+
     def stress_test(self, args):
         start_time = time.time()
         total_TL = self.TL_batch
         cnt = 0
         T = 10
         succeed = False
+        print(args)
         while True:
             if self.signal_queue.shutdown_is_set():
                 raise TimeoutError("Stress Tester shutting down")
-
             cnt += T
             elapsed = time.time() - start_time
             if elapsed > total_TL:
@@ -55,13 +56,25 @@ class Stress_Tester:
                 break
             else:
                 client_output = split_output(client_output.stdout)
+            if len(test_inputs) != T:
+                print(test_inputs)
+                raise ValueError(f"Something went wrong. The testcase number did not match.")
+            if len(AC_output) != T:
+                print(client_output)
+                if len(AC_output) < T:
+                    raise ValueError(f"Judge's program early exited during multi-test:\n{test_inputs[len(client_output)]}\n")
+                else:
+                    raise ValueError(f"Judge's program outputted more than T testcases:\n{test_inputs}\n")
+            if len(client_output) != T:
+                if T < 200:
+                    print(test_inputs)
 
-            if len(AC_output) < T:
                 print(client_output)
-                raise ValueError(f"Judge's program early exited during multi-test:\n{test_inputs[len(client_output)]}\n")
-            if len(client_output) < T:
-                print(client_output)
-                raise ValueError(f"client's program early exited during multi-test:\n{test_inputs[len(client_output)]}\n")
+                print(len(client_output))
+                if len(client_output) < T:
+                    raise ValueError(f"Client's program early exited during multi-test:\n{test_inputs[len(client_output)]}\n")
+                else:
+                    raise ValueError(f"Client's program outputted more than T testcases:\n{test_inputs}\n")
             test_result = self.checker.check_multi(test_inputs, client_output, AC_output)
             
             for i in range(T):
@@ -72,7 +85,6 @@ class Stress_Tester:
                         print('Current Best CE:\n' + test_inputs[i] + '\n' + test_result[i])
             T *= 2
 
-        print(args)
         print(f"Tried {cnt} testcases")
         if succeed:
             print("Successfully updated counter example")
