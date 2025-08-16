@@ -1,0 +1,4 @@
+anthropic
+google-generativeai
+pyyaml
+ttkbootstrap

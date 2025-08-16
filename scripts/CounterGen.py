@@ -85,7 +85,7 @@ def CounterGen(signal_queue: Signal_Queue, settings: dict, Statement: str, \
     try:
         model_type = settings[model_name]['val/gen']
         agent1 = Agent(signal_queue=signal_queue, model_name=model_name, 
-                       API_KEY=API_Key, model_type=model_type, desctiption="Validator/Generator Agent")
+                       API_KEY=API_Key, model_type=model_type, description="Validator/Generator Agent")
     except Exception as e:
         signal_queue.push(type='fail', msg=f"{e}\nTry again.", field="API")
         return
@@ -93,7 +93,7 @@ def CounterGen(signal_queue: Signal_Queue, settings: dict, Statement: str, \
     try:
         model_type = settings[model_name]['checker']
         agent2 = Agent(signal_queue=signal_queue, model_name=model_name, 
-                       API_KEY=API_Key, model_type=model_type, desctiption="Checker Agent")
+                       API_KEY=API_Key, model_type=model_type, description="Checker Agent")
     except Exception as e:
         signal_queue.push(type='fail', msg=f"{e}\nTry again.", field="API")
         return
@@ -111,7 +111,7 @@ def CounterGen(signal_queue: Signal_Queue, settings: dict, Statement: str, \
             model_type = settings[model_name]['AC']
             try:
                 agent3 = Agent(signal_queue=signal_queue, model_name=model_name, 
-                               API_KEY=API_Key, model_type=model_type, desctiption="AC Agent")
+                               API_KEY=API_Key, model_type=model_type, description="AC Agent")
             except Exception as e:
                 signal_queue.push(type='fail', msg=f"{e}\nTry again.", field="API")
                 return

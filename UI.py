@@ -378,7 +378,7 @@ if __name__ == '__main__':
     type_menu.config(state='readonly')
     type_menu.bind("<<ComboboxSelected>>", on_model_selected)
 
-    entry = tb.Entry(frame1, width=50, bootstyle="primary")
+    entry = tb.Entry(frame1, width=50, bootstyle="primary", show="•")
     entry.pack(side="left")
     set_entry_placeholder(entry, "Enter API Key", SETTINGS[SETTINGS["Last_Use"]]['API_KEY'])
 

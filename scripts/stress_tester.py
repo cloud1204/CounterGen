@@ -93,9 +93,9 @@ class Stress_Tester:
         return succeed
     def heatup(self):
         current_vector = [arg[0] for arg in self.args_limits]
-        for t in range(30): #
+        for t in range(50): #
             target = t % len(self.args_limits)
-            new_value = current_vector[target] * 2 if current_vector[target] >= 5 else current_vector[target] + 1
+            new_value = current_vector[target] * 3 if current_vector[target] >= 5 else current_vector[target] + 1
             current_vector[target] = min(new_value, self.args_limits[target][1])
 
             if self.stress_test(current_vector):

@@ -2,7 +2,7 @@ from queue import Queue
 import queue, threading
 class Signal:
     def __init__(self, type, msg, field = '') -> None:
-        self.type = type # succ, fail
+        self.type = type # succ, fail, start
         self.msg = msg
         self.field = field
 class Signal_Queue:

@@ -16,14 +16,21 @@ class Code:
             print(self.code)
         else: # Default: python code
             matches = re.findall(r"```(.*?)```", text, re.DOTALL)
-            if matches == []:
+            if matches != []:
+                self.code = matches[0]
+                if self.code[:7] == 'python\n':
+                    self.code = self.code[7:]
+                print(self.code)
+                assert self.is_valid_python_code(self.code)
+            elif re.findall(r"`(.*?)`", text, re.DOTALL) != []:
+                self.code = re.findall(r"`(.*?)`", text, re.DOTALL)[0]
+                if self.code[:7] == 'python\n':
+                    self.code = self.code[7:]
+                print(self.code)
+                assert self.is_valid_python_code(self.code)
+            else:
                 print("response:", text)
                 raise ValueError("Not valid python code")
-            self.code = matches[0]
-            if self.code[:7] == 'python\n':
-                self.code = self.code[7:]
-            print(self.code)
-            assert self.is_valid_python_code(self.code)
     def compile_cpp(self):
         self.filename = 'tmp' + str(random.randint(10000, 99999))
         with open(f"tmp_storage/{self.filename}.cpp", "w", encoding="utf-8") as f:

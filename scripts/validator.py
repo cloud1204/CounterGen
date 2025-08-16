@@ -39,7 +39,7 @@ class TC_Validator_Agent:
             else:
                 succeed = True
                 break
-            self.validator = Validator(self.agent.instruct(prompt, code_only=True))
+            validator = Validator(self.agent.instruct(prompt, code_only=True))
         if not succeed:
             raise RuntimeError("Failed to generate validator.")
         print(f"Validator finished and tested. Time spent: {time.time() - start_time} sec")
