@@ -17,7 +17,7 @@ class Code:
         else: # Default: python code
             matches = re.findall(r"```(.*?)```", text, re.DOTALL)
             if matches == []:
-                print(text)
+                print("response:", text)
                 raise ValueError("Not valid python code")
             self.code = matches[0]
             if self.code[:7] == 'python\n':

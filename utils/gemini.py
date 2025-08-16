@@ -11,7 +11,10 @@ class Gemini_Agent:
     def instruct(self, prompt, code_only = False):
         response_holder = {}
         def target():
-            response_holder["value"] = self.chat.send_message(prompt)
+            try:
+                response_holder["value"] = self.chat.send_message(prompt)
+            except Exception as e:
+                response_holder["error"] = e
 
         t = threading.Thread(target=target)
         t.start()
@@ -19,6 +22,8 @@ class Gemini_Agent:
         while t.is_alive() and not self.signal_queue.shutdown_is_set():
             t.join(timeout=0.3)  # wait in 1-second chunks
 
+        if "error" in response_holder:
+            raise response_holder["error"]
         if "value" not in response_holder:
             raise TimeoutError("Forced shutdown")
 

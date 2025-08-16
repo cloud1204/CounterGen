@@ -1,5 +1,6 @@
-Update your code so it will read the args and control the upper bound of the input size and value ranges. 
-If the problem is about strings, please use a arg to control the number of distinct alphabets used as well.
+Update the generator code so it will read the args and be able to control the upperbound of input size and value ranges. 
+If the problem is about alphabets strings, use an arg to control the number of distinct alphabets used as well.
+The args should be all integers.
 Like for this example code:
 import random
 def generate_testcase():

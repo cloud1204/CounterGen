@@ -181,12 +181,17 @@ def on_submit():
     inputs = [t.get("1.0", "end-1c") if t.get("1.0", "end-1c") not in placeholders else "" for t, placeholders in zip(texts, text_placeholders)]
     Statement = inputs[0]
 
-    Statement = parse_statement(Statement)
+    Statement, _Input, _Output = parse_statement(Statement)
+    Input = inputs[1] if _Input == None else _Input
+    Output = inputs[2] if _Output == None else _Output
+
     text2.delete("1.0", "end")
     set_text_placeholder(text2, "Paste problem description or link", Statement)
+    text3.delete("1.0", "end")
+    set_text_placeholder(text3, "", Input)
+    text4.delete("1.0", "end")
+    set_text_placeholder(text4, "", Output)
 
-    Input = inputs[1]
-    Output = inputs[2]
     WA = inputs[3]
     AC = inputs[4]
 
@@ -233,7 +238,7 @@ def open_settings():
 
     model_name = SETTINGS['Last_Use']
     if model_name == 'Gemini':
-        model_options = ['2.5-flash', '2.5-pro']
+        model_options = ['gemini-2.5-flash', 'gemini-2.5-pro']
     elif model_name == 'Claude':
         model_options = ['claude-3-7-sonnet-latest', 'claude-sonnet-4-0', 'claude-opus-4-0', 'claude-opus-4-1']
     elif model_name == 'OpenAI':

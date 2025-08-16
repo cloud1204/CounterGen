@@ -25,7 +25,6 @@ class AC_Agent:
     def test(self) -> Code:
         assert self.AC_code != None and self.checker != None
         start_time = time.time()
-        print('AC Code not found, generating AC Code')
         succeed = False
         for _ in range(5):
             test_output = self.AC_code.execute(self.example_input)
@@ -39,7 +38,7 @@ class AC_Agent:
                 print(f"AC Code failed example input. Try again. {test_result}")
                 prompt = f"The code isnt correct. for this testcase:\
                     {self.example_input}\n{test_result}\nYou can use a more naive method (prioritize the correctness) to solve it. \
-                    give me the correct whole python code."
+                    give me the correct whole python code. Dont insert any comment in the code"
                 self.AC_code = self.agent.instruct(prompt, code_only=True)
             else:
                 succeed = True

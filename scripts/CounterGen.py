@@ -1,7 +1,7 @@
 from utils.agent import Agent
 from utils.code import Code
-from scripts.tc_validator import TC_Validator_Agent
-from scripts.tc_generator import TC_Generator_Agent
+from scripts.validator import TC_Validator_Agent, Validator
+from scripts.generator import Generator_Agent
 from scripts.stress_tester import Stress_Tester
 from scripts.checker import Checker
 from scripts.AC_generator import AC_Agent
@@ -20,14 +20,17 @@ def checker_gen(signal_queue: Signal_Queue, agent, Statement) -> Checker:
     signal_queue.push(type='succ', msg="Successfully Generated Checker", field="Checker")
     return checker
 
-def validator_gen(signal_queue: Signal_Queue, agent, Statement, Input, Output):
+def validator_gen(signal_queue: Signal_Queue, agent: Agent, Statement, Input, Output) -> Validator:
     signal_queue.push(type='start', msg="Start generating validator", field="Validator")
     validator = TC_Validator_Agent(agent, Statement, Input, Output).work()
     signal_queue.push(type='succ', msg="Successfully generated and tested validator", field="Validator")
     return validator
-def generator_gen(signal_queue: Signal_Queue, agent, Statement, validator):
+
+def generator_gen_first(signal_queue: Signal_Queue, Gen_agent: Generator_Agent):
     signal_queue.push(type='start', msg="Start generating generator", field="Generator")
-    generator, args_limit = TC_Generator_Agent(agent, Statement, validator).work()
+    return Gen_agent.generate_first_edition()
+def generator_gen_second(signal_queue: Signal_Queue, Gen_agent: Generator_Agent, validator : Validator):
+    generator, args_limit = Gen_agent.finalize(validator=validator)
     signal_queue.push(type='succ', msg="Successfully generated and tested generator", field="Generator")
     return generator, args_limit
 def AC_Code_gen(signal_queue: Signal_Queue, AC_agent: AC_Agent):
@@ -47,6 +50,16 @@ def CounterGen(signal_queue: Signal_Queue, settings: dict, Statement: str, \
         if os.path.isfile(file_path):
             os.remove(file_path)
 
+    if not Statement:
+        signal_queue.push(type='fail', msg=f"Problem Statement not found. Try again.", field="Statement")
+        return
+    if not Input:
+        signal_queue.push(type='fail', msg=f"Example Input not found. Try again.", field="Example test")
+        return
+    if not Output:
+        signal_queue.push(type='fail', msg=f"Example Output not found. Try again.", field="Example test")
+        return
+
     start_time = time.time()
 
     try:
@@ -56,6 +69,7 @@ def CounterGen(signal_queue: Signal_Queue, settings: dict, Statement: str, \
     except Exception as e:
         print(e)
         print("User's code compilation failed. Please make sure it is valid c++/python code.")
+        signal_queue.push(type='fail', msg=f"{e}\nUser's code compilation failed. Try again.", field="User Code")
         return
 
     model_name = settings['Last_Use']
@@ -90,6 +104,9 @@ def CounterGen(signal_queue: Signal_Queue, settings: dict, Statement: str, \
     with ThreadPoolExecutor() as executor:
         fVAL = executor.submit(validator_gen, signal_queue, agent1, Statement, Input, Output)
         fCHE = executor.submit(checker_gen, signal_queue, agent2, Statement)
+        Gen_agent = Generator_Agent(agent1, Statement, Input)
+        fGEN = executor.submit(generator_gen_first, signal_queue, Gen_agent)
+
         if AC == None or AC == '':
             model_type = settings[model_name]['AC']
             try:
@@ -106,7 +123,8 @@ def CounterGen(signal_queue: Signal_Queue, settings: dict, Statement: str, \
 
         validator = fVAL.result()
 
-        fGEN = executor.submit(generator_gen, signal_queue, agent1, Statement, validator)
+        if fGEN.result():
+            fGEN = executor.submit(generator_gen_second, signal_queue, Gen_agent, validator)
 
         checker = fCHE.result()
         if (AC == None or AC == '') and fAC.result():
@@ -118,7 +136,6 @@ def CounterGen(signal_queue: Signal_Queue, settings: dict, Statement: str, \
         if AC == None or AC == '':
             AC_Code = fAC.result()
         
-    generator.wrap()
     AC_Code.wrap()
     
     signal_queue.push(type='start', msg='Start Stress Testing', field="Stress Test")
