@@ -2,7 +2,7 @@
 
 CounterGen is an LLM-assisted platform that helps problem solvers automatically generate counter-examples for their buggy programs.
 
-[![Watch the video](./images/demo.png))](https://www.youtube.com/watch?v=yg8VISQYDDo)
+[![Watch the video](./images/demo.png)](https://www.youtube.com/watch?v=yg8VISQYDDo)
 
 ## Motivation
 
