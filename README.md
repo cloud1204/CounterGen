@@ -46,9 +46,9 @@ cd CounterGen
 ```
 2. (Optional) Create a virtual environment
 ```
-python3 -m venv .venv
+python3 -m venv .venv            # or python -m venv .venv
 source .venv/bin/activate        # Linux/macOS
-# .venv\Scripts\activate.bat     # Windows
+# .venv\Scripts\activate.ps1     # Windows
 ```
 3. Install dependencies
 ```
