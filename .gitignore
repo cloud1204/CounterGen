@@ -2,7 +2,11 @@ myenv/
 test_stuff/
 __pycache__/
 API_config.yaml
-Input_Cache/
+AC.txt
+example_input.txt
+example_output.txt
+statement.txt
+WA.txt
 test.py 
 problem_info
 tmp_storage/*

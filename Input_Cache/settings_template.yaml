@@ -1,0 +1,17 @@
+Gemini: 
+  API_KEY: null
+  val/gen: gemini-2.5-flash
+  checker: gemini-2.5-flash
+  AC: gemini-2.5-flash
+Claude:
+  API_KEY: null
+  val/gen: claude-sonnet-4-0
+  checker: claude-sonnet-4-0
+  AC: claude-sonnet-4-0
+OpenAI:
+  API_KEY: null
+  val/gen: gpt-4o
+  checker: gpt-4o
+  AC: gpt-4o
+Last_Use: Gemini
+Time_Limit_Per_Batch: 2
