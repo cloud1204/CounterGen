@@ -47,6 +47,10 @@ class Stress_Tester:
             if AC_output == 'timeout':
                 print('AC Code TLEd')
                 break
+            elif AC_output.stderr or AC_output.returncode != 0:
+                print(AC_output.stderr)
+                print("return code:", AC_output.returncode)
+                raise RuntimeError(f"AC Code runtime error in one of these testcases: {test_inputs}.")
             else:
                 AC_output = split_output(AC_output.stdout)
 
@@ -54,23 +58,25 @@ class Stress_Tester:
             if client_output == 'timeout':
                 print('client code tled')
                 break
+            elif client_output.stderr or client_output.returncode != 0:
+                print(client_output.stderr)
+                print("return code:", client_output.returncode)
+                raise RuntimeError(f"WA Code runtime error in one of these testcases: {test_inputs}.")
             else:
                 client_output = split_output(client_output.stdout)
             if len(test_inputs) != T:
                 print(test_inputs)
                 raise ValueError(f"Something went wrong. The testcase number did not match.")
             if len(AC_output) != T:
-                print(client_output)
+                print(test_inputs)
+                print(AC_output)
                 if len(AC_output) < T:
                     raise ValueError(f"Judge's program early exited during multi-test:\n{test_inputs[len(client_output)]}\n")
                 else:
                     raise ValueError(f"Judge's program outputted more than T testcases:\n{test_inputs}\n")
             if len(client_output) != T:
-                if T < 200:
-                    print(test_inputs)
-
+                print(test_inputs)
                 print(client_output)
-                print(len(client_output))
                 if len(client_output) < T:
                     raise ValueError(f"Client's program early exited during multi-test:\n{test_inputs[len(client_output)]}\n")
                 else:
