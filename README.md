@@ -99,3 +99,18 @@ You can choose different model options for each stage of the process.
 
 * For hard problems, it is recommended to use stronger models to generate the AC code.
 * For other situations, lighter models are preferred, as they offer faster speed.
+
+## Optimizations
+
+### Parallelization
+
+API requests are I/O-bound, so processing them sequentially in a single thread can be very slow.
+To address this, we use a thread pool, which allows tasks to begin as soon as their prerequisite tasks are finished — as shown in the workflow diagram.
+
+### Wrapped execution for stress tests
+
+For small testcases, the main bottleneck is not the program execution itself, but the overhead of repeatedly creating subprocesses.
+
+To overcome this, we provide a wrapper function that feeds multiple inputs into the program within a single execution. This significantly reduces overhead, making testcase execution up to 10,000× faster.
+
+⚠️ Note: Because of this optimization, you should avoid using explicit exit commands (e.g., exit(0) in C++) inside your code, as they will prematurely terminate the multi-test execution.
