@@ -242,7 +242,7 @@ def open_settings():
     elif model_name == 'Claude':
         model_options = ['claude-3-7-sonnet-latest', 'claude-sonnet-4-0', 'claude-opus-4-0', 'claude-opus-4-1']
     elif model_name == 'OpenAI':
-        model_options = ['C', 'D']
+        model_options = ['gpt-4o-mini', 'gpt-4o', 'gpt-4.1', 'o3']
     else:
         model_options = []
 

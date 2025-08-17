@@ -66,7 +66,10 @@ class Generator_Agent:
         while True:
             succeed_flag = True
             for _ in range(GEN_TEST):
-                if _ <= GEN_TEST // 2:
+                if _ == 0:
+                    args_limits = [(args[0], args[0]) for args in self.args_limit]
+                    T = 10
+                elif _ <= GEN_TEST // 2:
                     args_limits = small_args_limits(self.args_limit)
                     T = 100
                 else:

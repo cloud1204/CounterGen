@@ -44,6 +44,6 @@ class AC_Agent:
                 succeed = True
                 break
         if not succeed:
-            raise RuntimeError("Failed to generate AC Code in 6 tries.")
+            raise RuntimeError("Failed to generate AC Code in 6 tries. You should try a stronger model.")
         print(f"AC code finished and tested. Time spent: {time.time() - start_time} sec")
         return self.AC_code

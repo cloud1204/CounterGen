@@ -74,6 +74,10 @@ def CounterGen(signal_queue: Signal_Queue, settings: dict, Statement: str, \
 
     model_name = settings['Last_Use']
     API_Key = settings[model_name]['API_KEY']
+
+    if not API_Key:
+        signal_queue.push(type='fail', msg=f"ERROR: API key is required. Try again.", field="API")
+        return
     
     if AC != None and AC != '':
         try:

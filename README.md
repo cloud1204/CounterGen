@@ -68,7 +68,7 @@ python UI.py
     Paste the full problem statement here.
     It is recommended to include the complete LaTeX text to preserve mathematical formatting.
 
-    * Codeforces users: Right-click the problem page → View Page Source → copy & paste the source code. We will automatically parse the statement and example testcases.
+    * Codeforces users: Right-click the problem page → View Page Source → copy & paste the whole source code. We will automatically parse the statement.
 
     * CSES/AtCoder users: You can simply paste the problem URL, and we will parse the statement and example testcases for you.
 
