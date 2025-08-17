@@ -10,6 +10,8 @@ class Code:
         if self.is_cpp_code(text):
             self.language = 'cpp'
             self.code = text
+            from utils.code_parsing import insert_return0_in_main
+            self.code = insert_return0_in_main(self.code)
             self.compile_cpp()
         elif self.is_valid_python_code(text):
             self.code = text
