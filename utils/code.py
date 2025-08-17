@@ -1,5 +1,5 @@
 import subprocess, random, re
-
+import shutil, os, sys
 def split_output(output: str, separate_pattern : str = "!@#s_p&^%") -> list[str]:
     return output.split(separate_pattern)[:-1]
 
@@ -54,7 +54,11 @@ class Code:
             return False
     def execute(self, input = "", args = [], timeout = 30):
         if self.language == 'python':
-            command = ["python", "-c", self.code] + [str(arg) for arg in args]
+            exe = os.path.basename(sys.executable).lower()
+            if "python" in exe:
+                command = [sys.executable, "-c", self.code] + [str(arg) for arg in args]
+            else:
+                raise EnvironmentError("No Python interpreter found in PATH")
             if timeout == -1:
                 result = subprocess.run(command, input=input, capture_output=True, text=True)
             else:
