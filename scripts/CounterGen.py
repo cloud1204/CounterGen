@@ -148,7 +148,10 @@ def CounterGen(signal_queue: Signal_Queue, settings: dict, Statement: str, \
                             checker=checker, signal_queue=signal_queue, TL_batch=settings['Time_Limit_Per_Batch']) 
     tester.work()
 
-    print(f"Successfully found counter example. Total time spent: {time.time() - start_time} sec")
+    if tester.current_best != "":
+        print(f"Successfully found counter example. Total time spent: {time.time() - start_time} sec")
+    else:
+        print(f"Failed to find counter example. Total time spent: {time.time() - start_time} sec")
     signal_queue.push(type='succ', msg=(tester.current_best, tester.fail_reason), field="Stress Test")
     for filename in os.listdir("./tmp_storage"):
         file_path = os.path.join("./tmp_storage", filename)
