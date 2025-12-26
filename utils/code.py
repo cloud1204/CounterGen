@@ -1,5 +1,6 @@
 import subprocess, random, re
 import shutil, os, sys
+import time
 def split_output(output: str, separate_pattern : str = "!@#s_p&^%") -> list[str]:
     return output.split(separate_pattern)[:-1]
 
@@ -37,11 +38,15 @@ class Code:
         self.filename = 'tmp' + str(random.randint(10000, 99999))
         with open(f"tmp_storage/{self.filename}.cpp", "w", encoding="utf-8") as f:
             f.write(self.code)
-        compile_cmd = ["g++", f"tmp_storage/{self.filename}.cpp", "-o", f"tmp_storage/{self.filename}"]
+        compile_cmd = ["g++", f"tmp_storage/{self.filename}.cpp", "-o", f"tmp_storage/{self.filename}", "-DONLINE_JUDGE", "-std=c++20"]
         compile_result = subprocess.run(compile_cmd, capture_output=True, text=True)
-        if compile_result.returncode != 0:
-            print('Compile error')
+        time.sleep(3)
+        if not os.path.exists(f"tmp_storage/{self.filename}") and not os.path.exists(f"tmp_storage/{self.filename}.exe"):
+            print('Compile error:' + f"tmp_storage/{self.filename}")
             print(compile_result.stderr)
+            gcc_version = ["cmd", "/c", "where g++"]
+            version_result = subprocess.run(gcc_version, capture_output=True, text=True)
+            print("GCC version info:" + version_result.stdout)
             raise ValueError("Compile Error")
     def is_cpp_code(self, code: str) -> bool:
         cpp_keywords = [
@@ -94,7 +99,7 @@ class Code:
     
     def cpp_wrap(self, separate_pattern = "!@#s_p&^%"):
         new_code = f"#define main user_main\n{self.code}\n#undef main\n"
-        new_code += "#include <bits/stdc++.h>\nusing namespace std;\n"
+        new_code += "#include <iostream>\nusing namespace std;\n"
         new_code += f'''
         signed main() {{
             ios::sync_with_stdio(false);

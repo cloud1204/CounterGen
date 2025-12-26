@@ -5,6 +5,8 @@ def extract_between(text, a, b):
     match = re.search(pattern, text, re.DOTALL)
     return match.group(1) if match else None
 def parse_codeforces(text: str) -> str:
+    if text[:4] == "<div>" and text[-5:] == "</div>":
+        return text, None, None
     problem_statement = extract_between(text, "standard output</div></div>" , "<div class=\"sample-tests\">")
     return problem_statement, None, None
 
