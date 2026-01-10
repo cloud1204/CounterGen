@@ -18,17 +18,15 @@ CounterGen leverages LLM APIs (Gemini, Claude, and OpenAI) to automatically gene
 
 The system generates four key components:
 
-1. **Testcase Generator** - Produces random valid inputs that satisfy the problem's constraints
+1. **Input Generator** - Produces random valid inputs (testcases) that satisfy the problem's constraints
 
-2. **Testcase Validator** - Verifies that generated inputs satisfy all constraints, ensuring the Testcase Generator's correctness
+2. **Input Validator** - Verifies that generated inputs satisfy all constraints, ensuring the Testcase Generator's correctness
 
-3. **Reference AC Code** - A correct solution to the problem, used to generate expected outputs for the testcases
+3. **Correct Solution (AC Code)** - A correct solution to the problem, used to generate expected outputs for the testcases
 
-4. **Checker** - Judges the user's code output against expected results, with support for problems that have multiple valid answers
+4. **Output Checker** - Judges the user's code output against expected results, with support for problems that have multiple valid answers
 
-We have designed an automated workflow to test these generated programs at every stage, ensuring they function as intended.
-
-We have also designed an automated workflow to test these generated programs in every stage, ensuring they function as intended. The workflow is summarized in the following diagram:
+We have designed an automated workflow to test these generated programs at every stage, ensuring they function as intended. The workflow is summarized in the following diagram:
 
 ![Workflow](./images/workflow.png)
 
