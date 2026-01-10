@@ -1,4 +1,5 @@
 myenv/
+.venv/
 test_stuff/
 __pycache__/
 API_config.yaml
