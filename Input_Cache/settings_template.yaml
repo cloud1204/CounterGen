@@ -13,5 +13,10 @@ OpenAI:
   val/gen: gpt-4o
   checker: gpt-4o
   AC: gpt-4o
+vLLM:
+  API_KEY: not needed
+  val/gen: null
+  checker: null
+  AC: null
 Last_Use: Gemini
 Time_Limit_Per_Batch: 2

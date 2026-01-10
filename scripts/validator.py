@@ -23,7 +23,7 @@ class TC_Validator_Agent:
     def work(self) -> Validator:
         start_time = time.time()
         prompt = f"Give me a python function named 'validate' that validates the testcase inputs for this problem:\n{self.problem_statement}\n \
-            the format is: def validate(full_testcase: str)->str: It should return single 'valid', or 'invalid' along with the violated constraint.\
+            the format is: def validate(full_testcase: str)->str: It should return single 'valid', or 'invalid' + the violated constraint (combined as a single str).\
             Don't insert any comment in the code. Here is an example of valid input:\n{self.example_input}"
             
         validator = Validator(self.agent.instruct(prompt, code_only=True))

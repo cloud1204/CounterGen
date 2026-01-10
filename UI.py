@@ -231,7 +231,7 @@ def open_settings():
 
     settings.geometry(f"500x350+{settings_x}+{settings_y}")
 
-    settings.resizable(False, False)
+    #settings.resizable(False, False)
     settings.attributes("-topmost", True)
 
     root.settings_window = settings
@@ -281,6 +281,7 @@ def open_settings():
         "Validator/Generator Model:",
         model_options,
         SETTINGS[model_name]['val/gen'],
+        readonly=False,
         index='val/gen'
     )
 
@@ -289,6 +290,7 @@ def open_settings():
         "Output Checker Model:",
         model_options,
         SETTINGS[model_name]['checker'],
+        readonly=False,
         index='checker'
     )
 
@@ -297,6 +299,7 @@ def open_settings():
         "AC Code Model:",
         model_options,
         SETTINGS[model_name]['AC'],
+        readonly=False,
         index='AC'
     )
 
@@ -373,7 +376,7 @@ if __name__ == '__main__':
         set_entry_placeholder(entry, "Enter API Key", SETTINGS[SETTINGS["Last_Use"]]['API_KEY'])
 
     type_var = tb.StringVar(value="Gemini" if SETTINGS["Last_Use"] == None else SETTINGS["Last_Use"])
-    type_menu = tb.Combobox(frame1, textvariable=type_var, values=["Gemini", "Claude", "OpenAI"], width=10, bootstyle="info")
+    type_menu = tb.Combobox(frame1, textvariable=type_var, values=["Gemini", "Claude", "OpenAI", "vLLM"], width=10, bootstyle="info")
     type_menu.pack(side="left", padx=(0, 10))
     type_menu.config(state='readonly')
     type_menu.bind("<<ComboboxSelected>>", on_model_selected)

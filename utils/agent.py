@@ -11,6 +11,9 @@ class Agent:
         elif model_name == 'Claude':
             from utils.claude import Claude_Agent
             self.Agent = Claude_Agent(signal_queue=signal_queue, model_type=model_type, API_KEY=API_KEY)
+        elif model_name == 'vLLM':
+            from utils.vLLM import vLLM_Agent
+            self.Agent = vLLM_Agent(signal_queue=signal_queue, model_type=model_type, API_KEY="dummy")
         else:
             raise ValueError(f'{model_name} is an unsupported model.')
         
