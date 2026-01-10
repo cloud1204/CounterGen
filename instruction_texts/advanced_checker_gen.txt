@@ -2,7 +2,7 @@ Ok, then give me a customized checker code like the below example 2, but for thi
 Note 0: The problem input, and both user's and judge's output would be passed as full text (string) in args. You must name the main checking function 'check', and its format should follow (problem_input : str, output_user : str, output_judge : str) -> str
 Note 1: If the statement says that it has multiple testcase, the Input/Outputs of all testcases would be passed all at once.
 Note 2: We know that output_judge is a 100% correct output (You can use it to simplify your code and save time implementing the solution yourself).
-Note 3: You should return ("AC") (without redundant characters) if the test is passed, and return the fail reason if it fail.
+Note 3: You should return ("AC") (without redundant characters) if the test is passed, and return the fail reason (In a single string) if it fail.
 
 # Example 2 (customized checker): Input C, output A, B such that A+B=C
 import sys
