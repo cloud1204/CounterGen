@@ -1,6 +1,8 @@
+# LLM providers
 anthropic
 google-generativeai
+openai
+# UI Core dependencies
 pyyaml
 ttkbootstrap
-openai
 grpcio
