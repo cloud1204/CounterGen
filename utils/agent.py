@@ -14,6 +14,9 @@ class Agent:
         elif model_name == 'vLLM':
             from utils.vLLM import vLLM_Agent
             self.Agent = vLLM_Agent(signal_queue=signal_queue, model_type=model_type, API_KEY="dummy")
+        elif model_name == 'OpenRouter':
+            from utils.openrouter import OpenRouter_Agent
+            self.Agent = OpenRouter_Agent(signal_queue=signal_queue, model_type=model_type, API_KEY=API_KEY)
         else:
             raise ValueError(f'{model_name} is an unsupported model.')
         

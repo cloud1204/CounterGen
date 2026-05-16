@@ -1,0 +1,50 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+#define ll long long int
+
+
+
+void solve() {
+	ll n;
+	cin >> n;
+	ll ans = 0;
+	if(n==2){
+		ans=-1;
+	}
+	for(int i=1; i<sqrt(n); i++){
+		if( (n-i)%i == 0) ans++;
+	}
+	
+	for(int i=2; i<=sqrt(n); i++){
+		vector<int> ar;
+		ll nn = n;
+		while(nn>0){
+			ar.push_back(nn%i);
+			nn/=i;
+		}
+		for(int i=2; i<=ar.size(); i++){
+			if(ar.size()%i) continue;
+			bool f= true;
+			for(int k=0; k<ar.size(); k+=i){
+				for(int j=k+1; j<k+i; j++){
+					if(ar[j] != ar[k]) f=false;
+				}
+			}
+			if(f) ans++;
+		}
+	}
+
+	cout << ans << endl;
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int t;
+	cin >> t;
+	while(t--) solve();
+	return 0;
+}

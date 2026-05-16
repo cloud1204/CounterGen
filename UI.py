@@ -490,10 +490,10 @@ if __name__ == '__main__':
     progress_label = tb.Label(progress_frame, text="Progress:", foreground="#878686")
     progress_label.pack(anchor="w")
 
-    progressbar = tb.Progressbar(progress_frame, length=500, maximum=6, bootstyle='success')
+    progressbar = tb.Progressbar(progress_frame, length=500, maximum=7, bootstyle='success')
     progressbar.pack()
 
-    subtask_names = ["API", "Validator", "Generator", "Checker", "AC Code", "Stress Test"]
+    subtask_names = ["API", "Validator", "Generator", "Checker", "Metamorphic", "AC Code", "Stress Test"]
     subtask_labels = []
 
     for name in subtask_names:

@@ -1,0 +1,42 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define pb push_back
+#define ff first
+#define sd second
+#define debug(x) cerr << #x << " ----> " << x << endl;
+
+const int mxN = 1e6 + 5;
+ll n;
+
+inline void solve(){
+	cin >> n;
+	ll ans = 0;
+	if(n > 2) ans = 1;
+	for(ll i = 2; i * i <= n; i++){
+		if(n % i == 0 and i * i != n) ans++;
+		vector<ll> v;
+		ll x = 1,n1 = n;
+		while(n1){
+			v.pb(n1 % i);
+			n1 /= i;
+		}		
+		for(int p = 2; p <= v.size(); p++){
+			ll ok = 1;
+			if(v.size() % p) continue;
+			for(int j = 1; j < v.size(); j++){
+				if(j % p and v[j] != v[j - 1]) ok = 0;
+			}
+			ans += ok;
+		}
+	}
+	cout << ans << '\n';
+}
+int main(){
+	ios::sync_with_stdio(false);
+	cin.tie(0);
+	cout.tie(0);
+ 	ll t;
+	cin >> t;
+	while(t--) solve();		
+}

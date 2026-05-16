@@ -1,0 +1,79 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+#define int long long
+#define endl '\n'
+using namespace std;
+int a[5005],b[5005],ind[5005],ans[5005],c[5005];
+vector<int> g[5005];
+queue<int> q;
+signed main()
+{
+	ios::sync_with_stdio(0);cin.tie(0);cout.tie(0);
+	int t;
+	cin>>t;
+	while(t--)
+	{
+		int n,flag=0;
+		cin>>n;
+		for(int i =1;i<=n;i++)cin>>a[i];
+		for(int i =1;i<=n;i++)cin>>b[i];
+		for(int i =1;i<=n;i++)
+		{
+			int cnt=0;
+			for(int j =n;j>i;j--)
+			{
+				if(a[j]>a[i])
+				{
+					if(cnt<b[i])
+					{
+						++cnt;
+						g[i].push_back(j);
+//						cout<<j<<' ';
+					}
+					else g[j].push_back(i);
+				}
+			}
+//			cout<<endl;
+			if(cnt<b[i])
+			{
+				flag=1;
+			}
+		}
+		if(flag)
+		{
+			cout<<-1<<endl;
+		}
+		else
+		{
+			for(int i=1;i<=n;i++)
+				for(auto j:g[i])
+					ind[j]++;
+			for(int i =1;i<=n;i++)
+			{
+				if(!ind[i])q.push(i);
+			}
+			int cur=0;
+			while(!q.empty())
+			{
+				int h=q.front();
+				ans[++cur]=h;
+				q.pop();
+				for(auto i:g[h])
+				{
+					--ind[i];
+					if(!ind[i])q.push(i);
+				}
+			}
+			if(cur<n)cout<<-1<<endl;
+			else
+			{
+				for(int i =1;i<=n;i++)c[ans[i]]=i;
+				for(int i =1;i<=n;i++)cout<<c[i]<<' ';
+				cout<<endl;
+			}
+		}
+		for(int i =1;i<=n;i++)ans[i]=ind[i]=0,g[i].clear();
+	}
+	return 0;
+}

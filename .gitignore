@@ -14,3 +14,6 @@ tmp_storage/*
 !tmp_storage/.gitkeep
 script.py
 settings.yaml
+.claude/
+benchmark_results.json
+tests/__pycache__/

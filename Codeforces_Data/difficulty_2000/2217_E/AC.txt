@@ -1,0 +1,16 @@
+import sys; input = sys.stdin.readline
+
+m = {}
+for b in range(2, 10**6):
+    v = b * b + b + 1; p = 3
+    while v <= 10**12: m.setdefault(v, []).append((b, p)); v = v * b + 1; p += 1
+for _ in range(int(input())):
+    n, a = int(input()), 0
+    f = {i for i in range(1, int(n**0.5) + 1) if n % i == 0}; f |= {n // i for i in f}
+    for d in f:
+        for b, p in m.get(d, []) + ([(d - 1, 2)] if d >= 3 else []):
+            y = n // d; x = b ** p; o = 1
+            while y and o: o = y % x < b; y //= x
+            a += o
+    print(a)
+    

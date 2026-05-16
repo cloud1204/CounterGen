@@ -1,0 +1,31 @@
+#include <bits/stdc++.h>
+#define int long long
+using namespace std;
+int d[1000010];
+int gcd(int a,int b){
+	return b?gcd(b,a%b):a;
+}
+signed main(){
+	int T;
+	cin>>T;
+	for(int i=1;i<=1000000;i++)
+		for(int j=i;j<=1000000;j+=i)d[j]++;
+	while(T--){
+		int n,ans=0;scanf("%lld",&n);
+		for(int i=2;i*i<=n;i++){
+			int lst=n%i,t=n/i,cnt=0,cntt=1;
+			while(t){
+				if(t%i!=lst){
+					cnt=gcd(cnt,cntt);
+					cntt=0;
+					lst=t%i;
+				}
+				t/=i,cntt++;
+			}
+			cnt=__gcd(cnt,cntt);
+			if(cnt>1)ans+=d[cnt]-1;
+		}
+		for(int i=1;i*i<=n;i++)if(n%i==0&&n/i-1>2&&n/i-1>i)ans++;
+		printf("%lld\n",ans);
+	}
+}

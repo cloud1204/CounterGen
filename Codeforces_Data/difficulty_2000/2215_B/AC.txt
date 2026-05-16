@@ -1,0 +1,60 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+void solve() {
+	int n; cin >> n;
+	vector<int> p(n);
+	for(int i = 0; i < n; i++) {
+	    cin >> p[i];
+	}
+	vector<int> d(n);
+	for(int i = 0; i < n; i++) {
+	    cin >> d[i];
+	}
+	vector<int> q;
+	q.reserve(n);
+	bool cek = true;
+	for(int i = n-1; i >= 0; i--) {
+	    if(d[i] == 0) {
+	        q.push_back(i);
+	    } else {
+	        int total = 0;
+	        bool vis = false;
+	        for(int id = q.size() - 1; id >= 0; id--) {
+	            int j = q[id];
+	            if(p[j] > p[i]) {
+	                total++;
+	                if(total == d[i]) {
+	                    q.insert(q.begin()+ id, i);
+	                    vis = true;
+	                    break;
+	                }
+	            }
+	        }
+	        if(!vis){
+	            cek = false;
+	            break;
+	        }
+	    }
+	}
+	if(!cek) cout << -1 << endl;
+	else {
+	    vector<int> q2(n);
+	    for(int i = 0; i < n; i++) {
+	        q2[q[i]] = i + 1;
+	    }
+	    for(int i = 0; i < n; i++) {
+	        cout << q2[i] << " ";
+	    }
+	    cout << endl;
+	}
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    int t; cin >> t;
+    while(t--) {
+        solve();
+    }
+}

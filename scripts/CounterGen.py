@@ -5,6 +5,7 @@ from scripts.generator import Generator_Agent
 from scripts.stress_tester import Stress_Tester
 from scripts.checker import Checker
 from scripts.AC_generator import AC_Agent
+from scripts.metamorphic import Metamorphic_Agent
 from utils.signal import Signal_Queue
 import os, time
 from concurrent.futures import ThreadPoolExecutor
@@ -40,6 +41,16 @@ def AC_Code_test(signal_queue: Signal_Queue, AC_agent: AC_Agent):
     result = AC_agent.test()
     signal_queue.push(type='succ', msg="Successfully Generated and tested AC Code", field="AC Code")
     return result
+
+def metamorphic_gen(signal_queue: Signal_Queue, agent: Agent, Statement: str, Input: str, Output: str,
+                    validator: Validator):
+    signal_queue.push(type='start', msg="Start generating metamorphic relation", field="Metamorphic")
+    meta = Metamorphic_Agent(agent, Statement, Input, Output).generate(validator)
+    if meta is None:
+        signal_queue.push(type='succ', msg="No metamorphic relation used (skipped)", field="Metamorphic")
+    else:
+        signal_queue.push(type='succ', msg="Metamorphic relation ready", field="Metamorphic")
+    return meta
 
 def CounterGen(signal_queue: Signal_Queue, settings: dict, Statement: str, \
                Input: str, Output: str, WA: str, AC: str) -> None:
@@ -83,6 +94,8 @@ def CounterGen(signal_queue: Signal_Queue, settings: dict, Statement: str, \
         try:
             AC_Code = Code(AC)
             signal_queue.push(type='succ', msg="Successfully Compiled AC Code", field="AC Code")
+            signal_queue.push(type='succ', msg="Metamorphic check skipped (user-provided AC)",
+                              field="Metamorphic")
         except Exception as e:
             signal_queue.push(type='fail', msg=f"{e}\nTry again.", field="AC Code")
             return
@@ -114,14 +127,16 @@ def CounterGen(signal_queue: Signal_Queue, settings: dict, Statement: str, \
         if AC == None or AC == '':
             model_type = settings[model_name]['AC']
             try:
-                agent3 = Agent(signal_queue=signal_queue, model_name=model_name, 
+                agent3 = Agent(signal_queue=signal_queue, model_name=model_name,
                                API_KEY=API_Key, model_type=model_type, description="AC Agent")
+                agent_meta = Agent(signal_queue=signal_queue, model_name=model_name,
+                                   API_KEY=API_Key, model_type=model_type, description="Metamorphic Agent")
             except Exception as e:
                 signal_queue.push(type='fail', msg=f"{e}\nTry again.", field="API")
                 return
-            
+
             signal_queue.push(type='succ', msg="successfully initalized chat", field="API")
-            
+
             AC_agent = AC_Agent(agent3, Statement, Input, Output)
             fAC = executor.submit(AC_Code_gen, signal_queue, AC_agent)
 
@@ -130,9 +145,14 @@ def CounterGen(signal_queue: Signal_Queue, settings: dict, Statement: str, \
         if fGEN.result():
             fGEN = executor.submit(generator_gen_second, signal_queue, Gen_agent, validator)
 
+        if AC == None or AC == '':
+            fMETA = executor.submit(metamorphic_gen, signal_queue, agent_meta,
+                                    Statement, Input, Output, validator)
+
         checker = fCHE.result()
         if (AC == None or AC == '') and fAC.result():
             AC_agent.set_checker(checker=checker)
+            AC_agent.set_metamorphic(fMETA.result())
             fAC = executor.submit(AC_Code_test, signal_queue, AC_agent)
 
         generator, args_limit = fGEN.result()

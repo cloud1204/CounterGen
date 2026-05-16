@@ -18,22 +18,19 @@ class Code:
             self.code = text
             print(self.code)
         else: # Default: python code
-            matches = re.findall(r"```(.*?)```", text, re.DOTALL)
-            if matches != []:
-                self.code = matches[0]
-                if self.code[:7] == 'python\n':
-                    self.code = self.code[7:]
-                print(self.code)
-                assert self.is_valid_python_code(self.code)
-            elif re.findall(r"`(.*?)`", text, re.DOTALL) != []:
-                self.code = re.findall(r"`(.*?)`", text, re.DOTALL)[0]
-                if self.code[:7] == 'python\n':
-                    self.code = self.code[7:]
-                print(self.code)
-                assert self.is_valid_python_code(self.code)
-            else:
-                print("response:", text)
-                raise ValueError("Not valid python code")
+            candidates = re.findall(r"```(.*?)```", text, re.DOTALL)
+            candidates += re.findall(r"`(.*?)`", text, re.DOTALL)
+            for cand in candidates:
+                stripped = cand
+                nl = stripped.find('\n')
+                if nl != -1 and stripped[:nl].strip().lower() in ('python', 'py', 'python3'):
+                    stripped = stripped[nl + 1:]
+                if stripped.strip() and self.is_valid_python_code(stripped):
+                    self.code = stripped
+                    print(self.code)
+                    return
+            print("response:", text)
+            raise ValueError("Not valid python code")
     def compile_cpp(self):
         self.filename = 'tmp' + str(random.randint(10000, 99999))
         with open(f"tmp_storage/{self.filename}.cpp", "w", encoding="utf-8") as f:

@@ -1,0 +1,44 @@
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+#include<vector>
+#include<cmath>
+using namespace std;
+const int lim=45;
+int m,k,l,st[50],stc,ans;
+long long n;
+vector<int> facs[50];
+bool chek(int x)
+{
+    for(int i=0;i<stc;i+=x)
+    for(int j=1;j<x;++j) if(st[i]!=st[i+j]) return 0;
+    return 1;
+}
+int work(long long x,int d)
+{
+    stc=0;
+    while(x)
+    {
+        st[stc++]=x%d;
+        x/=d;
+    }
+    for(auto v:facs[stc]) if(chek(v)) return facs[v].size();
+    return 0;
+}
+void solve()
+{
+    ans=0;
+    scanf("%lld",&n);
+    for(int i=sqrt(n);i>1;--i) ans+=work(n,i);
+    for(int i=1;i<n/i-1&&n/i>3;++i) ans+=!(n%i);
+    printf("%d\n",ans);
+}
+int main()
+{
+    for(int i=lim;i>1;--i)
+    for(int j=i;j<=lim;j+=i) facs[j].push_back(i);
+    int t;
+    scanf("%d",&t);
+    while(t--) solve();
+    return 0;
+}

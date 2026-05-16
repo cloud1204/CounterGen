@@ -1,0 +1,99 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    // Fast I/O
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    
+    int tc;
+    if (!(cin >> tc)) return 0;
+    
+    while(tc--) {
+        int n;
+        cin >> n;
+        
+        vector<int> p(n), d(n);
+        
+        // Read arrays
+        for(int i = 0; i < n; i++) cin >> p[i];
+        for(int i = 0; i < n; i++) cin >> d[i];
+
+        vector<pair<int, int>> sorted_p(n);
+        for(int i = 0; i < n; i++) {
+            sorted_p[i] = {p[i], i};
+        }
+        sort(sorted_p.rbegin(), sorted_p.rend());
+        
+        vector<vector<int>> adj(n);
+        vector<int> indeg(n, 0);
+        bool ok = true;
+        
+        for(int j = n - 1; j >= 0; j--) {
+            for(int k = 0; k < n; k++) {
+                if (sorted_p[k].first <= p[j]) break; 
+                
+                int idx = sorted_p[k].second;
+                if (idx > j) {
+                    if (d[j] > 0) {
+                        adj[j].push_back(idx);
+                        d[j]--;
+                        indeg[idx]++;
+                    } else {
+                        adj[idx].push_back(j);
+                        indeg[j]++;
+                    }
+                }
+            }
+            
+            if (d[j] > 0) {
+                ok = false;
+                break;
+            }
+        }
+        
+        if (!ok) {
+            cout << -1 << "\n"; 
+            continue;
+        }
+        
+        queue<int> q;
+        for(int i = 0; i < n; i++) {
+            if (indeg[i] == 0) {
+                q.push(i);
+            }
+        }
+        
+        vector<int> ans(n, -1);
+        int val = 1;
+        
+ 
+        while (!q.empty()) {
+            int v = q.front();
+            q.pop();
+            ans[v] = val++;
+            for(auto u : adj[v]) {
+                indeg[u]--;
+                if (indeg[u] == 0) {
+                    q.push(u);
+                }
+            }
+        }
+        
+        int min_indeg = *min_element(indeg.begin(), indeg.end());
+        if (min_indeg != 0) {
+            cout << -1 << "\n";
+            continue;
+        }
+        
+        for(int i = 0; i < n; i++) {
+            if (ans[i] == -1) {
+                ans[i] = val++;
+            } 
+            cout << ans[i] << (i == n - 1 ? "" : " ");
+        }
+        cout << "\n";
+    }
+    
+    return 0;
+}

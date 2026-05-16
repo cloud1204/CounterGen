@@ -1,0 +1,62 @@
+#include <bits/stdc++.h>
+#define all(x) begin(x), end(x)
+#define cerr cerr << "\e[91m[DEBUG] "<<__func__<<":"<<__LINE__<<"\e[39m | "
+#define derr if(0) cerr
+using namespace std;
+using i64 = long long;
+constexpr int IS_TC = true;
+
+void solve() {
+	int n; cin >> n;
+	vector<int> p(n);
+	for (int i = 0; i < n; i++) {
+		cin >> p[i];
+		p[i]--;
+	}
+	
+	vector<int> d(n);
+	for (auto &i : d) cin >> i;
+
+	bool valid = true;
+	for (int i = 0; i < n; i++) {
+		int cnt = 0;
+		for (int j = 1; j < n; j++) {
+			cnt += p[i] < p[j];
+		}
+		if (cnt < d[i]) valid = false;
+	}
+	if (!valid) {
+		cout << "-1\n";
+		return;
+	}
+
+	vector<int> ord(n);
+	iota(all(ord), 0);
+	sort(all(ord), [&](int i, int j) {
+		return p[i] > p[j];
+	});
+
+	vector<int> v;
+	for (auto i : ord) {
+		int j = v.size();
+		int cnt = 0;
+		while (j > 0) {
+			if (cnt == d[i]) break;
+			j--;
+			if (v[j] > i) cnt++;
+		}
+		v.insert(v.begin() + j, i);
+	}
+
+	vector<int> q(n);
+	for (int i = 0; i < n; i++) q[v[i]] = i;
+	for (auto i : q) cout << i + 1 << " ";
+	cout << "\n";
+}
+
+int main() {
+	ios::sync_with_stdio(false); cin.tie(nullptr);
+	int t = 1; if (IS_TC) cin >> t;
+	while (t--) solve();
+	return 0;
+}
