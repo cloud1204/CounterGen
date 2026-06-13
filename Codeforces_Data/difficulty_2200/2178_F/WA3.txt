@@ -1,0 +1,33 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define pii pair<int,int>
+#define fi first
+#define se second
+const int maxn=2e5+10;
+const int mod=998244353;
+int tc,n,x,y,siz[maxn],ok[maxn];
+vector<int> v[maxn];
+inline void dfs1(int x,int fa)
+{
+	siz[x]=1;
+	for(auto y:v[x])if(y!=fa)dfs1(y,x),siz[x]+=siz[y];
+	if(x!=1 && siz[x]%2==0)ok[x]=1;
+}
+inline void dfs2(int x,int fa)
+{
+	for(auto y:v[x])if(y!=fa)ok[y]|=ok[x],dfs2(y,x);
+}
+signed main()
+{
+	scanf("%d",&tc);
+	while(tc--)
+	{
+		scanf("%d",&n);for(int i=1;i<=n;i++)v[i].clear(),siz[i]=ok[i]=0;
+		for(int i=1;i<n;i++)scanf("%d%d",&x,&y),v[x].push_back(y),v[y].push_back(x);
+		dfs1(1,0),dfs2(1,0);
+		int ans=1;for(int i=2;i<=n;i++)if(ok[i])ans=ans*2%mod;
+		if((int)v[1].size()==1)ans=ans*2%mod;
+		printf("%d\n",ans);
+	}
+	return 0;
+}

@@ -1,0 +1,22 @@
+# include<bits/stdc++.h>
+# define int long long
+# define mod 1000000007
+using namespace std;
+int n,dp[500000],a[500000],T,bz,ans;
+signed main(){
+    dp[0]=1;
+    dp[1]=2;
+    for(int i = 2;i<500000;i++)dp[i]=(2*dp[i-1]+(i-1)*dp[i-2])%mod;
+    cin>>T;
+    while(T--){
+        cin>>n,bz=1;
+        for(int i = 0;i<=n;i++)cin>>a[i];
+        for(int i = 1;i<=n;i++)if(a[i]!=-1&&a[i]!=i){if(a[a[i]]!=i&&a[a[i]]!=-1)bz=0;else a[a[i]]=i;}
+        if(!bz){cout<<"0\n";continue;}
+        bz=0;
+        for(int i = 1;i<=n;i++)bz+=a[i]==-1;
+        ans=dp[bz];
+        if(a[n]==-1)ans-=dp[bz-1];
+        cout<<(ans+mod)%mod<<"\n";
+    }
+}

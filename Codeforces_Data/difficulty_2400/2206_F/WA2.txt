@@ -1,0 +1,76 @@
+#include<bits/stdc++.h>
+#define N 500005
+using namespace std;
+
+namespace xzz{
+	void IO(){ios::sync_with_stdio(0),cin.tie(0),cout.tie(0);}
+	bool beg;
+	struct comp{
+		double a,b;
+		friend comp operator +(const comp &x,const comp &y){return {x.a+y.a,x.b+y.b};}
+		friend comp operator -(const comp &x,const comp &y){return {x.a-y.a,x.b-y.b};}
+		friend comp operator *(const comp &x,const comp &y){return {x.a*y.a-x.b*y.b,x.b*y.a+x.a*y.b};}
+		friend comp operator /(const comp &x,int y){return {x.a/y,x.b/y};}
+	};
+	constexpr double pi=acos(-1);
+	int n,k,len=1,rev[N<<2],a[N<<2],sum;
+	comp F[N<<2],G[N<<2];
+	string s;
+	void FFT(comp *F,int typ){
+		for(int i=0;i<len;i++){
+			if(i<rev[i])	swap(F[i],F[rev[i]]);
+		}
+		for(int h=1;h<len;h<<=1){
+			comp cur={cos(pi/h),typ*sin(pi/h)};
+			for(int i=0;i<len;i+=(h<<1)){
+				comp w={1,0};
+				for(int j=0;j<h;j++,w=w*cur){
+					comp x=F[i+j],y=w*F[i+j+h];
+					F[i+j]=x+y,F[i+j+h]=x-y;
+				}
+			}
+		}
+		if(typ==-1){
+			for(int i=0;i<len;i++)	F[i]=F[i]/len;
+		}
+	}
+	inline int cmp(int q,int w){
+		return q>w;
+	}
+	bool ed;
+	void main(){
+		IO(),cerr<<(&beg-&ed)/1048576.0<<'\n';
+		cin>>n>>k>>s,s=" "+s;
+		while(len<=n*2)	len<<=1;
+		for(int i=0;i<len;i++)	rev[i]=(rev[i>>1]>>1)|((i&1)*(len>>1));
+		for(int i=1;i<=n;i++)	F[i].a=s[i]-'0';
+		for(int i=1;i<=n;i++)	G[n-i].a=(s[i]=='0');
+		FFT(F,1),FFT(G,1);
+		for(int i=0;i<len;i++)	F[i]=F[i]*G[i];
+		FFT(F,-1);
+		for(int i=1;i<=n;i++)	a[i]+=(int)(F[i+n].a+0.5);
+		for(int i=0;i<len;i++)	F[i]=G[i]={0,0};
+		for(int i=1;i<=n;i++)	F[n-i].a=s[i]-'0';
+		for(int i=1;i<=n;i++)	G[i].a=(s[i]=='0');
+		FFT(F,1),FFT(G,1);
+		for(int i=0;i<len;i++)	F[i]=F[i]*G[i];
+		FFT(F,-1);
+		for(int i=1;i<=n;i++)	a[i]+=(int)(F[i+n].a+0.5);
+		sum=a[1];
+		for(int i=1;i<=n;i++){
+			for(int j=1;j<=n;j+=i){
+				if(s[j]=='0'){
+					a[i]-=s[j-1]-'0';
+				}
+			}
+			for(int j=i;j<n;j+=i){
+				if(s[j]=='0'){
+					a[i]-=s[j+1]-'0';
+				}
+			}
+		}
+		sort(a+1,a+1+n,cmp);
+		cout<<a[k]+sum<<'\n';
+	}
+}
+signed main(){xzz::main();return 0;}

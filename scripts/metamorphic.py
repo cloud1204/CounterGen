@@ -6,6 +6,7 @@ import time
 
 class Metamorphic:
     def __init__(self, module_code: Code):
+        self.code = module_code.code
         self.namespace = {}
         exec(module_code.code, self.namespace)
         if 'transform' not in self.namespace or 'relate' not in self.namespace:
@@ -21,16 +22,27 @@ an output y' satisfying R(x, y, x', y') for ANY correct solution?
 Examples that often work:
 - Permutation invariance (shuffle an unordered collection -> same answer)
 - Linear scaling (multiply all weights/values by k -> answer scales by k)
-- Symmetry (reverse the array -> same or symmetric answer)
-- Adding non-interfering elements (e.g. extra unreachable nodes)
+- Adding non-interfering elements (e.g. extra unreachable nodes, padding zeros)
+- Duplicating a self-contained sub-instance (answer combines predictably)
+- Relabeling/renaming anonymous elements
 
-Cases where NO useful relation exists:
-- Output is the unique lexicographically smallest/largest answer
-- Output exposes specific indices/positions that any rearrangement changes
-- Problem has no clean structural invariant you are confident about
+A useful relation does NOT need to be a strict equality -- a one-sided bound \
+(answer can only stay the same or change in a known direction) is also fine, as long as \
+you can state the bound precisely in `relate`.
 
-If no clean relation exists, reply with exactly "No" (and nothing else). Otherwise, reply "Yes" \
-followed by a one-sentence description of the relation you will use."""
+Be careful with these traps -- prefer "No" if you suspect them:
+- Output is a specific construction, index, position, or witness (any reordering changes it).
+- "Lexicographically smallest/largest" answers where the tie-break depends on input order.
+- The problem has a directional/order-sensitive operation (left-to-right scan, prefix DP, \
+shift/rotation, turn-based game) AND your transformation reverses or reorders the input. \
+Mirror / reverse-and-swap transformations are especially risky on such problems: they preserve \
+high-level structural invariants but routinely break the actual count or value the problem asks for.
+
+If a clean relation exists, reply:
+  Yes. <one-sentence description of the relation>
+
+If not, reply with exactly:
+  No"""
 
 
 MODULE_PROMPT = """Now give me a Python module containing exactly these two functions:
@@ -46,8 +58,12 @@ def relate(in1: str, out1: str, in2: str, out2: str) -> str:
 
 Requirements:
 - transform must always produce input that satisfies the problem's input constraints.
-- relate must return 'OK' for ANY correct solution. Be conservative -- weaken the relation if you cannot \
-guarantee it always holds.
+- relate must return 'OK' for ANY correct solution. A FALSE POSITIVE (reporting a failure on a correct \
+solution) is much worse than reporting 'OK' too often. When uncertain, return 'OK'.
+- relate must handle output-format variation gracefully: trailing whitespace, optional trailing newline, \
+multiple valid answers, equivalent representations (e.g. different orderings of an unordered answer set). \
+If the problem allows multiple correct outputs, do NOT compare them for equality -- only check the \
+weaker invariant you actually proved.
 - Do not insert any comments. Give the python code only."""
 
 

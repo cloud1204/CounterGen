@@ -1,0 +1,52 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define int long long
+
+const int mod=1e9+7;
+const int N=1e6+10;
+
+int n,q;
+string s;
+
+void solve(){
+	cin>>n>>q;
+	cin>>s;
+	s=' '+s;
+	while(q--){
+		int l,r;
+		cin>>l>>r;
+		int len=r-l+1;
+		string a(s.substr(l,len));
+		a=' '+a;
+		vector<int> next(len+1),p(len+1),res(len+1),mn(len+1);
+		int sum=1;
+		res[1]=1;
+		for(int i=2,j=0;i<=len;i++){
+			while(j&&a[i]!=a[j+1])j=next[j];
+			if(a[i]==a[j+1])
+				j++;
+			p[i]=j;
+			if(mn[j]!=0)
+				mn[i]=mn[j];
+			else mn[i]=p[i];
+			res[i]=res[i-mn[i]]+1;
+			sum+=res[i];
+		}
+		cout<<sum<<'\n';
+	}
+}
+
+void init(){
+	
+}
+
+signed main(){
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	init();
+	int t=1;
+	cin>>t;
+	while(t--)
+		solve();
+	return 0;
+}

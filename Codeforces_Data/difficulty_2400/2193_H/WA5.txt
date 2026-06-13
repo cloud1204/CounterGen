@@ -1,0 +1,72 @@
+#include<iostream>
+#include<cstdio>
+#include<vector>
+#include<cassert>
+#define pb push_back
+using namespace std;
+int n;
+int a[200005];
+vector<int>G[200005],ans;
+int f[200005],g[200005];
+int dfs1(int x,int fa){
+	int w=(a[x]&1),o=0;
+	for(auto y:G[x]){
+		if(y==fa) continue;
+		if(!dfs1(y,x)) return 0;
+		if(g[y]){
+			w^=(a[y]&1);
+			if(f[y]) o|=(a[y]&1);
+		}
+	}
+	g[x]=(w|o); w^=(a[fa]&1); f[x]=(w|o);
+	return (f[x]|g[x]);
+}
+void dfs2(int x,int fa,int t=1){
+	if(t) assert(g[x]);
+	else assert(f[x]);
+	int w=(a[x]&1),z=0;
+	for(auto y:G[x]){
+		if(y==fa) continue;
+		if(!g[y]) dfs2(y,x,0);
+		else{
+			w^=(a[y]&1);
+			if(f[y]) z=y;
+		}
+	}
+	if(!t) w^=(a[fa]&1);
+	if(w) z=0;
+	else dfs2(z,x,0);
+	ans.pb(x);
+	for(auto y:G[x]){
+		if(y==fa||y==z) continue;
+		if(!g[y]) continue;
+		dfs2(y,x,1);
+	}
+	return;
+}
+void solve(){
+	scanf("%d",&n);
+	for(int i=1;i<=n;i+=1){
+		scanf("%d",&a[i]);
+		G[i].clear();
+	}
+	for(int i=1;i<n;i+=1){
+		int x,y; scanf("%d%d",&x,&y);
+		G[x].pb(y); G[y].pb(x);
+	}
+	if(!dfs1(1,0)) printf("NO\n");
+	else{
+		ans.clear(); dfs2(1,0);
+		printf("YES\n");
+		for(auto x:ans){
+			printf("%d ",x);
+		}
+		printf("\n");
+	}
+	return;
+}
+int main(){
+	int t; scanf("%d",&t);
+	while(t--) solve();
+	return 0;
+}

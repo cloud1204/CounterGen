@@ -1,0 +1,30 @@
+# include<bits/stdc++.h>
+# define int long long
+using namespace std;
+int T,n,fa[200001],B[200001],m,ip1,ip2,deap[200001],ans,siz[200001],at[200001];
+vector<int>son[200001];
+map<int,int>CALC[200001];
+signed main(){
+	cin>>T;
+	while(T--){
+		cin>>n>>m;
+		for(int i = 1;i<=n;i++)fa[i]=i+1,son[i].clear(),CALC[i].clear();
+		fa[n]=ans=0;
+		while(m--)cin>>ip1>>ip2,fa[ip1]=max(fa[ip1],ip2);
+		for(int i = n-1;i;i--)son[fa[i]].push_back(i),deap[i]=deap[fa[i]]+1,B[i]=deap[i];
+		sort(B+1,B+n+1);
+		for(int i = 1;i<=n;i++){
+			ans+=B[i]*(n-i),siz[i]=1;
+			at[i]=i,CALC[i][deap[i]]++;
+			for(int j : son[i]){
+				ans-=siz[i]*siz[j]*deap[i],siz[i]+=siz[j];
+				if(CALC[at[i]].size()<CALC[at[j]].size())swap(at[i],at[j]);
+				for(auto k : CALC[at[j]]){
+					ans+=(k.first-deap[i])*k.second*CALC[at[i]][k.first];
+					CALC[at[i]][k.first]+=k.second;
+				}
+			}
+		}
+		cout<<ans<<"\n";
+	}
+}

@@ -1,0 +1,26 @@
+#include <bits/stdc++.h>
+signed main() {
+    std::ios_base::sync_with_stdio(false); std::cin.tie(nullptr);
+    int t;
+    std::cin >> t;
+    while (t--) {
+        int n, q;
+        std::string s;
+        std::cin >> n >> q >> s;
+        while (q--) {
+            int l, r;
+            std::cin >> l >> r;
+            --l;
+            long long ans{1};
+            std::vector c{l};
+            for (int i=l+1; i<r; ++i) {
+                if (s[i] == s[l]) c.push_back(i);
+                else 
+                    while (s[i] != s[l+i-c.back()])
+                        c.pop_back();
+                ans += c.size();
+            }
+            std::cout << ans << '\n';
+        }
+    }
+}

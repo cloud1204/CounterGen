@@ -1,0 +1,25 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+
+int main() {
+
+   
+    int t;
+    cin >> t;
+
+    while(t--) {
+
+       int n,k;
+       cin>>n>>k;
+       int a[n];
+       for(int i=0;i<n;i++){
+        cin>>a[i];
+       }
+       
+    }
+    cout<<2<<endl;
+    cout<<0<<endl;cout<<10<<endl;cout<<0<<endl;cout<<973702700<<endl;
+
+    return 0;
+}

@@ -1,0 +1,58 @@
+from collections import deque
+for _ in range(int(input())):
+    n = int(input())
+    adjlist = [[] for _ in range(n)]
+    abc = []
+    for i in range(n):
+        a,b,c = map(int, input().split())
+        for j, trip in enumerate(abc):
+            x = a-trip[0]
+            y = b-trip[1]
+            z = c-trip[2]
+            if x != 0:
+                if (y**2 - 4*x*z) < 0:
+                    if x > 0:
+                        adjlist[i].append(j)
+                    else:
+                        adjlist[j].append(i)
+            elif y == 0 and z != 0:
+                if z > 0:
+                    adjlist[i].append(j)
+                else:
+                    adjlist[j].append(i)
+        abc.append((a,b,c))
+    
+    noparent = [True] * n
+    for i in range(n):
+        for j in adjlist[i]:
+            noparent[j] = False
+    
+    batmanlist = []
+    for i in range(n):
+        if noparent[i]:
+            batmanlist.append(i)
+
+    max_parent = [0]*n
+    max_child = [0]*n
+    
+    queue = deque()
+    postorder = []
+    for j in batmanlist:
+        queue.append(j)
+        postorder.append(j)
+    
+    while queue:
+        node = queue.popleft()
+        postorder.append(node)
+        for j in adjlist[node]:
+            if max_parent[j] < max_parent[node] + 1:
+                max_parent[j] = max_parent[node] + 1
+                queue.append((j))
+
+    while postorder:
+        node = postorder.pop()
+        for j in adjlist[node]:
+            max_child[node] = max(max_child[node], max_child[j]+1)
+    
+    ans = [max_parent[i]+max_child[i]+1 for i in range(n)]
+    print(*ans)

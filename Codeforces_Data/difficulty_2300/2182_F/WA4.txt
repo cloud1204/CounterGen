@@ -1,0 +1,78 @@
+#include<bits/stdc++.h>
+#define int long long
+#define MAXN (int)505
+using namespace std;
+int c[MAXN];
+int mod=998244353;
+int pw(int x, int y) {
+    int r=1;
+    while(y>0){
+        if(y&1){
+            r=(r*x)%mod;
+        }
+        y>>=1;
+        x=(x*x)%mod;
+    }
+    return r;
+}
+void solve() {
+	int n,m;cin>>n>>m;
+	for(int i=1;i<=n;i++){
+		cin>>c[i];
+	}
+	sort(c+1,c+n+1,greater<int>());
+	while(m--){
+		int t,x;cin>>t>>x;
+		if(t==2){
+			for(int i=1;i<=n;i++){
+				if(c[i]==x){
+					for(int j=i;j<=n;j++){
+						swap(c[j],c[j+1]);
+					}
+					break;
+				}
+			}n--;
+		}else if(t==1){
+			n++;
+			c[n]=x;
+			for(int i=n-1;i>=0;i--){
+				if(c[i]<c[i+1]){
+					swap(c[i],c[i+1]);
+				}else{
+					break;
+				}
+			}
+		}else{
+			vector<int>v;
+			int dp[61];
+			for(int i=0;(1ll<<i)<=x;i++){
+				dp[i]=0;
+				if((1ll<<i)&x){
+					v.push_back(i);
+				}
+			}dp[0]=1;
+			reverse(v.begin(),v.end());
+			int rez=0;
+			for(int i=1;i<=n;i++){
+				for(int j=v.size()-1;j>=0;j--){
+					if(c[i]-j>v[j]||(j==v.size()-1&&c[i]-j>=v[j])){
+						rez+=(dp[j]*pw(2,n-i))%mod;
+						rez%=mod;
+					}else if(c[i]-j==v[j]){
+						dp[j+1]+=dp[j];
+						dp[j+1]%=mod;
+					}
+				}
+			}
+			cout<<rez<<'\n';
+		}
+	}
+}
+int32_t main() {
+	ios_base::sync_with_stdio(0);cin.tie(0);cout.tie(0);
+	int32_t T=1;//cin>>T;
+	while(T--) {
+		solve();
+	}
+	return 0;
+}

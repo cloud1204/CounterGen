@@ -1,0 +1,43 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll=long long;
+
+int n,m;
+void work(){
+    cin>>n>>m;
+    vector<int>fa(n+1);
+    iota(fa.begin(),fa.end(),1);
+    while(m--){
+        int u,v;cin>>u>>v;
+        fa[u]=v;
+    }
+    vector<vector<int>>g(n+1);
+    for(int i=1;i<n;i++)
+        g[fa[i]].push_back(i);
+    vector<vector<ll>>vec(n+1,{0});
+    ll ans=0;
+    auto dfs=[&](auto&& self,int u) -> void {
+        for(int v:g[u]){
+            self(self,v);
+            if(vec[v].size()>vec[u].size())swap(vec[u],vec[v]);
+            int usz=vec[u].size(),vsz=vec[v].size();
+            for(int i=1;i<vsz;i++){
+                ans+=(vec[u][usz-i]-vec[u][usz-i-1])*vec[v][vsz-i]*i;
+                ans+=(vec[v][vsz-i]-vec[v][vsz-i-1])*vec[u][usz-i]*i;
+            }
+            for(int i=1;i<vsz;i++){
+                vec[u][usz-i]+=vec[v][vsz-i];
+            }
+            vec[v]=vector<ll>();
+        }
+        vec[u].push_back(vec[u].back()+1);
+    };
+    dfs(dfs,n);
+    cout<<ans<<'\n';
+}
+int main(){
+    ios::sync_with_stdio(0);cin.tie(0);
+    int T;cin>>T;while(T--)work();return 0;
+}
+
+//Σ min{dep(u),dep(v)}-dep(LCA(u,v))

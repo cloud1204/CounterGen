@@ -1,0 +1,51 @@
+#include<bits/stdc++.h>
+#define ll long long
+using namespace std;
+ll n,a[200001],b[200001],ja[200001],jx[200001];
+const ll mo=1000000007;
+int main(){
+	ios::sync_with_stdio(0);
+	cin.tie(0);cout.tie(0);
+	ll t;
+	cin>>t;
+	while(t--){
+		cin>>n;
+		bool pd=0;
+		a[0]=n;
+		ja[0]=0; 
+		for(int i=1;i<=n;i++){
+			cin>>a[i];
+			if(a[i]>a[i-1])pd=1;
+			ja[i]=jx[i]=0;
+		}
+		if(pd==1){
+			cout<<0<<endl;
+			continue;
+		}
+		ll ans=1,mxa=0;
+		for(int i=1;i<=n;i++){
+			mxa=max(mxa,a[i]);
+			if(a[i]!=a[i-1]){
+				b[i]=a[i-1];
+				ans=(ans*i)%mo;
+			}
+			else ja[a[i]]++;
+			jx[a[i]]=1;
+		}
+		ll cnt=0,jb=0;
+		for(int i=mxa;i>=0;i--){
+			if(jx[i]!=0)cnt+=ja[i];
+			else{
+				ans=ans*(cnt-jb)%mo;
+				jb++;
+			}
+		}
+		if(pd==1){
+			cout<<0<<endl;
+		}
+		else{
+			cout<<ans<<endl;
+		}
+	}
+	return 0;
+}

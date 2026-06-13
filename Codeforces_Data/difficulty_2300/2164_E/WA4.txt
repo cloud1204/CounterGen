@@ -1,0 +1,65 @@
+#include <bits/stdc++.h> 
+int main() {
+  std::ios::sync_with_stdio(0);
+  std::cin.tie(0);
+  int test;
+  std::cin >> test;
+  while (test--) {
+    int n, m;
+    std::cin >> n >> m;
+    int64_t ans = 0;
+    struct edge {
+      int u, v, w, i;
+      bool operator < (const edge &other) const {
+        return w < other.w;
+      }
+    };
+    std::vector<std::set<std::tuple<int, int, int>>> adj(n + 1);
+    std::vector<edge> E(m);
+    for (int i = 0; i < m; i++) {
+      int u, v, w;
+      std::cin >> u >> v >> w;
+      E[i] = {u, v, w, i};
+      ans += w;
+    }
+    std::vector<edge> ord = E; 
+    std::sort(E.begin(), E.end());
+    for (int it = 0, j = 0; it < m; it++) {
+      auto [u, v, w, i] = ord[it];
+      adj[u].insert({v, w, i});
+      adj[v].insert({u, w, i});
+      for (; j < m && it >= E[j].i; j++) {
+        auto dfs = [&](auto &self, int U) -> void {
+          while (!adj[U].empty()) {
+            auto [V, W, I] = *adj[U].begin();
+            adj[U].erase({V, W, I});
+            adj[V].erase({U, W, I});
+            ord[I] = {U, V, E[j].w, I};
+            self(self, V);
+          }
+        };
+        dfs(dfs, u), dfs(dfs, v);
+      }
+    }
+    std::vector deg(n + 1, 0);
+    for (auto &[u, v, w, i]: ord) {
+      deg[u]++, deg[v]++;
+    }
+    std::vector par(n + 1, - 1), cnt(n + 1, 0);
+    for (int u = 1; u <= n; u++) {
+      cnt[u] = deg[u] & 1;
+    }
+    std::function<int(int)> find = [&](int x) {
+      return par[x] == - 1 ? x : par[x] = find(par[x]);
+    };
+    for (auto &[u, v, w, i] : ord) {
+      u = find(u), v = find(v);
+      if (u != v) {
+        cnt[u] += cnt[v], par[v] = u;
+        ans += cnt[u] / 2 * w, cnt[u] &= 1;
+      }
+    }
+    std::cout << ans << '\n';
+  }
+  return 0;
+}

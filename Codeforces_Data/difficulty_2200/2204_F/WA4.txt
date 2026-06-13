@@ -1,0 +1,57 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define int  long long
+#define mod 998244353
+int a[500005],b[500005];
+int cf[500005],c[500005];
+int last[500005],nxt[500005];
+int h[500005],sf[500005];
+int mi(int x,int y){
+	int sum=1;
+	while(y){
+		if(y&1)sum=sum*x%mod;
+		x=x*x%mod;
+		y>>=1;
+	}return sum;
+}
+signed main(){
+	cin.tie(0) -> ios::sync_with_stdio(false);
+	int n,m,ans=0;cin>>n>>m;
+	for(int i=1;i<=n;i++)cin>>a[i],h[i]=a[i];
+	for(int i=1;i<=m;i++)cin>>b[i];
+	stack<int>q,g;q.push(0);a[0]=a[n+1]=-1;
+	for(int i=1;i<=n;i++){
+		while(!q.empty()&&a[i]<=a[q.top()])q.pop();
+		last[i]=q.top();q.push(i);
+	}q=g;q.push(n+1);
+	for(int i=n;i>=1;i--){
+		while(!q.empty()&&a[i]<a[q.top()])q.pop();
+		nxt[i]=q.top();q.push(i);
+	}q=g;q.push(0);a[0]=a[n+1]=1e9;
+	for(int i=1;i<=n;i++)a[i]=mi(a[i],mod-2),sf[i]=(sf[i-1]+a[i])%mod;
+	sf[n+1]=sf[n];
+	for(int i=1;i<=n;i++){
+		int l=i-last[i],r=nxt[i]-i,s=l*r;
+		//cout<<l<<" "<<r<<" "<<s<<endl;
+		int q=a[i]*s%mod;
+		int t=lower_bound(b+1,b+1+m,h[i])-b;
+		t--;
+		cf[1]=(cf[1]+q)%mod;
+		cf[t+1]=(cf[t+1]-q)%mod;
+		//c[1]=(c[1]+)
+		//cout<<q<<endl;
+		q=s;
+		cf[t+1]=(cf[t+1]+s)%mod;
+		c[t+1]=(c[t+1]+(h[i]-1)*s%mod)%mod;
+		ans=(ans+(i*(n-i+1)-s)*a[i]%mod)%mod;
+		//cout<<cf[1]<<endl;
+	}//cout<<ans<<endl;
+	//cout<<cf[1]<<endl;
+	for(int i=1;i<=m;i++)cf[i]=(cf[i]+cf[i-1])%mod,c[i]=(c[i]+c[i-1])%mod;
+	for(int i=1;i<=m;i++){
+		cf[i]=(cf[i]*(b[i]+1)%mod-c[i]+mod)%mod;
+		cout<<(cf[i]+ans)%mod<<" ";
+	}
+  	return 0;
+			
+}

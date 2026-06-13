@@ -1,0 +1,14 @@
+#include<bits/stdc++.h>
+using namespace std;
+int dp[1000001],n,maxx,num,a[1000001],mx;
+main(){
+	int t;cin>>t;while(t--){
+		cin>>n;for(int i=1;i<=n;i++)cin>>a[i];
+		dp[0]=maxx=mx=0;num=-1;for(int i=1;i<=n;i++){
+			if(a[i]==num+1)dp[i]=mx+1;else dp[i]=maxx+1;
+			if(dp[i]>maxx)mx=maxx,maxx=dp[i],num=a[i];
+			else if(dp[i]==maxx)num=-1;else mx=dp[i];
+		}cout<<n-dp[n]<<"\n";
+	}
+	return 0;
+}

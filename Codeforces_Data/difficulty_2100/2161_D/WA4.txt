@@ -1,0 +1,14 @@
+for _ in range(int(input())):
+    n=int(input())
+    count=0
+    h=list(map(int,input().split(" ")))
+    s={}
+    for i in range(n):
+        if h[i]-1 in s:
+            count+=1
+            continue
+        if h[i] in s:
+            s[h[i]]+=1
+        else:
+            s[h[i]]=1
+    print(count)

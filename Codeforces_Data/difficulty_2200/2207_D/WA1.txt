@@ -1,0 +1,32 @@
+#include <bits/stdc++.h>
+
+void solve() {
+    int n, u, v;
+    std::cin >> n >> u >> v;
+    
+    bool is_adjacent = false;
+    
+    for (int i = 0; i < n - 1; ++i) {
+        int x, y;
+        std::cin >> x >> y;
+        if ((x == u && y == v) || (x == v && y == u)) {
+            is_adjacent = true;
+        }
+    }
+    
+    if (is_adjacent) {
+        std::cout << "YES\n";
+    } else {
+        std::cout << "NO\n";
+    }
+}
+
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    
+    int t;
+    std::cin >> t;
+    while (t--) 
+        solve();
+}

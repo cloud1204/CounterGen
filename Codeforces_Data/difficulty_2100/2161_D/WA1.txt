@@ -1,0 +1,9 @@
+for _ in range(int(input())):
+  x = int(input())
+  l = list(map(int,input().split()))
+  ans = 0
+  for i in l:
+    for j in range(l.index(i)+1,len(l)):
+      if l[j]-i == 1:
+        ans+=1
+  print(ans//2)      

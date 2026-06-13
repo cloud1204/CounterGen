@@ -1,0 +1,131 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+const double PI = acos(-1.0);
+struct Complex {
+	double x, y;
+
+	Complex(double _x = 0.0, double _y = 0.0) {
+		x = _x;
+		y = _y;
+	}
+
+	Complex operator-(const Complex &b) const {
+		return Complex(x - b.x, y - b.y);
+	}
+
+	Complex operator+(const Complex &b) const {
+		return Complex(x + b.x, y + b.y);
+	}
+
+	Complex operator*(const Complex &b) const {
+		return Complex(x * b.x - y * b.y, x * b.y + y * b.x);
+	}
+};
+void change(vector <Complex> &y, int len) {
+	int i, j, k;
+
+	for (int i = 1, j = len / 2; i < len - 1; i++) {
+		if (i < j) std::swap(y[i], y[j]);
+		k = len / 2;
+
+		while (j >= k) {
+			j = j - k;
+			k = k / 2;
+		}
+
+		if (j < k) j += k;
+	}
+}
+void fft(vector <Complex> &y, int len, int on) {
+	change(y, len);
+	for (int h = 2; h <= len; h <<= 1) {
+		Complex wn(cos(2 * PI / h), sin(2 * PI / h));
+		for (int j = 0; j < len; j += h) {
+			Complex w(1, 0);
+			for (int k = j; k < j + h / 2; k++) {
+				Complex u = y[k];
+				Complex t = w * y[k + h / 2];
+				y[k] = u + t;
+				y[k + h / 2] = u - t;
+				w = w * wn;
+			}
+		}
+	}
+	if (on == -1) {
+		reverse(y.begin() + 1, y.begin() + len);
+		for (int i = 0; i < len; i++) {
+			y[i].x /= len;
+			y[i].y /= len;
+		}
+	}
+}
+void solve() {
+	string st;
+	int n, k;
+	cin >> n >> k >> st;
+	vector <int> f(n + 1, 0), a(n + 2, 0);
+	for (int i = 1; i <= n; i++) a[i] = st[i - 1] - '0';
+	for (int i = 1; i <= n; i++) f[1] += a[i] * 4;
+	for (int i = 1; i <= n; i++) f[i] = f[1];
+	vector <int> d(n + 1, 0);
+	for (int i = 1; i <= n; i++) f[i] -= a[1];
+	f[1] -= a[1];
+	int cnt = 0;
+	for (int i = 2; i <= n; i++) {
+		if (a[i] && a[i - 1]) cnt += a[i];
+		else {
+			for (int j = 1; j * j <= i - 1; j++) {
+				if ((i - 1) % j == 0) {
+					f[j] -= a[i];
+					if (j * j != (i - 1)) f[(i - 1) / j] -= a[i];
+				}
+			}
+		}
+		if (a[i] && a[i + 1]) cnt += a[i];
+		else if (i != n) {
+			for (int j = 1; j * j <= i; j++) {
+				if (i % j == 0) {
+					f[j] -= a[i];
+					if (j * j != i) f[i / j] -= a[i];
+				}
+			}
+		}
+	}
+	for (int i = 1; i <= n; i++) f[i] -= a[n];
+	for (int i = 1; i <= n; i++) f[i] -= cnt;
+	for (int i = 1; i <= n; i++) {
+		d[i] -= a[i];
+	}
+	for (int i = 1; i <= n; i++) {
+		d[n - i + 1] -= a[i];
+	}
+	for (int i = 1; i <= n; i++) d[i] += d[i - 1];
+	for (int i = 1; i <= n; i++) f[i] += d[i];
+
+	//FFT
+	int m = 2;
+	for (; m < n * 2; m <<= 1);
+	vector <Complex> g(m, {0, 0}), h(m, {0, 0}), b(m, 0);
+	for (int i = 1; i <= n; i++) g[n - i].x = (a[i] != 0), h[i - 1].x = a[i];
+	// i - j + n - 1
+	fft(g, m, 1);
+	fft(h, m, 1);
+	for (int i = 0; i < m; i++) b[i] = g[i] * h[i];
+	fft(b, m, -1);
+	for (int i = 0; i + 1 < m; i++) {
+		if (i < n - 1) f[n - 1 - i] -= (int)(b[i].x + 0.5);
+		else if (i - (n - 1) <= n - 1) f[i - (n - 1)] -= (int)(b[i].x + 0.5);
+	}
+	vector <int> F(n, 0);
+	for (int i = 0; i < n; i++) F[i] = f[i + 1];
+	stable_sort(F.begin(), F.end());
+	cout << F[k] << '\n';
+}
+int main() {
+//	ios :: sync_with_stdio(0);
+//	cin.tie(0), cout.tie(0);
+	int T = 1;
+//	cin >> T;
+	while (T--) solve();
+}

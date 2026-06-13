@@ -1,0 +1,25 @@
+#include<bits/stdc++.h>
+#define int long long
+using namespace std;
+int T,n,a[8005],b[8005],hsh[8005],dp[8005],kmp[8005],k;
+stack<int>g;
+const int mod=998244353;
+signed main(){
+	cin>>T;
+	while(T--){
+		cin>>n;dp[0]=1;
+		for(int i=1;i<=n;i++)cin>>a[i];
+		for(int i=1;i<=n;i++)dp[i]=0;
+		for(int i=1;i<=n;i++){
+			k=0;dp[i]+=dp[i-1];
+			for(int j=i;j<=n;j++)b[j-i+1]=a[j];
+			for(int j=0;j<=n-i+1;j++)kmp[j]=0;
+			for(int j=2;j<=n-i+1;j++){
+				while(k&&b[j]!=b[k+1])k=kmp[k];
+				if(b[j]==b[k+1])k++;
+				kmp[j]=k;
+				if(!kmp[j])dp[j+i-1]=(dp[j+i-1]+dp[i-1])%mod;
+			}
+		}cout<<dp[n]<<"\n";
+	}
+}

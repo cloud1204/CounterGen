@@ -1,0 +1,33 @@
+#include<bits/stdc++.h>
+#define inf 5000000000000000
+#define int long long
+using namespace std;
+int T,n,m,x;
+vector<int>a[1000005],dp1[1000005],dp2[1000005];
+signed main(){
+	cin>>T;
+	while(T--){
+		cin>>n>>m;
+		a[0].clear();dp1[0].clear();dp2[0].clear();
+		for(int i=0;i<=m;i++)a[0].push_back(-inf);
+		for(int i=0;i<=m;i++)dp1[0].push_back(-inf);
+		for(int i=0;i<=m;i++)dp2[0].push_back(-inf);
+		dp1[0][1]=dp2[0][1]=0;
+		for(int i=1;i<=n;i++){
+			a[i].clear();dp1[i].clear();dp2[i].clear();
+			a[i].push_back(-inf);dp1[i].push_back(-inf);dp2[i].push_back(-inf);
+			for(int j=1;j<=m;j++){
+				cin>>x;
+				a[i].push_back(x);
+				dp1[i].push_back(-inf);
+				dp2[i].push_back(-inf);
+			}
+		}
+		for(int i=1;i<=n;i++){
+			for(int j=1;j<=m;j++){
+				dp1[i][j]=max(dp1[i-1][j],dp1[i][j-1])+a[i][j];
+				dp2[i][j]=min({max(dp2[i-1][j],dp1[i][j-1])+a[i][j],max(dp1[i-1][j],dp2[i][j-1])+a[i][j],max(dp1[i-1][j],dp1[i][j-1])-a[i][j]});
+			}
+		}cout<<dp2[n][m]<<"\n";
+	}
+}

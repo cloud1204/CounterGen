@@ -1,0 +1,31 @@
+#include <bits/stdc++.h>
+#define ll long long
+using namespace std;
+
+vector<int> g[300005];
+int k;
+
+int df(int i, int p) {
+    int x = 1e9, y = 1e9, c = 0;
+    for(int j : g[i]) {
+        if(j == p) continue; c++;
+        int w = df(j, i);
+        if(w < x) y = x, x = w;
+        else if(w < y) y = w;
+    }
+    if(!c) return -1e9;
+    if(c == 1 or y >= k - 1) return max(0, x + 1);
+    return x + 1;
+}
+int main() {
+    int t; if (cin >> t) while (t--) {
+        int n, v; cin >> n >> k >> v;
+        for(int i = 0; i <= n; ++i) g[i].clear();
+        for(int i = 1; i < n; ++i) {
+            int a, b; cin >> a >> b;
+            g[a].push_back(b); g[b].push_back(a);
+        }
+        if(df(v, 0) < 0) cout << "YES\n";
+        else cout << "NO\n";
+    }
+} //XorGhost

@@ -1,0 +1,51 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define pii pair<int, int>
+#define all(x) x.begin(), x.end()
+
+void solve() {
+    int n, m;
+    cin >> n >> m;
+    vector<int> a(n);
+    iota(all(a), 1);
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        u--, v--;
+        a[u] = max(a[u], v);
+    }
+    vector<vector<int>> g(n);
+    for (int i = 0; i < n - 1; i++) g[a[i]].push_back(i);
+    ll ans = 0;
+    vector<int> dep(n), sz(n);
+    function<void(int)> dfs = [&](int u) {
+        sz[u] = 1;
+        for (auto v : g[u]) {
+            dep[v] = dep[u] + 1;
+            dfs(v);
+            sz[u] += sz[v];
+        }
+        ans -= 1LL * dep[u] * sz[u] * (sz[u] - 1) / 2;
+    };
+    dfs(n - 1);
+    vector<int> p(n);
+    iota(all(p), 0);
+    sort(all(p), [&](int x, int y) {
+        return dep[x] < dep[y];
+    });
+    for (int i = 0; i < n; i++) {
+        int j = i;
+        while (j + 1 < n && dep[p[j + 1]] == dep[p[i]]) j++;
+        ans += 1LL * dep[p[i]] * (n - 1 - i) * (j - i + 1);
+        i = j;
+    }
+    cout << ans << '\n';
+}
+
+int main() {
+    ios::sync_with_stdio(false); cin.tie(0);
+    int T;
+    cin >> T;
+    while (T--) solve();
+}

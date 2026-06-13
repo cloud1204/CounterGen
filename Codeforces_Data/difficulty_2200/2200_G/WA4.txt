@@ -1,0 +1,94 @@
+#include<bits/stdc++.h>
+#define endl '\n'
+using namespace std;
+typedef long long ll;
+typedef long long LL;
+typedef pair<int, int> PI;
+const int MX = 2e5+5;
+const int INF = INT_MAX;
+const ll pr = 1e9 + 7;
+ll dp[3005];
+ll sz = 0;
+LL n, m;
+LL modExp(LL a, LL n, int m) {
+LL r;
+a = (a % m + m) % m;
+for (r = 1; n; n /= 2) {
+if (n & 1) r = r * a % m;
+a = a * a % m;
+}
+return r;
+}
+void calc(ll xx){
+	sz ++;
+	m *= xx;
+	m %= pr;
+	for(int i = sz; i > 0; i --){
+		dp[i] += dp[i - 1] * xx;
+		dp[i] %= pr;
+	}
+}
+LL Calc(){
+	LL div = 1;
+	for(int i = 1; i <= sz; i ++){
+		div *= i;
+	}
+	LL tmp = div;
+	div *= sz + 1;
+	div = modExp(div, pr - 2, pr);
+	LL sum = 0;
+	for(int i = 0; i <= sz; i ++){
+//		cout << i << "::" << dp[i] << endl;
+		sum += dp[i] * tmp % pr;
+		sum %= pr;
+		tmp *= i + 1;
+		tmp %= pr;
+		tmp *= modExp(sz - i, pr - 2, pr);
+		tmp %= pr;
+	}
+	return sum * div % pr;
+}
+void solve(){
+	cin >> n >> m;
+	ll tmp = 0;
+	sz = 0;
+	memset(dp, 0, sizeof dp);
+	dp[0] = 1;
+	for(int i = 0; i < n; i ++){
+		char a; ll k;
+		cin >> a >> k;
+		if(a == '+') {
+			tmp += k;
+			tmp %= pr;
+		}
+		else if (a == '-'){
+			tmp -= k;
+			tmp = (tmp + pr) % pr;
+		}
+		else if(a == 'x'){
+			calc(k);
+		}
+		else {
+			k = modExp(k, pr - 2, pr);
+			calc(k);
+		}
+	}
+	tmp = tmp * Calc() % pr;
+	cout << (m + tmp + pr) % pr << endl;
+}
+
+int main(){
+#ifndef ONLINE_JUDGE
+	freopen("in.txt" , "r" , stdin);
+#endif
+	ios::sync_with_stdio(0);
+	cin.tie(0) , cout.tie(0);
+
+	int Tc = 1;
+	cin >> Tc;
+	while(Tc--) {
+		solve();
+	}
+
+	return 0;
+}

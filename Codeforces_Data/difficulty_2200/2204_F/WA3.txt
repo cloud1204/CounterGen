@@ -1,0 +1,62 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+constexpr const int md = 998244353;
+
+int pw(int a, int b) {
+	int r = 1;
+	while(b) {
+		if(b & 1) r = 1ll * r * a % md;
+		b >>= 1;
+		a = 1ll * a * a % md;
+	}
+	return r;
+}
+
+int inv(int x) {
+	return pw(x, md - 2);
+}
+
+int main() {
+	int n, m; cin >> n >> m;
+	vector<int> v(n), k(m), am(n, 0);
+	for(auto &x : v) cin >> x;
+	vector<int> iv = v;
+	for(auto &x : iv) x = inv(x);
+	for(auto &x : k) cin >> x;
+	vector<int> ord(n);
+	iota(ord.begin(), ord.end(), 0);
+	sort(ord.begin(), ord.end(), [&](auto a, auto b) { return v[a] < v[b]; });
+	set<int> S;
+	S.insert(-1);
+	S.insert(n);
+	for(int i = 0; i < n; ++i) {
+		auto x = S.lower_bound(ord[i]);
+		auto y = prev(x);
+		am[ord[i]] = 1ll * (*x - ord[i]) * (ord[i] - *y) % md;
+		S.insert(ord[i]);
+	}
+
+	int su1 = 0, su2 = 0, su3 = 0;
+	for(int i = 0; i < n; ++i) {
+		(su1 += 1ll * iv[i] * am[i] % md) %= md;
+		(su3 += 1ll * iv[i] * (i + 1) % md * (n - i) % md) %= md;
+	}
+
+	int l = 0;
+	int amm = 0;
+
+	for(int i = 0; i < m; ++i) {
+		int x = k[i];
+		while(l < n && v[ord[l]] <= x) {
+			(su2 += (v[ord[l]] - 2ll) * am[ord[l]]) %= md;
+			(su1 += ((md - 1ll) * iv[ord[l]] * am[ord[l]] % md)) %= md;
+			(su3 += ((md - 1ll) * iv[ord[l]] * am[ord[l]] % md)) %= md;
+			(amm += am[ord[l]]) %= md;
+			l++;
+		}
+		cout << ((su3 + 1ll * su1 * x + 1ll * amm * x - su2) % md + md) % md << '\n';
+	}
+}
+

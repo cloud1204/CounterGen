@@ -1,0 +1,69 @@
+#include <bits/stdc++.h>
+#define int long long
+using namespace std;
+const int N=5e5+100;
+const int mod=998244353; 
+inline int qpow(int x,int p){
+	int res=1;
+	while(p){
+		if(p&1)res=res*x%mod;
+		x=x*x%mod;
+		p>>=1;
+	}
+	return res;
+}
+inline int inv(int x){
+	return qpow(x,mod-2);
+}
+int n,m,sum;
+int a[N];
+int k[N];
+int l[N],r[N];
+int x[N];
+int stk[N],top;
+int pre1[N],pre2[N],pre3[N];
+void solve(){
+	for(int i=1;i<=n;i++){
+		sum=sum+i*(n-i+1)*inv(a[i])%mod;
+	}
+	a[0]=a[n+1]=-1;
+	stk[top=1]=0;
+	for(int i=1;i<=n;i++){
+		while(top&&a[i]<=a[stk[top]])top--;
+		l[i]=stk[top],stk[++top]=i;
+	}
+	stk[top=1]=n+1;
+	map<int,long long>cnt;
+	for(int i=n;i>=1;i--){
+		while(top&&a[i]<a[stk[top]])top--;
+		r[i]=stk[top],stk[++top]=i;
+	}
+	for(int i=1;i<=n;i++){
+		cnt[a[i]]+=(i-l[i])*(r[i]-i);
+	}
+	vector<int>x(1),c(1);
+	for(auto p:cnt){
+		x.push_back(p.first);
+		c.push_back(p.second);
+	}
+	int num=m;
+	m=cnt.size();
+	for(int i=1;i<=m;i++){
+		pre1[i]=(pre1[i-1]+c[i]*inv(x[i]))%mod;
+		pre2[i]=(pre2[i-1]+c[i])%mod;
+		pre3[i]=(pre3[i-1]+c[i]*(x[i]+1*inv(x[i])))%mod;
+	}
+	for(int j=1;j<=num;j++){
+		//cout<<p<<"\n";
+		int p=k[j];
+		int i=upper_bound(x.begin(),x.end(),p)-x.begin()-1;
+		cout<<(sum+p*(pre1[m]-pre1[i])+(p+2)*pre2[i]-pre3[i]+mod)%mod<<"\n";
+	}
+}
+signed main(){
+	cin>>n>>m;
+	for(int i=1;i<=n;i++)cin>>a[i];
+	for(int i=1;i<=m;i++)cin>>k[i];
+	solve();
+	return 0;
+}

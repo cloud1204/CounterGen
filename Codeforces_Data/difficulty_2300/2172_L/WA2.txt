@@ -1,0 +1,11 @@
+def max_segments(n, m, k, s):
+    seg = 1
+    for i in range(n-1):
+        if s[i] != s[i+1]:
+            seg += 1
+    if k == n:
+        return seg
+    return min(n, seg + 2*m)
+n, m, k = map(int, input().split())
+s = input().strip()
+print(max_segments(n, m, k, s))

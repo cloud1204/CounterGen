@@ -1,0 +1,77 @@
+#include <bits/stdc++.h>
+#define int long long
+#define double long double
+#define fast ios::sync_with_stdio(0), cin.tie(0), cout.tie(0)
+#define L first
+#define F first
+#define R second
+#define S second
+using namespace std;
+
+const int N = 3e3 + 7;
+const int mod = 998244353;
+const int INF = 2e18;
+vector<int> adj[N];
+int a[N], b[N], c[N];
+
+bool indep(int i, int j) {
+    int A = a[i] - a[j];
+    int B = b[i] - b[j];
+    int C = c[i] - c[j];
+
+    if(A) {
+        int d = B * B - 4 * A * C;
+        return d < 0;
+    }
+    else 
+        return !B && C;
+}
+
+set<pair<int,int>> st;
+
+void choose(int v) {
+    st.erase({adj[v].size(), v});
+    for(int to: adj[v]) 
+        st.erase({adj[to].size(), to});
+}
+
+main()
+{
+    fast;
+    int t; cin >> t;
+    while(t--) {
+        int n; cin >> n;
+        for(int i = 1; i <= n; i++)
+            cin >> a[i] >> b[i] >> c[i];
+
+        for(int i = 1; i <= n; i++) {
+            for(int j = i + 1; j <= n; j++) {
+                if(!indep(i, j)) {
+                    adj[i].push_back(j);
+                    adj[j].push_back(i);
+                }
+            }
+        }
+
+        set<pair<int,int>> all;
+        for(int i = 1; i <= n; i++)
+            all.insert({adj[i].size(), i});
+
+        for(int i = 1; i <= n; i++) {
+            st = all;
+            choose(i);
+
+            int ans = 1;
+            while(!st.empty()) {
+                choose(st.begin() -> S);
+                ans++;
+            }
+            
+            cout << ans << " ";
+        }
+        cout << "\n";
+
+        for(int i = 1; i <= n; i++)
+            adj[i].clear();
+    }
+}

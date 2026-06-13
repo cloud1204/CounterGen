@@ -1,0 +1,51 @@
+#include<bits/stdc++.h>
+#define int long long
+using namespace std;
+inline int read(){
+	int x=0,f=1;char ch=getchar();
+	while(ch<'0'||ch>'9'){if(ch=='-')f=-f;ch=getchar();}
+	while(ch>='0'&&ch<='9'){x=x*10+ch-'0';ch=getchar();}
+	return x*f;
+}
+int buf[1<<10];
+inline void print(int x,char ch=' '){
+	if(x<0) putchar('-'),x=-x;
+	int tot=0;
+	do{
+		buf[++tot]=x%10;
+		x/=10;
+	}while(x);
+	for(int i=tot;i;i--)
+		putchar(buf[i]+'0');
+	putchar(ch);
+}
+const int MAXN=2e5+5,mod=998244353;
+int T;
+int n;
+int v[MAXN],a[MAXN],b[MAXN];
+bool vis[MAXN];
+signed main(){
+	T=read();
+	while(T--){
+		n=read();
+		for(int i=1;i<=n;i++) v[i]=read();
+		for(int i=1;i<=n;i++) a[i]=read();
+		for(int i=1;i<=n;i++) b[i]=read();
+		
+		int p=1,q=1,ans=0;
+		for(int i=1;i<=n;i++) vis[i]=0;
+		for(int i=1;i<=n;i++){
+			while(p<=n&&vis[a[p]]) p++;
+			while(q<=n&&vis[b[q]]) q++;
+			if(v[a[p]]>=-v[b[q]]){
+				ans+=v[a[p]];
+				vis[a[p]]=1;
+			}
+			else{
+				vis[b[q]]=1;
+			}
+		}
+		print(ans,'\n');
+	}
+	return 0;
+}

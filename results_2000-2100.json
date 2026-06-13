@@ -1,0 +1,1072 @@
+[
+ {
+  "problem": "Codeforces_Data\\difficulty_2000\\2194_E",
+  "status": "ok",
+  "time": 900.1,
+  "api_usage": {
+   "calls": 6,
+   "prompt_tokens": 12708,
+   "completion_tokens": 1907,
+   "total_tokens": 14615,
+   "cost": 0.1112
+  },
+  "cost_limited": false,
+  "relations_valid": 3,
+  "relations_requested": 3,
+  "relations_declined": 0,
+  "relations_errored": 0,
+  "relation_failures": [],
+  "ac_verdicts": [
+   "pass",
+   "pass",
+   "pass"
+  ],
+  "ac_fp_count": 0,
+  "ac_fp_reason": null,
+  "wa_labels": [
+   "WA1",
+   "WA2",
+   "WA3",
+   "WA4",
+   "WA5"
+  ],
+  "wa_verdicts": {
+   "WA1": [
+    "pass",
+    "pass",
+    "pass"
+   ],
+   "WA2": [
+    "flag",
+    "pass",
+    "pass"
+   ],
+   "WA3": [
+    "flag",
+    "pass",
+    "pass"
+   ],
+   "WA4": [
+    "pass",
+    "pass",
+    "pass"
+   ],
+   "WA5": [
+    "pass",
+    "pass"
+   ]
+  },
+  "wa_reasons": {
+   "WA2": "expected 27 got 3 (k=9)",
+   "WA3": "expected -20 got -5 (k=4)"
+  },
+  "goldens": {
+   "num_goldens": 5,
+   "gate_passed": 5,
+   "corpus": [
+    {
+     "index": 0,
+     "gate": "pass",
+     "ground_truth": "correct",
+     "meta_example_verdicts": [
+      "pass",
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass",
+      "pass"
+     ]
+    },
+    {
+     "index": 1,
+     "gate": "pass",
+     "ground_truth": "correct",
+     "meta_example_verdicts": [
+      "pass",
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass",
+      "pass"
+     ]
+    },
+    {
+     "index": 2,
+     "gate": "pass",
+     "ground_truth": "correct",
+     "meta_example_verdicts": [
+      "pass",
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass",
+      "pass"
+     ]
+    },
+    {
+     "index": 3,
+     "gate": "pass",
+     "ground_truth": "correct",
+     "meta_example_verdicts": [
+      "pass",
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass",
+      "pass"
+     ]
+    },
+    {
+     "index": 4,
+     "gate": "pass",
+     "ground_truth": "correct",
+     "meta_example_verdicts": [
+      "pass",
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass",
+      "pass"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "problem": "Codeforces_Data\\difficulty_2000\\2195_F",
+  "status": "ok",
+  "time": 421.8,
+  "api_usage": {
+   "calls": 8,
+   "prompt_tokens": 17768,
+   "completion_tokens": 5424,
+   "total_tokens": 23192,
+   "cost": 0.2244
+  },
+  "cost_limited": false,
+  "relations_valid": 3,
+  "relations_requested": 3,
+  "relations_declined": 0,
+  "relations_errored": 0,
+  "relation_failures": [],
+  "ac_verdicts": [
+   "pass",
+   "pass",
+   "pass"
+  ],
+  "ac_fp_count": 0,
+  "ac_fp_reason": null,
+  "wa_labels": [
+   "WA1",
+   "WA2",
+   "WA3",
+   "WA4",
+   "WA5"
+  ],
+  "wa_verdicts": {
+   "WA1": [
+    "pass",
+    "pass",
+    "pass"
+   ],
+   "WA2": [
+    "flag",
+    "flag",
+    "flag"
+   ],
+   "WA3": [
+    "flag",
+    "flag",
+    "flag"
+   ],
+   "WA4": [
+    "flag",
+    "pass",
+    "pass"
+   ],
+   "WA5": [
+    "flag",
+    "flag",
+    "flag"
+   ]
+  },
+  "wa_reasons": {
+   "WA2": "value mismatch for -147665 -289403 671146: 9 vs 8",
+   "WA3": "value mismatch for 723697 -706566 -415987: 1 vs 0",
+   "WA4": "mismatch at test case 0 position 0: expected -21346 got 130",
+   "WA5": "value mismatch for -103 -6 -131: 4 vs 5"
+  },
+  "goldens": {
+   "num_goldens": 5,
+   "gate_passed": 4,
+   "corpus": [
+    {
+     "index": 0,
+     "gate": "pass",
+     "ground_truth": "correct",
+     "meta_example_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ]
+    },
+    {
+     "index": 1,
+     "gate": "pass",
+     "ground_truth": "correct",
+     "meta_example_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ]
+    },
+    {
+     "index": 2,
+     "gate": "pass",
+     "ground_truth": "correct",
+     "meta_example_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ]
+    },
+    {
+     "index": 3,
+     "gate": "pass",
+     "ground_truth": "correct",
+     "meta_example_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ]
+    },
+    {
+     "index": 4,
+     "gate": "fail",
+     "gate_reason": "example WA: expected: 3 2 3 3 3 3 2 2 3 3 3 3 1 2  found:"
+    }
+   ]
+  }
+ },
+ {
+  "problem": "Codeforces_Data\\difficulty_2000\\2201_C",
+  "status": "ok",
+  "time": 423.4,
+  "api_usage": {
+   "calls": 8,
+   "prompt_tokens": 16325,
+   "completion_tokens": 24321,
+   "total_tokens": 40646,
+   "cost": 0.6897
+  },
+  "cost_limited": false,
+  "relations_valid": 3,
+  "relations_requested": 3,
+  "relations_declined": 0,
+  "relations_errored": 0,
+  "relation_failures": [],
+  "ac_verdicts": [
+   "pass",
+   "pass",
+   "pass"
+  ],
+  "ac_fp_count": 0,
+  "ac_fp_reason": null,
+  "wa_labels": [
+   "WA1",
+   "WA2",
+   "WA3",
+   "WA4",
+   "WA5"
+  ],
+  "wa_verdicts": {
+   "WA1": [
+    "pass",
+    "pass",
+    "pass"
+   ],
+   "WA2": [
+    "pass",
+    "pass",
+    "pass"
+   ],
+   "WA3": [
+    "pass",
+    "pass",
+    "pass"
+   ],
+   "WA4": [
+    "pass",
+    "pass",
+    "pass"
+   ],
+   "WA5": [
+    "pass",
+    "pass",
+    "pass"
+   ]
+  },
+  "wa_reasons": {},
+  "goldens": {
+   "num_goldens": 5,
+   "gate_passed": 5,
+   "corpus": [
+    {
+     "index": 0,
+     "gate": "pass",
+     "ground_truth": "slow",
+     "meta_example_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ],
+     "gt_witness": "golden timed out on input: 3381 125994 ((())()()())()(()()())()()(()()())(())()()((()())((()())(((()((()())))()(()())())()()))())((()())(()("
+    },
+    {
+     "index": 1,
+     "gate": "pass",
+     "ground_truth": "correct",
+     "meta_example_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ]
+    },
+    {
+     "index": 2,
+     "gate": "pass",
+     "ground_truth": "slow",
+     "meta_example_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ],
+     "gt_witness": "golden timed out on input: 1720 9646 (()((()(()(()((()((((()))))))(((()))(()))()(())(()))(((()((())))())))((((()())))))()()))()(())()()()((("
+    },
+    {
+     "index": 3,
+     "gate": "pass",
+     "ground_truth": "correct",
+     "meta_example_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ]
+    },
+    {
+     "index": 4,
+     "gate": "pass",
+     "ground_truth": "correct",
+     "meta_example_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "problem": "Codeforces_Data\\difficulty_2000\\2215_B",
+  "status": "ok",
+  "time": 433.3,
+  "api_usage": {
+   "calls": 13,
+   "prompt_tokens": 27430,
+   "completion_tokens": 35782,
+   "total_tokens": 63212,
+   "cost": 1.0317
+  },
+  "cost_limited": false,
+  "relations_valid": 3,
+  "relations_requested": 3,
+  "relations_declined": 0,
+  "relations_errored": 0,
+  "relation_failures": [],
+  "ac_verdicts": [
+   "pass",
+   "pass",
+   "pass"
+  ],
+  "ac_fp_count": 0,
+  "ac_fp_reason": null,
+  "wa_labels": [
+   "WA1",
+   "WA2",
+   "WA3",
+   "WA4",
+   "WA5"
+  ],
+  "wa_verdicts": {
+   "WA1": [
+    "flag",
+    "pass",
+    "pass"
+   ],
+   "WA2": [
+    "pass",
+    "pass",
+    "pass"
+   ],
+   "WA3": [
+    "flag",
+    "pass",
+    "pass"
+   ],
+   "WA4": [
+    "pass",
+    "pass",
+    "pass"
+   ],
+   "WA5": [
+    "pass",
+    "pass",
+    "pass"
+   ]
+  },
+  "wa_reasons": {
+   "WA1": "case 2: original returned -1 but transformed gave a solution",
+   "WA3": "case 19: original solvable but transformed returned -1"
+  },
+  "goldens": {
+   "num_goldens": 5,
+   "gate_passed": 4,
+   "corpus": [
+    {
+     "index": 0,
+     "gate": "fail",
+     "gate_reason": "example WA: Test case 1: expected a valid permutation but got -1"
+    },
+    {
+     "index": 1,
+     "gate": "pass",
+     "ground_truth": "correct",
+     "meta_example_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ]
+    },
+    {
+     "index": 2,
+     "gate": "pass",
+     "ground_truth": "correct",
+     "meta_example_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ]
+    },
+    {
+     "index": 3,
+     "gate": "pass",
+     "ground_truth": "correct",
+     "meta_example_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ]
+    },
+    {
+     "index": 4,
+     "gate": "pass",
+     "ground_truth": "correct",
+     "meta_example_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "problem": "Codeforces_Data\\difficulty_2000\\2217_E",
+  "status": "declined",
+  "time": 183.8,
+  "api_usage": {
+   "calls": 9,
+   "prompt_tokens": 12868,
+   "completion_tokens": 31674,
+   "total_tokens": 44542,
+   "cost": 0.8562
+  },
+  "cost_limited": false,
+  "goldens": {
+   "num_goldens": 5,
+   "gate_passed": 2,
+   "corpus": [
+    {
+     "index": 0,
+     "gate": "fail",
+     "gate_reason": "example WA: expected: 0 0 2 4 5 5 24 9 17 144  found:"
+    },
+    {
+     "index": 1,
+     "gate": "fail",
+     "gate_reason": "example WA: expected: 0 0 2 4 5 5 24 9 17 144  found:"
+    },
+    {
+     "index": 2,
+     "gate": "pass",
+     "ground_truth": "correct",
+     "meta_example_verdicts": [],
+     "meta_samples_verdicts": []
+    },
+    {
+     "index": 3,
+     "gate": "fail",
+     "gate_reason": "example WA: expected: 0 0 2 4 5 5 24 9 17 144  found:"
+    },
+    {
+     "index": 4,
+     "gate": "pass",
+     "ground_truth": "correct",
+     "meta_example_verdicts": [],
+     "meta_samples_verdicts": []
+    }
+   ]
+  }
+ },
+ {
+  "problem": "Codeforces_Data\\difficulty_2100\\2150_C",
+  "status": "time-limit-exceeded",
+  "time": 900.1,
+  "api_usage": {
+   "calls": 17,
+   "prompt_tokens": 43233,
+   "completion_tokens": 248971,
+   "total_tokens": 292204,
+   "cost": 6.4404
+  },
+  "cost_limited": false,
+  "relations_valid": 1,
+  "relations_requested": 3,
+  "relations_declined": 0,
+  "relations_errored": 0,
+  "relation_failures": [],
+  "ac_verdicts": [
+   "pass"
+  ],
+  "ac_fp_count": 0,
+  "ac_fp_reason": null,
+  "wa_labels": [
+   "WA1",
+   "WA2",
+   "WA3",
+   "WA4",
+   "WA5"
+  ],
+  "wa_verdicts": {
+   "WA1": [
+    "flag"
+   ],
+   "WA2": [],
+   "WA3": [],
+   "WA4": [],
+   "WA5": []
+  },
+  "wa_reasons": {
+   "WA1": "expected 6 got 2"
+  },
+  "goldens": {
+   "num_goldens": 5,
+   "gate_passed": 3,
+   "corpus": [
+    {
+     "index": 0,
+     "gate": "pass",
+     "ground_truth": "slow",
+     "meta_example_verdicts": [],
+     "meta_samples_verdicts": [],
+     "gt_witness": "golden timed out on input: 5059 130480 -16601391 4758248 -4941699 -10424190 5267696 8131440 2761286 -7765714 19817129 -1095578 -16597553 110"
+    },
+    {
+     "index": 1,
+     "gate": "gen-failed"
+    },
+    {
+     "index": 2,
+     "gate": "pass",
+     "ground_truth": "slow",
+     "meta_example_verdicts": [],
+     "meta_samples_verdicts": [],
+     "gt_witness": "golden timed out on input: 2989 86870 129457374 75012344 672 68938976 -126862782 32552101 48853998 43177960 -208467976 244260117 164283537 2"
+    },
+    {
+     "index": 3,
+     "gate": "fail",
+     "gate_reason": "example WA: expected: 2 5 0 3000000000 10 85 14 24  found:"
+    },
+    {
+     "index": 4,
+     "gate": "pass",
+     "ground_truth": "slow",
+     "meta_example_verdicts": [],
+     "meta_samples_verdicts": [],
+     "gt_witness": "golden timed out on input: 1614 13498 -353916874 445539606 -101384363 217010056 378152836 510701639 -266208123 -527078757 -81470439 -2159488"
+    }
+   ]
+  }
+ },
+ {
+  "problem": "Codeforces_Data\\difficulty_2100\\2161_D",
+  "status": "time-limit-exceeded",
+  "time": 962.0
+ },
+ {
+  "problem": "Codeforces_Data\\difficulty_2100\\2170_E",
+  "status": "ok",
+  "time": 770.7,
+  "api_usage": {
+   "calls": 12,
+   "prompt_tokens": 19507,
+   "completion_tokens": 30569,
+   "total_tokens": 50076,
+   "cost": 0.8618
+  },
+  "cost_limited": false,
+  "relations_valid": 3,
+  "relations_requested": 3,
+  "relations_declined": 0,
+  "relations_errored": 0,
+  "relation_failures": [],
+  "ac_verdicts": [
+   "pass",
+   "pass",
+   "pass"
+  ],
+  "ac_fp_count": 0,
+  "ac_fp_reason": null,
+  "wa_labels": [
+   "WA1",
+   "WA2",
+   "WA3",
+   "WA4",
+   "WA5"
+  ],
+  "wa_verdicts": {
+   "WA1": [
+    "flag",
+    "flag",
+    "flag"
+   ],
+   "WA2": [
+    "flag",
+    "flag",
+    "flag"
+   ],
+   "WA3": [
+    "pass",
+    "pass",
+    "pass"
+   ],
+   "WA4": [
+    "flag",
+    "flag",
+    "flag"
+   ],
+   "WA5": [
+    "flag",
+    "flag",
+    "flag"
+   ]
+  },
+  "wa_reasons": {
+   "WA1": "outputs differ: ['733283101', '431060426', '64524591', '197421672', '3584446', '-176397212', '867082360', '15950', '-23313895', '-233506562', '32520', '32', '2', '2', '2', '2', '2', '2', '2', '2', '2'",
+   "WA2": "outputs differ: ['962341951', '558076910', '640138359', '288230919', '31737125', '967995026', '736432489', '152426038', '872921783', '587065896', '200685376', '614216382', '601722871', '64', '2', '32'",
+   "WA4": "outputs differ: ['469275832', '4', '516495861', '660040011', '15716493', '837138516', '692221350', '616359454', '607900769', '4032', '4', '4', '6', '4', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2",
+   "WA5": "outputs differ: ['39400635', '661905890', '507944192', '149906976', '932785144', '805769214', '445589926', '515415726', '602851328', '189958269', '275982564', '49152', '469759880', '192', '248', '6553"
+  },
+  "goldens": {
+   "num_goldens": 5,
+   "gate_passed": 5,
+   "corpus": [
+    {
+     "index": 0,
+     "gate": "pass",
+     "ground_truth": "correct",
+     "meta_example_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ]
+    },
+    {
+     "index": 1,
+     "gate": "pass",
+     "ground_truth": "correct",
+     "meta_example_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ]
+    },
+    {
+     "index": 2,
+     "gate": "pass",
+     "ground_truth": "correct",
+     "meta_example_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ]
+    },
+    {
+     "index": 3,
+     "gate": "pass",
+     "ground_truth": "correct",
+     "meta_example_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ]
+    },
+    {
+     "index": 4,
+     "gate": "pass",
+     "ground_truth": "correct",
+     "meta_example_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "problem": "Codeforces_Data\\difficulty_2100\\2183_E",
+  "status": "ok",
+  "time": 382.9,
+  "api_usage": {
+   "calls": 12,
+   "prompt_tokens": 22756,
+   "completion_tokens": 63053,
+   "total_tokens": 85809,
+   "cost": 1.6901
+  },
+  "cost_limited": false,
+  "relations_valid": 3,
+  "relations_requested": 3,
+  "relations_declined": 0,
+  "relations_errored": 0,
+  "relation_failures": [],
+  "ac_verdicts": [
+   "pass",
+   "pass",
+   "pass"
+  ],
+  "ac_fp_count": 0,
+  "ac_fp_reason": null,
+  "wa_labels": [
+   "WA1",
+   "WA2",
+   "WA3",
+   "WA4",
+   "WA5"
+  ],
+  "wa_verdicts": {
+   "WA1": [
+    "pass",
+    "pass",
+    "pass"
+   ],
+   "WA2": [
+    "pass",
+    "pass",
+    "pass"
+   ],
+   "WA3": [
+    "pass",
+    "pass",
+    "pass"
+   ],
+   "WA4": [
+    "pass",
+    "pass",
+    "pass"
+   ],
+   "WA5": [
+    "pass",
+    "pass",
+    "pass"
+   ]
+  },
+  "wa_reasons": {},
+  "goldens": {
+   "num_goldens": 5,
+   "gate_passed": 2,
+   "corpus": [
+    {
+     "index": 0,
+     "gate": "fail",
+     "gate_reason": "exec-timeout on example"
+    },
+    {
+     "index": 1,
+     "gate": "pass",
+     "ground_truth": "correct",
+     "meta_example_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ]
+    },
+    {
+     "index": 2,
+     "gate": "pass",
+     "ground_truth": "correct",
+     "meta_example_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass",
+      "pass",
+      "pass"
+     ]
+    },
+    {
+     "index": 3,
+     "gate": "fail",
+     "gate_reason": "example WA: expected: 2 0 10 0 973702700  found: 0 0 10 0 0"
+    },
+    {
+     "index": 4,
+     "gate": "fail",
+     "gate_reason": "exec-timeout on example"
+    }
+   ]
+  }
+ },
+ {
+  "problem": "Codeforces_Data\\difficulty_2100\\2205_E",
+  "status": "time-limit-exceeded",
+  "time": 900.2,
+  "api_usage": {
+   "calls": 12,
+   "prompt_tokens": 22729,
+   "completion_tokens": 153601,
+   "total_tokens": 176330,
+   "cost": 3.9537
+  },
+  "cost_limited": false,
+  "relations_valid": 2,
+  "relations_requested": 3,
+  "relations_declined": 0,
+  "relations_errored": 0,
+  "relation_failures": [],
+  "ac_verdicts": [
+   "pass",
+   "pass"
+  ],
+  "ac_fp_count": 0,
+  "ac_fp_reason": null,
+  "wa_labels": [
+   "WA1",
+   "WA2",
+   "WA3",
+   "WA4",
+   "WA5"
+  ],
+  "wa_verdicts": {
+   "WA1": [
+    "flag",
+    "flag"
+   ],
+   "WA2": [
+    "pass",
+    "pass"
+   ],
+   "WA3": [
+    "pass",
+    "pass"
+   ],
+   "WA4": [
+    "flag",
+    "flag"
+   ],
+   "WA5": [
+    "flag",
+    "pass"
+   ]
+  },
+  "wa_reasons": {
+   "WA1": "mismatch: -1640682954 vs 1179675800",
+   "WA4": "mismatch: 1079120361246 vs 1044181808891",
+   "WA5": "mismatch: 1706550252 vs 8686091244"
+  },
+  "goldens": {
+   "num_goldens": 5,
+   "gate_passed": 2,
+   "corpus": [
+    {
+     "index": 0,
+     "gate": "pass",
+     "ground_truth": "slow",
+     "meta_example_verdicts": [
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass"
+     ],
+     "gt_witness": "golden timed out on input: 7 39 1240 3160 216 2614 831 116 2788 3284 1055 2833 3197 1665 766 2651 1789 269 2308 1607 1454 1922 3005 2 1268 9"
+    },
+    {
+     "index": 1,
+     "gate": "fail",
+     "gate_reason": "exec-error on example: Traceback (most recent call last):   File \"<string>\", line 2, in <module> NameError: name 'n' is not defined"
+    },
+    {
+     "index": 2,
+     "gate": "fail",
+     "gate_reason": "exec-error on example: Traceback (most recent call last):   File \"<string>\", line 2, in <module> NameError: name 'np' is not defined"
+    },
+    {
+     "index": 3,
+     "gate": "gen-failed"
+    },
+    {
+     "index": 4,
+     "gate": "pass",
+     "ground_truth": "slow",
+     "meta_example_verdicts": [
+      "pass"
+     ],
+     "meta_samples_verdicts": [
+      "pass"
+     ],
+     "gt_witness": "golden timed out on input: 9 3663 3182 3018 1636 2337 2800 1321 827 1448 2047 3518 632 391 1866 692 2322 2178 1673 1682 3340 1242 1881 1927"
+    }
+   ]
+  }
+ },
+ {
+  "problem": "Codeforces_Data\\difficulty_2200\\2178_F",
+  "status": "metamorphic-error",
+  "time": 36.4,
+  "goldens": {
+   "num_goldens": 5,
+   "gate_passed": 0,
+   "corpus": [
+    {
+     "index": 0,
+     "gate": "gen-failed"
+    },
+    {
+     "index": 1,
+     "gate": "gen-failed"
+    },
+    {
+     "index": 2,
+     "gate": "gen-failed"
+    },
+    {
+     "index": 3,
+     "gate": "gen-failed"
+    },
+    {
+     "index": 4,
+     "gate": "gen-failed"
+    }
+   ]
+  }
+ }
+]

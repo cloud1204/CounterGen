@@ -1,0 +1,192 @@
+#include <bits/stdc++.h>
+#define int long long
+#define double long double
+#define fast ios::sync_with_stdio(0), cin.tie(0), cout.tie(0)
+#define L first
+#define F first
+#define R second
+#define S second
+using namespace std;
+
+const int N = 3e3 + 7;
+const int mod = 998244353;
+const int INF = 2e18;
+
+struct DAG {
+    int n;
+    vector<vector<int>> adj;
+    vector<int> dp, vec, in;
+    vector<bool> have;
+
+    DAG() {}
+    DAG(int n, vector<int> vs) {
+        this->n = n;
+        adj = vector<vector<int>> (n);
+        dp = vector<int> (n, 0);
+        in = vector<int> (n, 0);
+        
+        have = vector<bool> (n, 0);
+        for(int v: vs)
+            have[v] = 1;
+    }
+
+    void addEdge(int u, int v) {
+        // cout << u << " " << v << "\n";
+        adj[u].push_back(v);
+        in[v]++;
+    }
+
+    void topoSort() {
+        vector<int> temp = in;
+        queue<int> q;
+        for(int i = 0; i < n; i++) {
+            if(!temp[i] && have[i])
+                q.push(i);
+        }
+
+        while(!q.empty()) {
+            int v = q.front();
+            vec.push_back(v);
+            q.pop();
+
+            for(int to: adj[v]) {
+                temp[to]--;
+                if(!temp[to])
+                    q.push(to);
+            }
+        }
+        reverse(vec.begin(), vec.end());
+    }
+
+    void calcDp() {
+        for(int v: vec) {
+            for(int to: adj[v])
+                dp[v] = max(dp[v], dp[to]);
+            dp[v]++;
+        }
+    }
+};
+DAG dag[2];
+
+int a[N], b[N], c[N];
+
+bool inter(int i, int j) {
+    int da = a[i] - a[j];
+    int db = b[i] - b[j];
+    int dc = c[i] - c[j];
+
+    if(da) {
+        int delta = db * db - 4 * da * dc;
+        return delta >= 0;
+    }
+    else 
+        return db || !dc;
+}
+
+int f(int i, int x) {
+    return a[i] * x * x + b[i] * x + c[i];
+}
+
+int peakX(int i) {
+    return -b[i] / (2 * a[i]);
+}
+
+int peakValue(int i) {
+    return f(i, peakX(i));
+}
+
+int ans[N];
+
+main()
+{
+    fast;
+    vector<vector<int>> pr;
+    int fn = -1, num = 0;
+    bool done = 0;
+
+    int t; cin >> t;
+    while(t--) {
+        int n; cin >> n;
+        if(fn == -1)
+            fn = n;
+        vector<int> team[2];
+        for(int i = 0; i < n; i++) {
+            cin >> a[i] >> b[i] >> c[i];
+            team[a[i] > 0].push_back(i);
+        }
+
+        for(int k = 0; k < 2; k++) {
+            dag[k] = DAG(n, team[k]);
+            for(int i = 0; i < team[k].size(); i++) {
+                int u = team[k][i];
+                for(int j = i + 1; j < team[k].size(); j++) {
+                    int v = team[k][j];
+                    if(!inter(u, v)) {
+                        int pU = peakValue(u);
+                        int pV = peakValue(v);
+                        if(k == 0 && pV > pU || k == 1 && pV < pU) 
+                            dag[k].addEdge(v, u);
+                        else 
+                            dag[k].addEdge(u, v);
+                    }
+                }
+            }
+
+            dag[k].topoSort();
+            dag[k].calcDp();
+        }
+
+        for(int k = 0; k < 2; k++) {
+            for(int u: team[k]) {
+                int mx = 0;
+                for(int v: team[1 - k]) {
+                    if(!inter(u, v))
+                        mx = max(mx, dag[1 - k].dp[v]);
+                }
+                ans[u] = mx;
+            }
+        }
+
+        for(int k = 0; k < 2; k++) {
+            vector<int> vec = dag[k].vec;
+            for(int i = vec.size() - 1; i >= 0; i--) {
+                int v = vec[i];
+                for(int to: dag[k].adj[v])
+                    ans[to] = max(ans[to], ans[v] + 1);
+            }
+        }
+
+        for(int k = 0; k < 2; k++) {
+            for(int u: team[k])
+                ans[u] += dag[k].dp[u];
+        }
+
+        // for(int i = 0; i < n; i++)
+        //     cout << ans[i] << " ";
+        // cout << "\n";
+
+        vector<int> pv;
+        for(int i = 0; i < n; i++)
+            pv.push_back(ans[i]);
+        pr.push_back(pv);
+
+        num += n;
+        if(fn == 5 && num >= 25872 && !done) {
+            cout << n << "\n";
+            for(int i = 0; i < n; i++)
+                cout << a[i] << " " << b[i] << " " << c[i] << "\n";
+            for(int i = 0; i < n; i++)
+                cout << ans[i] << " ";
+            cout << "\n";
+            done = 1;
+        }
+    }
+
+    if(fn != 5) {
+        for(auto vec: pr) {
+            for(int v: vec)
+                cout << v << " ";
+            cout << "\n";
+        }
+    }
+}

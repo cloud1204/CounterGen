@@ -1,0 +1,73 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define int long long
+
+const int N=6e5+5,V=65,mod=998244353;
+int n,m,c[V],s[V];
+int fac[N],inv[N],f[N][V];
+
+int exp(int x,int y){
+	int ans=1;
+	while(y){
+		if(y&1) (ans*=x)%=mod;
+		(x*=x)%=mod;
+		y>>=1;
+	}
+	return ans;
+}
+
+int C(int x,int y){
+	if(x<0||y<0||x<y) return 0;
+	return fac[x]*inv[y]%mod*inv[x-y]%mod;
+}
+
+int get(int x){
+	int ans=0,cur=0;
+	int p=1;
+	for(int i=0;i<=60;i++){
+		s[i]=c[i];
+		if(i) s[i]+=s[i-1];
+	}
+	for(int i=60;i>=0;i--){
+		int now=0;
+		while(now<c[i]&&x/2<((1<<i)>>cur)&&((1<<i)>>cur)<x){
+			x-=((1<<i)>>cur);
+			now++,cur++;
+		}
+		if(now<c[i]&&x<=((1<<i)>>cur)){
+			(ans+=p*f[c[i]][now+1]%mod*(i?f[s[i-1]][0]:1)%mod)%=mod;
+		}
+		(p*=C(c[i],now))%=mod;
+	}
+	return ans;
+}
+
+signed main(){
+	ios::sync_with_stdio(0);cin.tie(0);
+	fac[0]=1;
+	for(int i=1;i<=N-5;i++) fac[i]=fac[i-1]*i%mod;
+	for(int i=0;i<=N-5;i++) inv[i]=exp(fac[i],mod-2);
+	f[0][0]=1;
+	for(int i=1;i<=N-5;i++){
+		f[i][0]=f[i-1][0]*2%mod;
+		for(int j=1;j<=60;j++) f[i][j]=(f[i-1][j-1]+f[i-1][j])%mod;
+	}
+	cin>>n>>m;
+	for(int i=1;i<=n;i++){
+		int a;cin>>a;
+		c[a]++;
+	}
+	while(m--){
+		int op,x;cin>>op>>x;
+		if(op==1){
+			c[x]++;
+		}
+		if(op==2){
+			c[x]--;
+		}
+		if(op==3){
+			cout<<get(x)<<endl;
+		}
+	}
+	return 0;
+}

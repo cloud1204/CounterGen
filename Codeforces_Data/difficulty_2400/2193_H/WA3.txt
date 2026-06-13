@@ -1,0 +1,72 @@
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+signed main () {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout << fixed << setprecision(15);
+
+	int tt;
+	cin >> tt;
+
+	while (tt--) {
+		int n;
+		cin >> n;
+		vector<int> v(n);
+		for (auto &a : v) cin >> a;
+		for (auto &a : v) a &= 1;
+		vector<vector<int>> g(n);
+		for (int i = 1; i < n; i++) {
+			int a, b;
+			cin >> a >> b;
+			a--; b--;
+			g[a].push_back(b);
+			g[b].push_back(a);
+		}
+		vector<int> d(n), e(n, 1);
+		for (int i = 0; i < n; i++) {
+			for (auto &a : g[i]) {
+				d[i] ^= v[a];
+			}
+		}
+		set<int> s;
+		vector<int> ans;
+		for (int i = 0; i < n; i++) {
+			if (!v[i] && d[i]) {
+				e[i] = 0;
+				ans.push_back(i+1);
+			}
+			else if (v[i] && !d[i]) {
+				s.insert(i);
+			}
+		}
+		while (s.size()) {
+			auto x = *s.begin();
+			s.erase(x);
+			ans.push_back(x+1);
+			e[x] = 0;
+			for (auto &a : g[x]) {
+				if (!e[a]) continue;
+				if (v[a]) {
+					d[a] ^= 1;
+					if (d[a]) s.erase(a);
+					else s.insert(a);
+				}
+				else {
+					ans.push_back(a+1);
+					e[a] = 0;
+				}
+			}
+		}
+		if ((int)ans.size() == n) {
+			cout << "YES\n";
+			for (int i = 0; i < n; i++) {
+				cout << ans[i] << " \n"[i+1==n];
+			}
+		}
+		else cout << "NO\n";
+	}
+
+	return 0;
+}

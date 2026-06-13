@@ -1,0 +1,72 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define int long long
+#define endl '\n'
+using PII = pair<int,int>;
+const int MOD=676767677;
+const int N=2e6+10;
+int fe[N],infe[N],dp[N],iR[N],iL[N];
+int qmi(int a,int k)
+{
+    int re=1;
+    a%=MOD;
+    while(k)
+    {
+        if(k&1)re=re*a%MOD;
+        a=a*a%MOD;
+        k>>=1;
+    }
+    return re;
+}
+
+void init()
+{
+    fe[0]=1;
+    infe[0]=1;
+    for(int i=1;i<N;i++)fe[i]=fe[i-1]*i%MOD;
+    infe[N-1]=qmi(fe[N-1],MOD-2);
+    for(int i=N-2;i>0;i--)infe[i]=(infe[i+1]*(i+1))%MOD;
+}
+
+int C(int a,int b)
+{
+    if(a<0||b>a)return 0;
+    return fe[a]*infe[b]%MOD*infe[a-b]%MOD;
+}
+
+void dfs(int l,int r,int cn,int lr,int ll)
+{
+    if(r<l)return; 
+    int mid=l+r>>1;
+    dp[mid]=cn;iR[mid]=lr;iL[mid]=ll;
+    dfs(l,mid-1,cn+1,lr,mid);
+    dfs(mid+1,r,cn+1,mid,ll);
+}
+void solve()
+{
+    int n,m,ans=0;
+    cin>>n>>m;
+    dfs(1,n,1,0,n+1);
+    for(int i=1;i<=n;i++)
+    {
+        int d=dp[i],ir=iR[i],il=iL[i];
+        int t1=C(m+n-1,n);
+        int t2=(il<=n?C(m+i+n-il-1,i+n-il):0);
+        int t3=(ir>0?C(m+ir+n-i-1,ir+n-i):0);
+        int t4=(ir>0&&il<=n?C(m+ir+n-il-1,ir+n-il):0);
+        int aa=(t1-t2-t3+t4)%MOD;
+        ans=(ans+d*aa)%MOD;
+    }
+    cout<<ans<<endl;
+}
+signed main()
+{
+    cin.tie(0);
+    ios::sync_with_stdio(0);
+    init();
+    int T=1;
+    cin>>T;
+    while(T--)
+    solve();
+    return 0;
+}

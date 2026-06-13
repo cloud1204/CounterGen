@@ -1,0 +1,31 @@
+#include<bits/stdc++.h>
+using namespace std;
+using i64=long long;
+constexpr i64 mod=1000000007;
+int n,a[400010];
+i64 f[400010];
+void solve(){
+   scanf("%d",&n);
+   for(int i=0;i<=n;i++)scanf("%d",&a[i]);
+   int c=0;
+   bool flag=false;
+   for(int i=1;i<=n;i++)if(a[i]!=-1){
+      flag=flag||a[i]==n;
+      if(a[i]&&a[i]!=i){
+         if(a[a[i]]==-1)c--;
+         else if(a[a[i]]!=i){
+            return puts("0"),void();
+         }
+      }
+   }else c++;
+   if(flag)printf("%lld\n",f[c]);
+   else if(c)printf("%lld\n",(f[c]+mod-f[c-1])%mod);
+   else puts("1");
+}
+int main(){
+   n=400000;
+   f[0]=1,f[1]=2;
+   for(int i=2;i<=n;i++)f[i]=(f[i-1]+f[i-1]+(i-1)*f[i-2])%mod;
+   int T;for(scanf("%d",&T);T--;)solve();
+   return 0;
+}

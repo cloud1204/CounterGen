@@ -1,0 +1,45 @@
+#include <bits/stdc++.h>
+#define int long long
+using namespace std;
+
+int T,n,k,v,s,e,cnt,dep[505050];
+bool isleaf[505050];
+vector<int> adj[505050];
+
+void dfs(int i,int p){
+	if(isleaf[i]) cnt++;
+	if(dep[i]==k) return;
+	for(int j:adj[i]){
+		if(j!=p){
+			dep[j]=dep[i]+1;
+			dfs(j,i);
+		}
+	}
+}
+
+signed main(){
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
+	cout.tie(0);
+	cin>>T;
+	while(T--){
+		cin>>n>>k>>v;
+		for(int i=1;i<=n;i++){
+			adj[i].clear();
+			dep[i]=0;
+		}
+		cnt=0;
+		for(int i=1;i<n;i++){
+			cin>>s>>e;
+			adj[s].push_back(e);
+			adj[e].push_back(s);
+		}
+		for(int i=1;i<=n;i++) isleaf[i]=(adj[i].size()==1);
+		dfs(v,0);
+		if(cnt>1){
+			cout<<"YES\n";
+			continue;
+		}
+		cout<<"NO\n";
+	}
+}

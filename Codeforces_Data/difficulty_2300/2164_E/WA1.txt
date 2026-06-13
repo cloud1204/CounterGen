@@ -1,0 +1,91 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define int long long
+typedef vector<int> vi;
+typedef pair<int, int> ii;
+
+struct UnionFind {
+    vector<int> arr, cnt;
+    vector<priority_queue<ii, vector<ii>, greater<ii>>> pair_info;
+
+    UnionFind(int n, vector<int>& cnt) {
+        this->cnt = cnt;
+        arr.resize(n);
+        pair_info.resize(n);
+        iota(begin(arr), end(arr), 0);
+    }
+
+    int find(int u) {
+        if (arr[u] == u)
+            return u;
+        return arr[u] = find(arr[u]);
+    }
+
+    void merge(int u, int v, int w) {
+        u = find(u), v = find(v);
+        if (size(pair_info[u]) > size(pair_info[v]))
+            swap(u, v);
+
+        int new_pairs = 0;
+        if (u != v) {
+            arr[u] = v;
+            cnt[v] += cnt[u];
+            if (cnt[v] == 2) {
+                new_pairs++;
+                cnt[v] = 0;
+            }
+
+            while (!pair_info[u].empty()) {
+                pair_info[v].push(pair_info[u].top());
+                pair_info[u].pop();
+            }
+        }
+
+        while (!pair_info[v].empty() && pair_info[v].top().first >= w) {
+            new_pairs += pair_info[v].top().second;
+            pair_info[v].pop();
+        }
+
+        if (new_pairs > 0)
+            pair_info[v].emplace(w, new_pairs);
+    }
+
+    long long get_ans() {
+        long long ans = 0;
+        while (!pair_info[find(0)].empty()) {
+            auto [w, pairs] = pair_info[find(0)].top();
+            pair_info[find(0)].pop();
+            ans += (long long)w * pairs;
+        }
+        return ans;
+    }
+};
+
+void solve() {
+    int n, m; cin >> n >> m;
+    long long ans = 0;
+    vector<int> degree(n);
+    vector<array<int, 3>> edges(m);
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < 3; j++)
+            cin >> edges[i][j];
+            
+        ++degree[--edges[i][0]];
+        ++degree[--edges[i][1]];
+        ans += edges[i][2];
+    }
+    
+    for (int i = 0; i < n; i++)
+        degree[i] %= 2;
+    UnionFind dsu(n, degree);
+    for (int i = 0; i < m; i++)
+        dsu.merge(edges[i][0], edges[i][1], edges[i][2]);
+
+    cout << ans + dsu.get_ans() << '\n';
+}
+
+signed main() {
+    ios_base::sync_with_stdio(0); cin.tie(0);
+    int t = 1; cin >> t;
+    while (t--) solve();
+}

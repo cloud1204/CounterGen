@@ -1,0 +1,92 @@
+#include <bits/stdc++.h>
+#define int long long
+
+using namespace std;
+
+const bool TEST = 1;
+vector<bool> a, s, used;
+
+vector<vector<int>> g;
+set<array<int, 2>> valid;
+
+void check(int v) {
+	if (a[v] ^ s[v]) {
+		valid.insert({a[v], v});
+	} else {
+		valid.erase({a[v], v});
+	}
+}
+
+void solve() {
+	int n;
+	cin >> n;
+
+	a.assign(n, 0);
+	s.assign(n, 0);
+	used.assign(n, 0);
+	g.clear();
+	g.resize(n);
+
+	for (int i = 0; i < n; i++) {
+		int x;
+		cin >> x;
+		a[i] = x & 1;
+	}
+
+	for (int i = 0; i < n - 1; i++) {
+		int u, v;
+		cin >> u >> v;
+		u--, v--;
+
+		g[v].push_back(u);
+		g[u].push_back(v);
+
+		s[u] = (s[u] ^ a[v]);
+		s[v] = (s[v] ^ a[u]);
+
+		check(u);
+		check(v);
+	}
+
+	// for (auto x : valid) {
+	// 	cout << x[0] << ' ' << x[1] << '\n';
+	// }
+
+	vector<int> ans;
+
+	while (!valid.empty()) {
+		int v = (*(valid.begin()))[1];
+		valid.erase(valid.begin());
+		ans.push_back(v);
+
+		used[v] = 1;
+		for (auto u : g[v]) {
+			if (used[u]) continue;
+
+			s[u] = (s[u] ^ a[v]);
+			check(u);
+		}
+	}
+
+	if ((int) ans.size() != n) {
+		cout << "NO" << '\n';
+		return;
+	}
+	cout << "YES" << '\n';
+	for (auto x : ans) {
+		cout << x + 1 << ' ';
+	} cout << '\n';
+}
+
+signed main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+
+	int t = 1;
+	if (TEST)
+		cin >> t;
+
+	while (t--) {
+		solve();
+	}
+}

@@ -1,0 +1,48 @@
+# >_<
+import sys
+input = sys.stdin.readline
+def add(x,y,fen):
+    while x < len(fen):
+        fen[x] += y
+        x |= x + 1
+
+def q(x,fen):
+    r = 0
+    while x:
+        r += fen[x-1]
+        x &= x-1
+    return r
+
+for _ in range(int(input())):
+    n = int(input())
+    a = list(map(int, input().split()))
+    fenB = [0 for _ in range(n+1)]
+    A = [int(i) - 1 for i in map(int, input().split())]
+    B = [int(i) - 1 for i in map(int, input().split())]
+    RA = [0 for _ in range(n)]
+    RB = [0 for _ in range(n)]
+    for i in range(n):
+        add(i, a[B[i]], fenB)
+        RA[A[i]] = i
+        RB[B[i]] = i
+    sol = 0
+    b = 0
+    for i in range(n):
+        elm = A[i]
+        br = RB[elm]
+        if a[elm] >= 0:
+            sol += a[elm]
+            add(br, -a[elm], fenB)
+            a[elm] = 0
+            continue
+        while b <= br and q(br+1, fenB) <= 0:
+            x = a[B[b]]
+            #sol -= x
+            add(b, -x, fenB)
+            a[B[b]] = 0
+            b += 1
+        sol += a[elm]
+        add(br, -a[elm], fenB)
+        a[elm] = 0
+        #print(sol,a)
+    print(sol)

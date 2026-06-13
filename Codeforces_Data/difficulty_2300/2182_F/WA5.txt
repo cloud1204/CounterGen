@@ -1,0 +1,73 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+typedef long long ll;
+
+ll count(vector<ll>& array, ll objective) {
+    
+    ll n = array.size();
+    ll count = 0;
+
+    for (ll mask = 0; mask < (1LL << n); mask++) {
+
+        ll sum = 0;
+        ll c = 0;
+        for (ll i = 0; i < n; i++) {
+            if (mask & (1LL << i)) {
+                sum += (ll)(1LL << (array[i] - c));
+                c = c + 1;
+                if (sum >= objective)
+                {
+                    count++;
+                    break;
+                }
+                
+            }
+        }
+
+    }
+
+    return count;
+}
+
+int main() {
+    ll r, i;
+
+    cin >> r >> i;
+    vector<ll> arrayF;
+    while(r--) {
+        ll n;
+        cin >> n;
+        arrayF.push_back(n);
+    }
+    sort(arrayF.begin(), arrayF.end(), greater<ll>());
+    
+    while (i--)
+    {
+        int option;
+        ll n;
+        cin >> option >> n;
+
+        if (option == 1)
+        {
+            arrayF.push_back(n);
+            sort(arrayF.begin(), arrayF.end(), greater<ll>());
+        } else if (option == 2)
+        {
+            for (auto it = arrayF.begin(); it != arrayF.end(); ++it) {
+                if (*it == n) {
+                    arrayF.erase(it);
+                    break;
+                }
+            }
+        } else if (option == 3)
+        {
+            ll comb = count(arrayF,n);
+            cout << comb << endl;
+        }
+        
+    }
+    
+}

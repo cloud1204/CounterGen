@@ -1,0 +1,62 @@
+import heapq
+from fractions import Fraction
+
+def MSF(b, k):
+    # store fractions as (current numerator, denominator)
+    fr = [[1, x] for x in b]
+
+    heap = []
+
+    # initial gains
+    for i,(x,y) in enumerate(fr):
+        gain1 = Fraction(1, y)
+        heapq.heappush(heap, (-gain1, i, 1))
+
+        if y > 1:
+            gain2 = Fraction(x, y-1) - Fraction(x, y)
+            heapq.heappush(heap, (-gain2, i, 2))
+
+    for _ in range(k):
+        gain, i, typ = heapq.heappop(heap)
+        x,y = fr[i]
+
+        if typ == 1:
+            x += 1
+        else:
+            y -= 1
+
+        fr[i] = [x,y]
+
+        gain1 = Fraction(1, y)
+        heapq.heappush(heap, (-gain1, i, 1))
+
+        if y > 1:
+            gain2 = Fraction(x, y-1) - Fraction(x, y)
+            heapq.heappush(heap, (-gain2, i, 2))
+
+    s = Fraction(0,1)
+    for x,y in fr:
+        s += Fraction(x,y)
+
+    return s
+
+MOD = 998244353
+
+def mod_fraction(fr):
+    p = fr.numerator % MOD
+    q = fr.denominator % MOD
+    return (p * pow(q, MOD-2, MOD)) % MOD
+
+
+n,m = map(int,input().split())
+a = list(map(int,input().split()))
+k = list(map(int,input().split()))
+
+for K in k:
+    total = Fraction(0,1)
+
+    for l in range(n):
+        for r in range(l,n):
+            total += MSF(a[l:r+1], K)
+
+    print(mod_fraction(total))

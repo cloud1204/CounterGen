@@ -1,0 +1,69 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define rep(i,a,b) for(int i=(a);i<(b);i++)
+using ll = long long;
+
+const ll MOD = 676767'677;
+ll p0w(ll x,ll e){
+	ll p = 1;
+	ll acc = x;
+	while(e){
+		if(e&1) p = p*acc%MOD;
+		acc = acc*acc%MOD;
+		e /= 2;
+	}
+	return p;
+}
+
+const int MAX = 2'000'067;
+const array<ll,MAX> fact = []{
+	array<ll,MAX> fact = {1};
+	rep(i,1,MAX) fact[i] = fact[i-1]*i%MOD;
+	return fact;
+}();
+const array<ll,MAX> anti = []{
+	array<ll,MAX> anti;
+	anti[MAX-1] = p0w(fact[MAX-1],MOD-2);
+	for( int i = MAX-2; i >= 0; i-- ) anti[i] = anti[i+1]*(i+1)%MOD;
+	return anti;
+}();
+ll cmb(ll n, ll k){ return 0 <= k and k <= n ? fact[n]*anti[k]%MOD*anti[n-k]%MOD : 0; }
+
+void solve();
+int main(){
+        cin.tie(0)->sync_with_stdio(0);
+        int t; cin >> t; while(t--) solve();
+}
+void solve(){
+        int n,m; cin >> n >> m;
+        vector<int> seq;
+        ll out = 0;
+        auto dfs = [&]( auto f, int l, int r ){
+                if( l > r ) return;
+                int u = (l+r)/2;
+                seq.push_back(u);
+
+                int lp = -1;
+                int rp = n;
+                for( int t = (int)(seq.size())-2; t >= 0; t-- ){
+                        if( seq[t] > seq[t+1] ) if( rp == n ) rp = seq[t];
+                        if( seq[t] < seq[t+1] ) if( lp == -1 ) lp = seq[t];
+                }
+
+                ll d = seq.size();
+                ll w = cmb(n+m-1,m-1);
+                if( lp > -1 ) w -= cmb(n+m-1 - (u-lp),m-1);
+                if( rp < n ) w -= cmb(n+m-1 - (rp-u),m-1);
+                if( lp > -1 and rp < n ) w += cmb(n+m-1 - (u-lp)-(rp-u),m-1 );
+
+                out = (out + w*d)%MOD;
+                //cout << u << " " << w << " " << d << endl;
+                
+                f(f,l,u-1);
+                f(f,u+1,r);
+                seq.pop_back();
+        };
+        dfs(dfs,0,n-1);
+
+        cout << out << "\n";
+}

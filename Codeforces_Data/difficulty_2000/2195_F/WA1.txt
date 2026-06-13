@@ -1,0 +1,144 @@
+#include <bits/stdc++.h>
+using namespace std;
+using ll  = long long;
+using u64 = unsigned long long;
+using P   = pair<ll, ll>;
+using mat = vector<vector<int>>;
+using graph = vector<vector<int>>;
+#define mem(a,b) memset(a,b,sizeof(a)) //Max is 0x7f, Min is 0x81
+#define endl '\n'
+#define imax INT_MAX
+#define imin INT_MIN
+#define lmax LONG_LONG_MAX
+#define lmin LONG_LONG_MIN
+#define mod 1000000007
+inline void Print(int a[], int n) {for (int i = 1; i <= n; ++i) cout << a[i] << " "; cout << endl;}
+inline void Print(ll a[], int n) {for (int i = 1; i <= n; ++i) cout << a[i] << " "; cout << endl;}
+inline ll gcd(ll a, ll b) { return b == 0LL ? a : gcd(b, a % b); }
+inline ll qpow(ll a, ll x) {
+	if (x == 0) return 1;
+	ll tmp = qpow(a, x / 2);
+	tmp = tmp * tmp % mod;
+	if (x & 1) tmp = tmp * a % mod;
+	return tmp;
+}
+inline ll inv(ll a) { return qpow(a, mod - 2); }
+#define maxn 3005
+
+ll a[maxn], c[maxn], b[maxn];
+int dp[maxn], in[maxn], out[maxn], dp2[maxn];
+bool vis[maxn];
+graph g, rg;
+
+bool intersect(int i, int j) {
+	if (a[i] == a[j]) return 0;
+	ll d = (ll)(b[i] - b[j]) * (b[i] - b[j]) - 4LL * (a[i] - a[j]) * (c[i] - c[j]);
+	return d >= 0;
+}
+
+bool f_less(int i, int j) {
+	return 4LL * a[i] * a[j] * c[i] - b[i] * b[i] * a[j] <
+		   4LL * a[i] * a[j] * c[j] - b[j] * b[j] * a[i];
+}
+
+void dfs1(int cur) {
+	if (vis[cur]) return;
+	vis[cur] = 1;
+	dp[cur] = 1;
+	for (int next : g[cur]) {
+		if (vis[next] == 0) {
+			dfs1(next);
+		}
+		dp[cur] = max(dp[cur], dp[next] + 1);
+	}
+}
+
+void dfs2(int cur) {
+	if (vis[cur]) return;
+	vis[cur] = 1;
+	dp2[cur] = 1;
+	for (int next : rg[cur]) {
+		if (vis[next] == 0) {
+			dfs2(next);
+		}
+		dp2[cur] = max(dp2[cur], dp2[next] + 1);
+	}
+}
+
+int main() {
+	ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+
+	int t;
+	cin >> t;
+	while (t--) {
+		int n;
+		cin >> n;
+		g = graph(n + 1), rg = graph(n + 1);
+		for (int i = 1; i <= n; ++i) {
+			cin >> a[i] >> b[i] >> c[i];
+			vis[i] = 0;
+			in[i] = out[i] = 0;
+		}
+
+		for (int i = 1; i <= n; ++i) {
+			for (int j = 1; j <= n; ++j) {
+				if (i == j) continue;
+				if (intersect(i, j) == 0) {
+					if (a[i] * a[j] > 0) {
+						if (a[i] > 0 && f_less(i, j)) {
+							g[i].push_back(j);
+							rg[j].push_back(i);
+							in[j]++;
+							out[i]++;
+						}
+						else if (a[i] < 0 && f_less(j, i)) {
+							g[i].push_back(j);
+							rg[j].push_back(i);
+							in[j]++;
+							out[i]++;
+						}
+					}
+				}
+			}
+		}
+
+		// for (int i = 1; i <= n; ++i) {
+		// 	for (int j = 1; j <= n; ++j) {
+		// 		cout << intersect(i, j) << " ";
+		// 	}
+		// 	cout << endl;
+		// }
+
+		for (int i = 1; i <= n; ++i) {
+			if (in[i] == 0) dfs1(i);
+		}
+		for (int i = 1; i <= n; ++i) vis[i] = 0;
+		for (int i = 1; i <= n; ++i) {
+			if (out[i] == 0) dfs2(i);
+		}
+
+		for (int i = 1; i <= n; ++i) {
+			int ans = dp[i] + dp2[i] - 1;
+			int d = 0;
+			for (int j = 1; j <= n; ++j) {
+				if (i == j) continue;
+				if (intersect(i, j) == 0 && a[i] * a[j] < 0) {
+					d = max(d, dp[j]);
+				}
+			}
+			cout << ans + d << " ";
+		}
+		cout << endl;
+	}
+	
+	return 0;
+}
+
+/*
+1
+4
+1 2 -1
+-3 0 -3
+-1 4 -5
+1 2 -4
+*/

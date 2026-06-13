@@ -1,0 +1,94 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define rep(i,a,b) for(int i=(a);i<(b);i++)
+using ll = long long;
+const ll MOD = 998244353;
+
+ll p0w(ll x,ll e){
+        ll p = 1;
+        while(e){
+                if(e&1) p = p*x%MOD;
+                x = x*x%MOD;
+                e >>= 1;
+        }
+        return p;
+}
+
+const array<ll,23> W = []{
+        array<ll,23> W = {2200};
+        rep(i,0,22) W[i+1] = W[i]*W[i]%MOD;
+        return W;
+}();
+vector<ll> dft( vector<ll> poly,int b){
+        int n = 1<<b;
+        poly.resize(n,0);
+        rep(loop,1,b+1){
+                vector<ll> nv(n,0);
+                ll acc = 1;
+                int space = n>>loop;
+                for( int q = 0; q < n; q += space ){
+                        rep(r,0,space) nv[q+r] = (poly[2*q%n + r] + acc*poly[2*q%n + space + r])%MOD;
+                        acc = acc*W[23-loop]%MOD;
+                }
+                poly = nv;
+        }
+        return poly;
+}
+vector<ll> mul( vector<ll> a, vector<ll> b ){
+        int sz = a.size() + b.size() - 1;
+        int j = 1;
+        while( 1 <<j  < sz ) j++;
+        vector<ll> A = dft(a,j);
+        vector<ll> B = dft(b,j);
+        ll inv = p0w(1<<j,MOD-2);
+        rep(i,0,B.size()) B[i] = A[i]*B[i]%MOD * inv%MOD;
+
+        A = dft(B,j);
+        reverse(A.begin()+1,A.end());
+        A.resize(sz);
+        return A;
+}
+
+int main(){
+        int n,k; cin >> n >> k;
+        string s; cin >> s;
+        
+        vector<ll> a(n);
+        rep(i,0,n) a[i] = s[i] - '0';
+
+        vector<ll> b(n);
+        rep(i,0,n) b[i] = a[i] == 0;
+
+        vector<ll> p1 = mul(a,b);
+        reverse(a.begin(),a.end());
+        vector<ll> p2 = mul(a,b);
+        reverse(a.begin(),a.end());
+
+        //for( auto e: p1 ) cout << e << " ";
+        //cout << endl;
+        //for( auto e: p2 ) cout << e << " ";
+        //cout << endl;
+
+        vector<ll> plate(n+1,0);
+        rep(i,1,n) plate[i] += p1[n-1+i] + p2[n-1+i];
+        //for( auto e: plate ) cout << e << " ";
+        //cout << endl;
+
+        ll base = 0;
+        rep(i,1,n) base += b[i]*a[i-1];
+        rep(i,0,n-1) base += b[i]*a[i+1];
+        rep(w,1,n+1){
+                for( int h = w; h < n; h += w ){
+                        plate[w] -= b[h]*a[h-1] + b[h-1]*a[h];
+                        //if( w == 2 ) cout << h << " " << b[h]*a[h-1] + b[h-1]*a[h] << endl;
+                }
+        }
+        rep(i,1,n+1) plate[i] += base;
+        sort(plate.begin(),plate.end());
+        cout << plate[n-k+1] << endl;
+        
+        //for( auto e: plate ) cout << e << " ";
+        //cout << endl;
+        //cout << base << endl;
+
+}

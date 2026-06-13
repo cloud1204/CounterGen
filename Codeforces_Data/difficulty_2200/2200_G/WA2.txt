@@ -1,0 +1,87 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int maxn = 3005;
+typedef long long ll;
+const int mod = 1e9+7;
+
+char s[maxn];
+
+int dp[maxn][maxn]={};
+int fac[maxn];
+
+int qpow(int a,int b,int c){
+    int ans=1;
+    while(b){
+        if(b&1)ans=1ll*ans*a%c;
+        b>>=1;
+        a=1ll*a*a%c;
+    }
+    return ans;
+}
+
+int main(){
+    fac[0]=1;
+    for(int i=1;i<maxn;i++){
+        fac[i]=1ll*fac[i-1]*i%mod;
+    }
+    int t;
+    scanf("%d",&t);
+    while(t--){
+        int n,x;
+        scanf("%d%d",&n,&x);
+        int sum=0;
+        int ans=x;
+        vector<int>g;
+        g.push_back(0);
+        for(int i=1;i<=n;i++){
+            scanf("%s",s);
+            char op=s[0];
+            int len=strlen(s);
+            int u=0;
+            for(int j=1;j<len;j++){
+                int cur=s[j]-'0';
+                u=(u*10ll+cur)%mod;
+            }
+            if(op=='+' || op=='-'){
+                if(op=='+')sum+=u;
+                if(op=='-')sum-=u;
+                if(sum>=mod)sum-=mod;
+                if(sum<0)sum+=mod;
+            }else if(op=='x' || op=='/'){
+                if(op=='x'){
+                    g.push_back(u);
+                    ans=1ll*ans*u%mod;
+                }else{
+                    g.push_back(qpow(u,mod-2,mod));
+                    ans=1ll*ans*qpow(u,mod-2,mod)%mod;
+                }
+            }
+        }
+        dp[0][0]=1;
+        int sz=(int)g.size()-1;
+        int now=0;
+        for(int i=1;i<=sz;i++){
+            for(int j=0;j<=i;++j){
+                if(j){
+                    dp[i][j]=(dp[i-1][j]+1ll*dp[i-1][j-1]*g[i]%mod*j%mod)%mod;
+                }else{
+                    dp[i][j]=dp[i-1][j];
+                }
+
+                if(i==sz){
+                    now=(now+1ll*dp[i][j]*fac[i-j]%mod)%mod;
+                }
+            }
+        }
+        ans=(ans+1ll*now*qpow(fac[sz+1],mod-2,mod)%mod*sum%mod)%mod;
+        printf("%d\n",ans);
+    }
+}
+/*
+10
+4
+-1 -1 2 2
+
+
+5
+*/

@@ -1,0 +1,81 @@
+# include <bits/stdc++.h>
+# define int long long
+# define vi vector<int>
+# define pb push_back
+# define pii pair<int, int>
+# define fi first
+# define se second
+# define endl '\n'
+# define jess ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+
+using namespace std;
+
+int n, m, ans, deg[1000005], u[1000005], v[1000005], w[1000005], sz[1000005], par[1000005];
+pii ed[1000005];
+vi isi[1000005];
+
+int root(int x) {
+    if(x==par[x]) return x;
+    return par[x]=root(par[x]);
+}
+
+void merge(int a, int b) {
+    a=root(a); b=root(b);
+    if(a==b) return;
+    if(sz[a]<sz[b]) swap(a, b);
+    par[b]=a;
+    sz[a]+=sz[b];
+    for(int i : isi[b]) isi[a].pb(i);
+    isi[b].clear();
+    sz[b]=0;
+}
+
+void solve () {
+    cin >> n >> m;
+    ans=0;
+    for(int i=1; i<=n; i++) {
+        isi[i].clear();
+        par[i]=i;
+        sz[i]=1;
+        deg[i]=0;
+    }
+    for(int i=1; i<=m; i++) {
+        cin >> u[i] >> v[i] >> w[i];
+        if(u[i]==v[i]) {
+            ans+=w[i];
+            ed[i]={w[i], i};
+            continue;
+        }
+        deg[u[i]]++;
+        deg[v[i]]++;
+        ed[i]={w[i], i};
+        ans+=w[i];
+    }
+    sort(ed+1, ed+m+1);
+    for(int i=1; i<=n; i++) {
+        if(deg[i]%2==1) isi[i].pb(i);
+    }
+    int idx=1;
+    for(int i=1; i<=m; i++) {
+        while(idx<=ed[i].se) {
+            merge(u[idx], v[idx]);
+            idx++;
+        }
+        int rt=root(u[ed[i].se]);
+        // cout << "idx " << i << " " << ed[i].fi << endl;
+        // for(int j : isi[rt]) cout << "isi " << j << endl;
+        while(isi[rt].size()>1) {
+            // cout << "apus " << isi[rt].back() << " ";
+            isi[rt].pop_back();
+            isi[rt].pop_back();
+            ans+=ed[i].fi;
+        }
+    }
+    cout << ans << endl;
+}
+ 
+signed main() {
+   jess;
+   int tc; cin >> tc;
+   while(tc--) solve();
+}

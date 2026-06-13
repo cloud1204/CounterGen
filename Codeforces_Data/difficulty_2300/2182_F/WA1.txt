@@ -1,0 +1,45 @@
+def nCr(n,r):
+    return (fact[n]*pow(fact[r],mod-2,mod)*pow(fact[n-r],mod-2,mod))%mod
+
+mod = 998244353
+fact = [1]
+for i in range(300004):
+    fact.append((fact[i]*(i+1))%mod)
+
+Two = [1]
+
+for i in range(300004):
+    Two.append((Two[i]*(2))%mod)
+
+N,M = map(int,input().split())
+C = [*map(int,input().split())]
+c = [0 for _ in range(63)]
+for i in C:
+    c[i] += 1
+
+for i in range(M):
+    q,x = map(int,input().split())
+    if(q == 1):
+        c[x] += 1
+    elif(q == 2):
+        c[x] -= 1
+    else:
+        cnt = sum(c)
+        now = 0
+        half = 0
+        C = 0
+        an = 0
+        p = 1
+        for i in range(62,-1,-1):
+            cnt -= c[i]
+            for j in range(c[i]):
+                if( now + 2**(i-half) >= x):
+                    for k in range(j+1,c[i]+1):
+                        an += p*Two[cnt]*nCr(c[i],k)
+                        an %= mod
+                    p *= nCr(c[i],j)
+                    break
+                else:
+                    now += int(2**(i-half))
+                    half += 1
+        print(an)

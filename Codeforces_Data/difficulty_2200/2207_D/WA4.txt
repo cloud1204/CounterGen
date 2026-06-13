@@ -1,0 +1,32 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int N=500005;
+int n,k,pre,vis[N],ok[N],with[N],lp[N];
+vector<vector<int>>a;
+void dfs(int u){
+  vis[u]=1;
+  for(int v:a[u]) if(vis[v]==0) {
+    dfs(v);with[u]=min(with[u],with[v]+1);if(with[u]<=k) lp[u]++;
+    if(lp[u]>=2) ok[u]=1;
+  } 
+}
+int main() 
+{
+    int test;cin>>test;
+    while(test--){
+      cin>>n>>k>>pre; a.resize(n+5);
+      for(int i=1;i<n;i++){
+        int u,v;
+        cin>>u>>v;
+        a[u].push_back(v);
+        a[v].push_back(u);
+      }
+      for(int i=1;i<=n;i++) {vis[i]=lp[i]=ok[i]=0;with[i]=1e6;}
+      for(int i=1;i<=n;i++) if(a[i].size()==1) {ok[i]=1;with[i]=0;}
+      dfs(pre);
+      a.clear();
+      if(ok[pre]==1) cout<<"YES";else cout<<"NO";
+      cout<<endl;
+    }
+    return 0;
+}

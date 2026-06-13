@@ -1,0 +1,31 @@
+#include <bits/stdc++.h>
+#define int long long
+using namespace std;
+vector<int> v[200010];
+int c[200010],siz[200010],dist[200010],fa[200010];
+signed main(){
+	int T;
+	cin>>T;
+	while(T--){
+		int n,m;scanf("%lld%lld",&n,&m);
+		for(int i=0;i<=n+3;i++)v[i].clear(),c[i]=0,siz[i]=0;
+		for(int i=n;i>1;i--)v[i].push_back(i-1);
+		for(int i=1;i<=m;i++){
+			int a,b;
+			scanf("%lld%lld",&a,&b);
+			v[b].push_back(a);
+		}
+		for(int i=0;i<=n+3;i++)dist[i]=(int)(1e18),fa[i]=0;
+		dist[n]=0;
+		for(int i=n;i>=1;i--)for(int j:v[i])if(dist[j]>dist[i]+1)dist[j]=dist[i]+1,fa[j]=i;
+		for(int i=1;i<=n;i++)c[dist[i]]++;
+		int ans=0;
+		for(int i=n;i>=0;i--){
+			ans+=i*(c[i]+c[i+1]-1)*c[i];
+			c[i]+=c[i+1];
+		}
+		for(int i=1;i<=n;i++)siz[i]++,siz[fa[i]]+=siz[i];
+		for(int i=1;i<=n;i++)ans-=siz[i]*(siz[i]-1)/2*dist[i];
+		printf("%lld\n",ans);
+	}
+}

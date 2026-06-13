@@ -1,0 +1,62 @@
+#include <bits/stdc++.h>
+typedef long long ll;
+
+using namespace std;
+
+const ll MOD = 676767677;
+
+ll fact[2000001];
+ll invfact[2000001];
+
+ll modpow(ll n, ll e) {
+    if(e == 0) return 1;
+    ll x = modpow(n, e/2);
+    x *= x;
+    x %= MOD;
+    if(e % 2 == 1) {
+        x *= n;
+        x %= MOD;
+    }
+    return x;
+}
+
+ll binom(ll n, ll x) {
+    if(n < x) return 0;
+    return (fact[n] * ((invfact[x] * invfact[n-x]) % MOD)) % MOD;
+}
+
+ll calc(ll n, ll l, ll r, ll m, int k) {
+    if(l+1 >= r) return 0;
+    ll x = (l + r) / 2;
+    ll g = 0;
+    ll ans = binom(n+m-1, m-1);
+    if(l != -1) ans -= binom(n+m-1 - x + l, m-1);
+    if(r != n) ans -= binom(n+m-1 - r + x, m-1);
+    if(l != -1 && r != n) ans += binom(n+m-1 -r+l, m-1);
+    ans *= k;
+    ans %= MOD;
+    ans += calc(n, l, x, m, k+1);
+    ans += calc(n, x, r, m, k+1);
+    return ans % MOD;
+}
+
+void solve() {
+    int n, m;
+    cin >> n >> m;
+    cout << calc(n, -1, n, m, 1) << '\n';
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(0);
+    fact[0] = invfact[0] = 1;
+    for(int i = 1; i <= 2000000; i++) {
+        fact[i] = (fact[i-1] * i) % MOD;
+        invfact[i] = modpow(fact[i], MOD - 2);
+    }
+    int tc_count;
+    cin >> tc_count;
+    while(tc_count--) {
+        solve();
+    }
+}

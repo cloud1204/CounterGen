@@ -1,9 +1,27 @@
-# Brief OpenRouter usage check. Reads $env:OPENROUTER_API_KEY.
+# Brief OpenRouter usage check. Reads $env:OPENROUTER_API_KEY,
+# or falls back to Input_Cache\settings.yaml's OpenRouter.API_KEY.
 # Usage: .\openrouter_usage.ps1
 
 $key = $env:OPENROUTER_API_KEY
 if (-not $key) {
-    Write-Host "OPENROUTER_API_KEY not set." -ForegroundColor Red
+    $settingsPath = Join-Path $PSScriptRoot 'Input_Cache\settings.yaml'
+    if (Test-Path $settingsPath) {
+        $inOR = $false
+        foreach ($line in Get-Content $settingsPath) {
+            if ($line -match '^\s*OpenRouter\s*:') { $inOR = $true; continue }
+            if ($inOR) {
+                if ($line -match '^\S' -and $line -notmatch '^\s*$') { break }
+                if ($line -match '^\s*API_KEY\s*:\s*(\S+)\s*$') {
+                    $candidate = $Matches[1]
+                    if ($candidate -ne 'null' -and $candidate -ne '~') { $key = $candidate }
+                    break
+                }
+            }
+        }
+    }
+}
+if (-not $key) {
+    Write-Host "OPENROUTER_API_KEY not set and no OpenRouter key found in Input_Cache\settings.yaml." -ForegroundColor Red
     exit 1
 }
 

@@ -1,0 +1,46 @@
+#include<bits/stdc++.h>
+#define ll long long
+#define pii pair<int,int>
+#define fi first
+#define se second
+#define INF 1e18
+#define N 200009
+#define ll long long
+using namespace std;
+int n,m;
+basic_string<int> g[N];
+int head[N],nxt[N],a[N],b[N],c[N],tot;
+ll ans=0;
+void dfs(int u){
+	head[u]=0;
+	for(int v:g[u]){
+		dfs(v);
+		int x=head[u],y=head[v];
+		if(!x){head[u]=y;continue;}
+		ll s1=0,s2=0,s3=0,s4=0,cnt=0;
+		while(1){
+			++cnt;
+			s1+=b[x],s2+=b[y];
+			ans+=1ll*b[x]*c[y]*cnt;
+			ans+=1ll*b[y]*c[x]*cnt;
+			s3+=1ll*b[x]*cnt;
+			s4+=1ll*b[y]*cnt;
+			b[x]+=b[y];c[x]+=c[y];
+			if(nxt[x]&&nxt[y])x=nxt[x],y=nxt[y];
+			else break;
+		}
+	}
+	++tot;nxt[tot]=head[u];head[u]=tot;
+	b[tot]=1;c[tot]=c[nxt[tot]]+1;
+}
+void solve(){
+	ans=0;
+	cin>>n>>m;for(int i=1;i<=n;i++)a[i]=i+1,g[i].clear();
+	for(int i=1,x,y;i<=m;i++)cin>>x>>y,a[x]=max(a[x],y);
+	for(int i=1;i<n;i++)g[a[i]]+=i;
+	tot=0;dfs(n);cout<<ans<<"\n";
+}
+int main(){
+	ios::sync_with_stdio(0);cin.tie(0);cout.tie(0);
+	int T;cin>>T;while(T--)solve();return 0;
+}

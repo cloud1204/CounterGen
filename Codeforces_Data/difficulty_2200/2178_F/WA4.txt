@@ -1,0 +1,40 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define int long long
+#define N 200100
+#define mod 998244353
+int T,n,siz[N],tot[N],dep[N],ans;
+vector<int>p[N];
+int ksm(int x,int k,int Mod){
+	int ans=1;
+	while(k){
+		if(k&1)ans=ans*x%Mod;
+		x=x*x%Mod,k>>=1;
+	}
+	return ans;
+}
+void dfs(int x,int father){
+	siz[x]=1,dep[x]=dep[father]+1;
+	for(int y:p[x])if(y!=father)dfs(y,x),siz[x]+=siz[y];
+	if(!(siz[x]&1))tot[dep[x]]++; 
+}
+signed main(){
+	ios::sync_with_stdio(0),cin.tie(0),cout.tie(0);
+	cin>>T;
+	while(T--){
+		cin>>n;ans=1;
+		for(int i=1,u,v;i<n;i++){
+			cin>>u>>v;
+			p[u].push_back(v),p[v].push_back(u);
+		}
+		dfs(1,0);
+		for(int i=2;i<=n;i++){
+			if(!tot[i])continue;
+			int t=ksm(i,tot[i],mod-1);
+			ans=ans*ksm(2,t,mod);
+		}
+		cout<<ans<<'\n';
+		for(int i=1;i<=n;i++)tot[i]=dep[i]=siz[i]=0,p[i].clear();
+	}
+	return 0;
+}

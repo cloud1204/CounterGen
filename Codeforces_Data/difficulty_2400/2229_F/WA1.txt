@@ -1,0 +1,26 @@
+#include <bits/stdc++.h>
+#define ll long long
+using namespace std;
+int n,a[20],k,t;
+ll f[20][1<<17],sum[1<<17];
+int main(){
+	ios::sync_with_stdio(0),cin.tie(0);
+	cin>>t;
+	while(t--){
+		cin>>n>>k,n--;
+		for(int i=0;i<=n;i++) cin>>a[i];
+		sort(a,a+n+1);
+		for(int i=1;i<(1<<n);i++) sum[i]=sum[i&i-1]+a[__lg(i&-i)];
+		for(int i=0;i<(1<<n);i++)
+			f[1][i]=sum[i];
+		for(int i=1;i<k;i++)
+			for(int j=1;j<(1<<n);j++){
+				if(__builtin_popcount(j)>n/(i+1)) continue;
+				int r=(1<<n)-1^j;
+				for(int t=r;t;t=t-1&r)
+					f[i+1][j|t]=max(f[i+1][j|t],min(f[i][t],sum[j]));
+			}
+		cout<<f[k][(1<<n)-1]+a[n]<<'\n';
+	}
+	return 0;
+}

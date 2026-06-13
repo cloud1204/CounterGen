@@ -1,0 +1,94 @@
+#include "bits/stdc++.h"
+using namespace std;
+#define int long long
+const int mod = 1e9 + 7;
+int binpow(int a, int n)
+{
+    long long res = 1;
+    while (n != 0)
+    {
+        if (n & 1)
+            res = res * a % mod;
+        a = a * a % mod;
+        n >>= 1;
+    }
+    return res;
+}
+int f(int n)
+{
+    if (n == 0 or n == 1)
+    {
+        return 1;
+    }
+    return (n * f(n - 1)) % mod;
+}
+void solve()
+{
+    int n, x, sum = 0;
+    cin >> n >> x;
+    vector<int> l;
+    for (int i = 1; i <= n; i++)
+    {
+        string s;
+        cin >> s;
+        int j = 0;
+        for (int k = 1; k < s.size(); k++)
+        {
+            j *= 10;
+            j += (s[k] - '0');
+        }
+        if (s[0] == '+')
+        {
+            sum += j;
+        }
+        else if (s[0] == '-')
+        {
+            sum += (mod - j);
+        }
+        else if (s[0] == 'x')
+        {
+            l.push_back(j);
+        }
+        else
+        {
+            l.push_back(binpow(j, mod - 2));
+        }
+    }
+    vector<vector<int>> pr(l.size() + 1, vector<int>(l.size() + 1, 0));
+    for (int i = 0; i <= l.size(); i++)
+    {
+        pr[i][0] = 1;
+    }
+    for (int i = 1; i <= l.size(); i++)
+    {
+        for (int j = 1; j <= i; j++)
+        {
+            pr[i][j] = (pr[i - 1][j] + l[i - 1] * pr[i - 1][j - 1]) % mod;
+        }
+    }
+    int ans = 0;
+    for (int i = 0; i <= l.size(); i++)
+    {
+        int s1 = (((f(i) * f(l.size() - i)) % mod) * pr[l.size()][i] % mod);
+        ans += s1;
+        ans %= mod;
+    }
+    ans *= sum;
+    ans %= mod;
+    ans *= binpow(f(l.size() + 1), mod - 2);
+    ans %= mod;
+    ans += ((pr[l.size()][l.size()] * x) % mod);
+    ans %= mod;
+    cout << ans << "\n";
+}
+int32_t main()
+{
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    int t = 1;
+    cin >> t;
+    while (t--)
+    {
+        solve();
+    }
+}

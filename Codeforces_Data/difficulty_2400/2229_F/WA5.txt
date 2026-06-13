@@ -1,0 +1,67 @@
+#include <bits/stdc++.h>
+#define pb push_back
+#define fst first
+#define snd second
+#define fore(i,a,b) for(int i=a,ggdem=b;i<ggdem;++i)
+#define SZ(x) ((int)x.size())
+#define ALL(x) x.begin(),x.end()
+#define mset(a,v) memset((a),(v),sizeof(a))
+#define FIN ios::sync_with_stdio(0);cin.tie(0);cout.tie(0)
+using namespace std;
+typedef long long ll;
+
+pair<ll,ll> dp[(1ll<<18)+10];
+
+vector<ll> a;
+
+ll b=0;
+
+pair<ll,ll> f(ll mk){
+	auto &res=dp[mk];
+	if(res.fst>=0)return res;
+	if(mk==0)return res={0,0};
+	res={0,0};
+	fore(i,0,SZ(a)){
+		if((1ll<<i)&mk){
+			auto p=f(mk^(1ll<<i));
+			p.snd+=a[i];
+			if(p.snd>=b)p={p.fst+1,0};
+			res=max(res,p);
+		}
+	}
+	return res;
+}
+
+int main(){FIN;
+	ll t; cin>>t;
+	while(t--){
+		ll n,k; cin>>n>>k;
+		a.clear();
+		a.resize(n);
+		fore(i,0,n)cin>>a[i];
+		if(n==1){
+			cout<<a[0]<<"\n";
+			continue;
+		}
+		if(k>=n){
+			cout<<a.back()<<"\n";
+			continue;
+		}
+		sort(ALL(a));
+		ll maxi=a.back();
+		a.pop_back();
+		ll l=1,r=1e11;
+		while(l<=r){
+			ll m=(l+r)/2;
+			b=m;
+			fore(i,0,(1ll<<n)){
+				dp[i]={-1,-1};
+			}
+			if(f((1ll<<(n-1))-1).fst>=k)l=m+1;
+			else r=m-1;
+		}
+		cout<<r+maxi<<"\n";
+	}
+	
+	return 0;
+}

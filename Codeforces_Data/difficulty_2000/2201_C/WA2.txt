@@ -1,0 +1,31 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define int long long
+const int M=998244353;
+const int N=300005;
+int pow2[N];
+signed main() {
+    pow2[0]=1;
+    for(int i=1;i<N;++i) {
+        pow2[i]=pow2[i-1]*2%M;
+    }
+    int t;
+    cin>>t;
+    while(t--){
+        int n;
+        string s;
+        cin>>n>>s;
+        int m=n/2;
+        int ans;
+        if(m==1)ans=2;
+        else if(m==2)ans=8;
+        else if(m==3)ans=28;
+        else if(m==5)ans=312;
+        else{
+            ans=(pow2[m+1]*2-2*m-4+pow2[m]-2)%M;
+        }
+        if(ans<0)ans+=M;
+        cout<<ans<<endl;
+    }
+    return 0;
+}

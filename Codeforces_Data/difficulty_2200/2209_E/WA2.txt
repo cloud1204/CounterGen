@@ -1,0 +1,26 @@
+#include<bits/stdc++.h>
+#define ll long long
+using namespace std;
+ll n,q;
+string s;
+int main(){
+    ios::sync_with_stdio(0);
+    cin.tie(0);cout.tie(0);
+    int T;cin>>T;
+    while(T--){
+        cin>>n>>q>>s;
+        s=" "+s;
+        while(q--){
+            ll l,r;
+            cin>>l>>r;
+            ll cnt=1,now=l,ans=1;
+            for(int i=l+1;i<=r;i++){
+                if(s[i]==s[l])cnt++,now=l+1;
+                else if(s[i]==s[now])now++;
+                else cnt=1;
+                ans+=cnt;
+            }cout<<ans<<"\n";
+        }
+    }
+    return 0;
+}

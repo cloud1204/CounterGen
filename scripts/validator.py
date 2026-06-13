@@ -4,6 +4,7 @@ import time
 
 class Validator:
     def __init__(self, func_code: Code):
+        self.code = func_code.code
         self.namespace = {}
         try:
             exec(func_code.code, self.namespace)

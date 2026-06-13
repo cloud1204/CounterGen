@@ -1,0 +1,280 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+#define ll long long
+#define ull unsigned long long
+#define ld long double
+
+#define fastio ios::sync_with_stdio(false); cin.tie(0); cout.tie(0);
+#define pb push_back
+#define mp make_pair
+#define fi first
+#define se second
+#define all(x) (x).begin(), (x).end()
+#define readarr(a, n) for (int i = 0; i < n; i++) cin >> a[i];
+#define printarr(a, n) for (int i = 0; i < n; i++) cout << a[i] << ' '; cout << endl;
+#define sizearr(a) (ll)a.size()
+
+typedef struct _node
+{
+    int a, b, c;
+    int maxHeight;
+    int optAns;
+} node_t;
+
+bool isIntersect(int a, int b, vector<node_t> &Map)
+{
+    node_t A = Map[a];
+    node_t B = Map[b];
+    int D = (A.b - B.b)*(A.b - B.b) - 4*(A.a - B.a)*(A.c - B.c);
+    if (D > 0) return true;
+    else if (D < 0) return false;
+    else
+    {
+        if (A.a == B.a && A.c == B.c) return true;
+        else if (A.a == B.a) return false;
+        else return true;
+    } 
+}
+
+int isInside(int a, int b, vector<node_t> &Map) // 0 -> intersect, 1 -> a inside b, 2 -> b inside a, 3 -> opposite directions
+{
+    node_t A = Map[a];
+    node_t B = Map[b];
+    if (A.a * B.a < 0) return 3;
+    else
+    {
+        int D = (A.b - B.b)*(A.b - B.b) - 4*(A.a - B.a)*(A.c - B.c);
+        if (D < 0)
+        {
+            if (A.c > B.c && A.a > 0) return 1;
+            else if (A.c > B.c && A.a < 0) return 2;
+            else if (A.c < B.c && A.a < 0) return 1;
+            else return 2;
+        }
+        else if (D == 0)
+        {
+            if (A.a - B.a == 0 && A.c - B.c == 0) return 0;
+            else if (A.a - B.a == 0)
+            {
+                if ((A.c > B.c && A.a > 0) || (A.c < B.c && A.a < 0)) return 1;
+                else if ((A.c > B.c && A.a < 0) || (A.c < B.c && A.a > 0)) return 2;
+            }
+            else return 0;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    return 3;
+}
+
+int best(int &n, vector<int> &up, vector<int> &down, vector<node_t> &Map, vector<vector<int>> &adjList, int node)
+{
+    node_t Node = Map[node];
+    queue<int> list;
+    vector<int> finalList;
+    vector<int> visited(n);
+    if (Node.a > 0)
+    {
+        for (int i = 0; i < down.size(); i++)
+        {
+            list.push(down[i]);
+            visited[down[i]] = 1;
+        }
+        while (!list.empty())
+        {
+            int front = list.front();
+            list.pop();
+            if (isIntersect(front, node, Map))
+            {
+                for (int i = 0; i < adjList[front].size(); i++) if (visited[adjList[front][i]] == 0) 
+                {
+                    list.push(adjList[front][i]);
+                    visited[adjList[front][i]] = 1;
+                }
+            }
+            else
+            {
+                finalList.pb(front);
+            }
+        }
+        int maxH = 0;
+        for (int i = 0; i < finalList.size(); i++) maxH = max(maxH, Map[finalList[i]].maxHeight);
+        return maxH;
+    }
+    else
+    {
+        for (int i = 0; i < up.size(); i++)
+        {
+            list.push(up[i]);
+            visited[up[i]] = 1;
+        }
+        while (!list.empty())
+        {
+            int front = list.front();
+            list.pop();
+            if (isIntersect(front, node, Map))
+            {
+                for (int i = 0; i < adjList[front].size(); i++) if (visited[adjList[front][i]] == 0) 
+                {
+                    list.push(adjList[front][i]);
+                    visited[adjList[front][i]] = 1;
+                }
+            }
+            else
+            {
+                finalList.pb(front);
+            }
+        }
+        int maxH = 0;
+        for (int i = 0; i < finalList.size(); i++) maxH = max(maxH, Map[finalList[i]].maxHeight);
+        return maxH;
+    }
+}
+
+void solve()
+{
+    int n;
+    cin >> n;
+    vector<vector<int>> adjList(n);
+    vector<node_t> Map(n);
+    vector<int> dependencies(n);
+    vector<int> depCopy(n);
+    for (int i = 0; i < n; i++) cin >> Map[i].a >> Map[i].b >> Map[i].c;
+    vector<int> up;
+    vector<int> down;
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = i; j < n; j++)
+        {
+            if (i == j) continue;
+            int slot = isInside(i, j, Map);
+            if (slot == 3 || slot == 0) continue;
+            else if (slot == 1) adjList[j].pb(i);
+            else if (slot == 2) adjList[i].pb(j);
+        }
+    }
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < adjList[i].size(); j++) dependencies[adjList[i][j]]++;
+    }
+    vector<vector<int>> adjListReversed(n);
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < adjList[i].size(); j++) adjListReversed[adjList[i][j]].pb(i);
+    }
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < adjListReversed[i].size(); j++) depCopy[adjListReversed[i][j]]++;
+    }
+
+    // use reverse graph for distances
+    queue<int> toposortQ;
+    for (int i = 0; i < n; i++)
+    {
+        if (depCopy[i] == 0)
+        {
+            toposortQ.push(i);
+            Map[i].maxHeight = 1;
+        }
+    }
+    while (!toposortQ.empty())
+    {
+        int front = toposortQ.front();
+        toposortQ.pop();
+        for (int i = 0; i < adjListReversed[front].size(); i++)
+        {
+            Map[adjListReversed[front][i]].maxHeight = max(Map[adjListReversed[front][i]].maxHeight, Map[front].maxHeight + 1);
+            depCopy[adjListReversed[front][i]]--;
+            if (depCopy[adjListReversed[front][i]] == 0) toposortQ.push(adjListReversed[front][i]);
+        }
+    }
+
+    // compute up and down
+    for (int i = 0; i < n; i++)
+    {
+        if (dependencies[i] == 0)
+        {
+            if (Map[i].a > 0) up.pb(i);
+            else down.pb(i);
+        }
+    }
+
+    // use dp for forward computation
+    queue<int> finalQ;
+
+    for (int i = 0; i < up.size(); i++) 
+    {
+        Map[up[i]].optAns = Map[up[i]].maxHeight + best(n, up, down, Map, adjList, up[i]);
+        for (int j = 0; j < adjList[up[i]].size(); j++)
+        {
+            dependencies[adjList[up[i]][j]]--;
+            if (dependencies[adjList[up[i]][j]] == 0) finalQ.push(adjList[up[i]][j]);
+        }
+    }
+    for (int i = 0; i < down.size(); i++) 
+    {
+        Map[down[i]].optAns = Map[down[i]].maxHeight + best(n, up, down, Map, adjList, down[i]);
+        for (int j = 0; j < adjList[down[i]].size(); j++) 
+        {
+            dependencies[adjList[down[i]][j]]--;
+            if (dependencies[adjList[down[i]][j]] == 0) finalQ.push(adjList[down[i]][j]);
+        }
+    }
+
+    vector<int> oppositeBest(n, 0);
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = i + 1; j < n; j++)
+        {
+            if (Map[i].a * Map[j].a > 0) continue;
+
+            if (!isIntersect(i, j, Map))
+            {
+                oppositeBest[i] = max(oppositeBest[i], Map[j].maxHeight);
+                oppositeBest[j] = max(oppositeBest[j], Map[i].maxHeight);
+            }
+        }
+    }
+
+    while (!finalQ.empty())
+    {
+        int front = finalQ.front();
+        finalQ.pop();
+        int ownBest = Map[front].maxHeight + oppositeBest[front];
+        int parentBest = 0;
+        int posi = -1;
+        for (int i = 0; i < adjListReversed[front].size(); i++)
+        {
+            if (parentBest < Map[adjListReversed[front][i]].optAns - Map[adjListReversed[front][i]].maxHeight + Map[front].maxHeight + 1)
+            {
+                parentBest = Map[adjListReversed[front][i]].optAns - Map[adjListReversed[front][i]].maxHeight + Map[front].maxHeight + 1;
+                posi = adjListReversed[front][i];
+            }
+        }
+        Map[front].optAns = max(parentBest, ownBest);
+        for (int i = 0; i < adjList[front].size(); i++)
+        {
+            dependencies[adjList[front][i]]--;
+            if (dependencies[adjList[front][i]] == 0) finalQ.push(adjList[front][i]);
+        }
+    }
+
+    for (int i = 0; i < n; i++) cout << Map[i].optAns << ' ';
+    cout << endl;
+    
+}
+
+int main()
+{ 
+    fastio;
+    int t;
+    cin >> t;
+    while (t--)
+    {
+        solve();
+    }
+    return 0;
+}

@@ -1,0 +1,33 @@
+#include<bits/stdc++.h>
+using namespace std;
+vector<int>g[501000];
+int dp[500100];
+int n,k,rt;
+#define pb push_back
+void dfs(int x,int f){
+    bool gg=0;
+    int kd=0,mi=1e9,M=1e9;
+    for(int v:g[x])if(v!=f){
+        dfs(v,x),gg=1;
+        M=min(M,dp[v]);
+        if(!dp[v])kd++;
+        else mi=min(mi,dp[v]);
+    }
+    if(!gg)dp[x]=0;
+    else{
+        dp[x]=M+1;
+        if(kd>=2||kd&&mi<=k-1)dp[x]=0;
+    }
+}
+void sol(){
+    scanf("%d%d%d",&n,&k,&rt);
+    for(int i=1;i<=n;i++)g[i].clear();
+    for(int i=1,u,v;i<n;i++)
+        scanf("%d%d",&u,&v),g[u].pb(v),g[v].pb(u);
+    dfs(rt,0);
+    puts((dp[rt]==0)?"Yes":"No");
+}
+int main(){
+    int T;cin>>T;while(T--)sol();
+    return 0;
+}

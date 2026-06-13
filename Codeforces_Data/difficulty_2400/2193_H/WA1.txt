@@ -1,0 +1,42 @@
+#include <iostream>
+#include <set>
+#include <array>
+const int N=2e5+5;
+int n,a[N],del[N],deg[N];
+std::basic_string<int> G[N];
+std::set<std::array<int,2> > mp;
+void neatisaac()
+{
+	mp.clear();
+	std::cin>>n;
+	for(int i=1;i<=n;i++) std::cin>>a[i],a[i]&=1,del[i]=0,deg[i]=a[i],G[i].clear();
+	for(int i=1,u,v;i<n;i++)
+		std::cin>>u>>v,G[u]+=v,G[v]+=u,deg[u]^=a[v],deg[v]^=a[u];
+	for(int i=1;i<=n;i++) if(deg[i]) mp.insert({a[i],i});
+	std::basic_string<int> ans;
+	while(!mp.empty())
+	{
+		int u=mp.begin()->at(1);
+		mp.erase({a[u],u}),del[u]=1,ans+=u;
+		if(a[u]) for(int v:G[u]) if(!del[v])
+		{
+			deg[v]^=1;
+			if(deg[v]) mp.insert({a[v],v});
+			else mp.erase({a[v],v});
+		}
+	}
+	if(ans.size()==n)
+	{
+		std::cout<<"YES\n";
+		for(int i:ans) std::cout<<i<<' ';
+		std::cout<<'\n';
+	}
+	else std::cout<<"NO\n";
+}
+signed main()
+{
+	std::cin.tie(0)->sync_with_stdio(0);
+	int T;
+	std::cin>>T;
+	while(T--) neatisaac();
+}

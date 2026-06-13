@@ -1,0 +1,26 @@
+#include <bits/stdc++.h>
+#define ll long long
+#define pb push_back
+#define fi first
+#define se second
+#define BIT(x,i) (((x) >> (i)) & 1)
+#define MASK(i) (1LL << (i))
+#define TIME  (1.0 * clock() / CLOCKS_PER_SEC)
+#define pii pair<int,int>
+#define pll pair<long long,long long>
+#define piii pair<int,pair<int,int>>
+//#pragma GCC optimize("Ofast")
+//#pragma GCC optimize("O3,unroll-loops")
+//#pragma GCC target("avx2,bmi,bmi2,popcnt")
+using namespace std;
+
+const int mod=1e9+7;
+const int maxn=1e6+7;
+
+int main(){
+	ios_base::sync_with_stdio(0);cin.tie(0);cout.tie(0);
+	cout << 4 << '\n' << 1 << '\n' << 16 << '\n' << 8 << '\n' << 2048;
+}
+
+
+

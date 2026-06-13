@@ -1,0 +1,152 @@
+#include<iostream>
+#include<vector>
+#include<fstream>
+#include<string>
+#include<map>
+#include<set>
+#include<stack>
+#include<queue>
+#include<bitset>
+#include<algorithm>
+#include<cmath>
+#include <iomanip>
+#include<unordered_map>
+#include "math.h"
+#include<numeric>
+# define int  long long
+using namespace std;
+const long double EPS = 1e-7;
+const long double fi = 1.0 / ((1 + sqrt(5)) / 2);
+// const int   INF = 1e18;
+const long double MAX = 1e5;
+int   st = 31;
+# define rall(x) (x).begin(), (x).end()
+# define pi pair<int  , int  >
+# define f first
+# define s second
+# define all(x) (x).begin(), (x).end()
+# define pi pair<int  , int  >
+# define popcount(x) __builtin_popcount(x)
+const int INF = 1e18;
+const int logn = 20;
+int ans = 0;
+
+
+vector<int> bad;
+int p[1000001], sz[1000001], cnt[1000001], id[1000001];
+struct hui {
+    int a, b, c, d;
+    hui(int a_, int b_, int c_, int d_) {
+        a = a_;
+        b = b_;
+        c = c_;
+        d = d_;
+    }
+};
+bool cmp(hui f, hui s) {
+    return f.c < s.c;
+}
+
+void init(int n) {
+    for (int i = 1; i <= n; ++i) {
+        p[i] = i;
+        sz[i] = 1;
+        cnt[i] = (bad[i] == 1);
+        id[i] = 0;
+    }
+}
+int leader(int a) {
+    return p[a] == a ? a : leader(p[a]);
+}
+
+
+
+void add(int a, int b, int cst) {
+    // cout << a << ' ' << b << '\n';
+
+    a = leader(a);
+    b = leader(b);
+    if (a == b) {
+        return;
+    }
+
+    if (sz[b] > sz[a]) {
+        swap(a, b);
+    }
+    ans += ((cnt[a] + cnt[b]) / 2) * cst;
+    sz[a] += sz[b];
+    cnt[a] = (cnt[a] + cnt[b]) % 2;
+    p[b] = a;
+}
+void cl(int a, int cst) {
+    a = leader(a);
+    ans += (cnt[a] / 2) * cst;
+    cnt[a] %= 2;
+}
+
+
+void dfs(int cur, vector<vector<hui>>& graf, vector<int>& used, int cur_idx, int cst) {
+    used[cur] = 1;
+    for (auto i : graf[cur]) {
+        if (i.d <= cur_idx) {
+             add(cur, i.a, cst);
+            if (used[i.b] == 0) {
+                dfs(i.b, graf, used, cur_idx, cst);
+            }
+        }
+    }
+}
+void solve() {
+    int n, m;
+    cin >> n >> m;
+    ans = 0;
+
+    vector<vector<hui>> graf(n + 1);
+    vector<hui> ed;
+    bad.assign(n + 1, 0);
+    int sm = 0;
+    vector<hui> ed1;
+    for (int i = 0; i < m; ++i) {
+        int a, b, c;
+        cin >> a >> b >> c;
+        graf[a].push_back(hui(b, a, c, i));
+        graf[b].push_back(hui(a, b, c, i));
+        ed.push_back(hui(a, b, c, i));
+        ed1.push_back(hui(a, b, c, i));
+        sm += c;
+    }
+    int cn = 0;
+    for (int i = 1; i <= n; ++i) {
+        if (graf[i].size() % 2 != 0) {
+            bad[i] = 1;
+            cn++;
+        }
+    }
+    // if (cn % 2 != 0) {
+    //     bad[1] = 1;
+    // }
+    vector<int> suf(m + 2);
+    suf[m] = INF;
+    for (int i = m - 1; i >= 0; --i) {
+        suf[i] = min(suf[i + 1], ed[i].c);
+    }
+
+    init(n);
+    // sort(all(ed), cmp);
+    vector<int> used(n + 1, 0);
+    for (int i = 0; i < m; ++i) {
+        if (suf[i] == ed[i].c) {
+            dfs(ed[i].a, graf, used, i, ed[i].c);
+        }
+    }
+    cout << ans + sm << '\n';
+}
+
+signed main() {
+    int t;
+    cin >> t;
+    while (t--) {
+        solve();
+    }
+    return 0;
+}
