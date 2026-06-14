@@ -1,0 +1,16 @@
+#include<iostream>
+#define LoveCyrene ios :: sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr)
+using namespace std;
+signed main(){
+	LoveCyrene;
+	long long T, n, x, y, i, s;
+	cin >> T; while(T--){
+		cin >> n;
+		for (i = 1, y = n, s = 1; i <= n; i++, y = x){
+			cin >> x; long long k = x - n + i;
+			if(k > i || k < 0 || (x > y)) s = 0;
+			s = s * (x == y ? k : i) % 1000000007ll;
+		}
+		cout << s << '\n';
+	}
+}

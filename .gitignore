@@ -3,7 +3,6 @@ myenv/
 test_stuff/
 __pycache__/
 API_config.yaml
-AC.txt
 example_input.txt
 example_output.txt
 statement.txt

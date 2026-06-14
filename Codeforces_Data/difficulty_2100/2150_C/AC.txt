@@ -1,0 +1,24 @@
+#include <bits/stdc++.h>
+#define int long long
+using namespace std;
+int a[200005],b[200005],v[200005];
+map<int,int>mp;
+void add(int a,int b){
+    for(auto it=mp.lower_bound(a);b<=0;it=mp.erase(it)){
+        if(it==mp.end())return;
+        a=(*it).first;
+        b+=(*it).second;
+    }mp[a]=b;
+}
+signed main(){
+    int t;cin>>t;
+    while(t--){mp.clear();
+        int n,ans=0;cin>>n;
+        for(int i=1;i<=n;i++)cin>>v[i],ans+=v[i];
+        for(int i=1;i<=n;i++)cin>>a[i];
+        for(int i=1,x;i<=n;i++)cin>>x,b[x]=i;
+        for(int i=1;i<=n;i++)add(b[a[i]],-v[a[i]]);
+        for(auto [x,y]:mp)ans+=y;
+        cout<<ans<<'\n';
+    }
+    return 0;}

@@ -1,0 +1,33 @@
+#include <bits/stdc++.h>
+#define ll long long
+#define F(i,l,r) for(ll i=l;i<=r;i++)
+#define M(a) memset(a,0,sizeof a)
+using namespace std;const ll _=998244353;
+ll a[1005],c[65],f[1005][65],h[65];
+void upd(ll &x,ll y){x=(x+y)%_;}
+int main(){
+	ll n,q,x,o,p;
+	cin>>n>>q;F(i,1,n)cin>>x,c[x]++;
+	while(q--){
+		cin>>o>>x;
+		if(o==1)c[x]++;else if(o==2)c[x]--;
+		else{
+			M(f);M(a);M(h);
+			p=n=0;
+			for(ll i=60;i>=0;i--){
+				if(x>>i&1)h[++p]=i;
+				F(j,1,c[i])a[++n]=i;
+			}
+			f[0][0]=1;
+			F(i,1,n)F(j,0,p){
+				ll e=f[i-1][j];
+				if(j==p)upd(f[i][j],e*2);
+				else{
+					upd(f[i][j],e);
+					if(a[i]-j>h[j+1])upd(f[i][p],e);
+					else if(a[i]-j==h[j+1])upd(f[i][j+1],e);
+				}
+			}printf("%lld\n",f[n][p]);
+		}
+	}return 0;
+}

@@ -1,0 +1,5 @@
+I,E=input,enumerate
+for _ in[0]*int(I()):
+	P=[[]for _ in[0]*int(I())]
+	for i,x in E(I().split()):P[int(x)-1]+=i,
+	print(sum(j<p.pop()for x,p in E(P[1:])for j in P[x][::-1]if p and j<p[-1]))

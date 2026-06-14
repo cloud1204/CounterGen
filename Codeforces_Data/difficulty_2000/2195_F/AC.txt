@@ -1,0 +1,107 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define endl '\n'
+#define ll long long
+#define pll pair<long long, long long>
+#define x first
+#define y second
+#define db double
+#define pb push_back
+#define debug(x) cout << " x:" << x << endl;
+#define N 100050
+mt19937_64 rg(chrono::steady_clock::now().time_since_epoch().count());
+
+struct F
+{
+    ll a, b, c;
+    int id;
+};
+
+bool below(F f1, F f2)
+{
+    ll A = f2.a - f1.a;
+    ll B = f2.b - f1.b;
+    ll C = f2.c - f1.c;
+
+    if (A > 0)
+    {
+        ll D = B * B - 4 * A * C;
+        return D < 0;
+    }
+    else if (A == 0)
+    {
+        return B == 0 && C > 0;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+void solve()
+{
+    int n;
+    cin >> n;
+
+    vector<F> f(n);
+
+    for (int i = 0; i < n; i++)
+    {
+        cin >> f[i].a >> f[i].b >> f[i].c;
+        f[i].id = i;
+    }
+
+    sort(f.begin(), f.end(), [](const F &x, const F &y)
+         {
+        if (x.c != y.c) return x.c < y.c;
+        if (x.a != y.a) return x.a < y.a;
+        return x.b < y.b; });
+
+    vector<int> down(n, 1), up(n, 1), ans(n);
+
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < i; j++)
+        {
+            if (below(f[j], f[i]))
+            {
+                down[i] = max(down[i], down[j] + 1);
+            }
+        }
+    }
+
+    for (int i = n - 1; i >= 0; i--)
+    {
+        for (int j = i + 1; j < n; j++)
+        {
+            if (below(f[i], f[j]))
+            {
+                up[i] = max(up[i], up[j] + 1);
+            }
+        }
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        ans[f[i].id] = down[i] + up[i] - 1;
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        cout << ans[i] << " \n"[i + 1 == n];
+    }
+}
+
+int main()
+{
+    ios::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
+    int t = 1;
+    cin >> t;
+    while (t--)
+    {
+        solve();
+    }
+    return 0;
+}

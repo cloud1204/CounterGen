@@ -1,0 +1,28 @@
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+const ll INF=1e18;
+void solve(){
+    int n,m;
+    cin>>n>>m;
+    vector<vector<ll>>v(n+2,vector<ll>(m+2,-INF));
+    for(int i=1;i<=n;i++)for(int j=1;j<=m;j++)cin>>v[i][j];
+    auto f=v,g=v;
+    for(int i=1;i<=n;i++)for(int j=1;j<=m;j++)if(i+j>2)f[i][j]=v[i][j]+max(f[i-1][j],f[i][j-1]);
+    for(int i=n;i;i--)for(int j=m;j;j--)if(i+j<n+m)g[i][j]=v[i][j]+max(g[i+1][j],g[i][j+1]);
+    ll ans=INF;
+    for(int i=1;i<=n;i++){
+        vector<ll>prf(m+2,-INF),suf=prf;
+        for(int j=m;j;j--) suf[j]=max(suf[j+1],f[i-1][j]+g[i][j]);
+        for(int j=1;j<=m;j++) prf[j]=max(prf[j-1],f[i][j]+g[i+1][j]);
+        for(int j=1;j<=m;j++) ans=min(ans,max({prf[j-1],suf[j+1],f[i][j]+g[i][j]-3*v[i][j]}));
+    }
+    cout<<ans<<'\n';
+}
+
+int main(){
+    ios::sync_with_stdio(false);
+    int T=1;
+    cin>>T;
+    while(T--)solve();
+}

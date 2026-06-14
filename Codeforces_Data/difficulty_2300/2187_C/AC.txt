@@ -1,0 +1,36 @@
+#include<bits/stdc++.h>
+using namespace std;
+const int N=2e5+5;
+int T,n,m,fa[N],dep[N],sz[N],a[N];
+long long ans;
+vector<int>g[N];
+map<int,int>dfs(int u){
+	map<int,int>S;
+	sz[u]=1,a[u]=dep[u];
+	S[dep[u]]=1;
+	for(int v:g[u]){
+		dep[v]=dep[u]+1;
+		auto T=dfs(v);
+		if(S.size()<T.size())S.swap(T);
+		for(auto[p,q]:T){
+			ans+=1ll*q*S[p]*(p-dep[u]);
+			S[p]+=q;
+		}sz[u]+=sz[v];
+	}return S;
+}signed main(){
+	for(cin>>T;T--;){
+		cin>>n>>m,ans=0;
+		for(int i=1;i<=n;++i)g[i].clear();
+		for(int i=1;i<n;++i)fa[i]=i+1;
+		for(int i=1,u,v;i<=m;++i){
+			cin>>u>>v;
+			fa[u]=max(fa[u],v);
+		}for(int i=1;i<n;++i)g[fa[i]].push_back(i);
+		dep[n]=1,dfs(n);
+		sort(a+1,a+n+1);
+		for(int u=1;u<=n;++u){
+			ans+=1ll*(n-u)*a[u]-sz[u]*(sz[u]-1ll)/2*dep[u];
+			for(int v:g[u])ans+=sz[v]*(sz[v]-1ll)/2*dep[u];
+		}cout<<ans<<'\n';
+	}
+}

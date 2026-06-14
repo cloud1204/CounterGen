@@ -1,0 +1,51 @@
+#include<bits/stdc++.h>
+using namespace std;
+const int maxn=2e5+5;
+int n,a[maxn];
+vector<int> e[maxn];
+int b[maxn];bool vis[maxn];
+vector<int> ans;
+void del(int u){
+	vis[u]=1;
+	ans.push_back(u);
+	for(auto v:e[u]){
+		if(!vis[v])b[v]^=a[u];
+	}
+}
+vector<int> dfn;
+void dfs(int u,int fa){
+	dfn.push_back(u);
+	for(auto v:e[u]){
+		if(!vis[u]&&!a[u]&&b[u])del(u);
+		if(v==fa)continue;
+		dfs(v,u);
+	}
+	if(!vis[u]&&b[u])del(u);
+}
+void solve(){
+	memset(b,0,sizeof b);memset(vis,0,sizeof vis);
+	dfn.clear();ans.clear();
+	cin>>n;
+	for(int i=1;i<=n;i++){
+		e[i].clear();cin>>a[i];a[i]&=1;b[i]=a[i];
+	}
+	for(int i=1,u,v;i<n;i++){
+		cin>>u>>v;
+		e[u].push_back(v);e[v].push_back(u);
+		b[u]^=a[v];b[v]^=a[u];
+	}
+	dfs(1,0);
+	for(auto u:dfn){
+		if(!vis[u]&&b[u])del(u);
+	}
+	cout<<(ans.size()==n?"Yes":"No")<<endl;
+	if(ans.size()==n){
+		for(auto u:ans)cout<<u<<' ';
+		cout<<endl;
+	}
+}
+int main(){
+	int t;cin>>t;
+	while(t--)solve();
+	return 0;
+}

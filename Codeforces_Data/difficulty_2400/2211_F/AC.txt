@@ -1,0 +1,25 @@
+#include<bits/stdc++.h>
+using namespace std;using ll=long long;using vl=vector<ll>;
+const int M=676'767'677,P=2e6+10;
+void add(ll&a,ll b){a+=b;if(a>=M)a-=M;}
+vl mul,inv,iv;
+ll D(int n,int m){return mul[n+m]*inv[n]%M*inv[m]%M;}
+int n,m;ll res;
+void spr(int l,int r,int dep)
+{
+	if(r-l<=1)return;
+	int mid=l+r>>1,dl=mid-l,dr=r-mid;
+	ll V=D(n,m);
+	if(l!=0)add(V,M-D(n-dl,m));
+	if(r!=n+1)add(V,M-D(n-dr,m));
+	if(l!=0&&r!=n+1)add(V,D(n-dl-dr,m));
+	add(res,V*dep%M);
+	spr(l,mid,dep+1);spr(mid,r,dep+1);
+}
+int main()
+{
+	ios::sync_with_stdio(0),cin.tie(0);
+	mul=inv=iv=vl(P+1,1);
+	for(int i=2;i<=P;i++)mul[i]=mul[i-1]*i%M,iv[i]=(M-M/i)*iv[M%i]%M,inv[i]=inv[i-1]*iv[i]%M;
+	int t=1;cin>>t;while(t--){res=0;cin>>n>>m;m--;spr(0,n+1,1);cout<<res<<'\n';}
+}

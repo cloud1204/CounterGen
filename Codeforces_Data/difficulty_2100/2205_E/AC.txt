@@ -1,0 +1,27 @@
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+const int N=8010,mod=998244353;
+int n,a[N],b[N],f[N];
+void solve(){
+	cin>>n;
+	for(int i=1;i<=n;i++)cin>>a[i],f[i]=0;
+	f[0]=1;
+	for(int i=1;i<=n;i++){
+		for(int j=1;j<=i;j++)b[j]=0;
+		int k=0;
+		for(int j=i-1;j>=1;j--){
+			while(k&&a[j]!=a[i-k])k=b[i-k+1];
+			if(a[j]==a[i-k])k++;
+			b[j]=k;
+		}
+		for(int j=1;j<=i;j++)if(!b[j])f[i]=(f[j-1]+f[i])%mod;
+	}
+	cout<<f[n]<<'\n';
+}
+int main(){
+	int _;
+	cin>>_;
+	while(_--)solve();
+	return 0;
+}

@@ -1,0 +1,48 @@
+#include<bits/stdc++.h>
+using namespace std;
+const int N=1e6+5;
+long long t,n,m,fa[N<<1],sum,d[N<<1],a[N<<1];
+vector<int>p[N<<1];
+int find(int k){
+	if(fa[k]==k) return k;
+	return fa[k]=find(fa[k]);
+}
+void dfs(int k){
+	for(auto v:p[k]){
+		a[v]=min(a[v],a[k]);
+		dfs(v);
+		d[k]+=d[v];
+	}
+	if(d[k]>=2){
+		sum+=a[k]*(d[k]/2);
+		d[k]%=2;
+	}
+} 
+int main(){
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	cin>>t;
+	while(t--){
+		cin>>n>>m;
+		for(int i=1;i<=n+m;i++) fa[i]=i,d[i]=0,p[i].clear();
+		sum=0;
+		for(int i=1;i<=m;i++){
+			int u,v;
+			cin>>u>>v>>a[i+n];
+			d[u]^=1;
+			d[v]^=1;
+			sum+=a[i+n];
+			u=find(u);
+			v=find(v);
+			p[n+i].push_back(v);
+			if(u!=v){
+				p[n+i].push_back(u);
+			}
+			fa[u]=fa[v]=i+n;
+		}
+		dfs(n+m);
+		cout<<sum<<"\n";
+	}
+	return 0;
+}

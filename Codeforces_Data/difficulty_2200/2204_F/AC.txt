@@ -1,0 +1,53 @@
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+
+const int N=500000,M=998244353;
+
+ll i,j,k,n,m,t,a[N+50],L[N+50],R[N+50],s[N+50],it,res;
+ll ksm(ll a,ll p){ll res=1;while(p){if(p&1){res=res*a%M;}a=a*a%M;p>>=1;}return res;}
+
+map<ll,ll> mp;
+
+ll wt[N+50],p0[N+50],p1[N+50],p2[N+50];
+
+ll fuck(ll x){
+	ll k,ans=res;
+	k=upper_bound(wt+1,wt+m+1,x)-wt-1;
+	return (res+p1[k]+(p0[k+1]+p2[k])%M*x%M)%M;
+}
+
+int main(){
+	ios::sync_with_stdio(0); cin.tie(0);
+	cin>>n>>t;
+	for(i=1;i<=n;i++){
+		cin>>a[i];
+		res+=i*(n+1-i)%M*ksm(a[i],M-2)%M;
+		res%=M;
+	}
+	for(i=1;i<=n+1;i++){
+		while(it&&a[i]<=a[s[it]]){
+			R[s[it]]=i; it--;
+		}
+		L[i]=s[it]; s[++it]=i;
+	}
+	for(i=1;i<=n;i++){
+		mp[a[i]]+=(R[i]-i)*(i-L[i])%M;
+	}
+	for(auto [w,num]:mp){
+		m++;
+		wt[m]=w;
+		p0[m]=num%M*ksm(w,M-2)%M;
+		p1[m]=(2ll+M-w+M-ksm(w,M-2))%M*(num%M); p1[m]%=M;
+		p2[m]=num;
+	}
+	for(i=m;i>=0;i--)p0[i]=(p0[i+1]+p0[i])%M;
+	for(i=1;i<=m;i++){
+		p1[i]=(p1[i-1]+p1[i])%M;
+		p2[i]=(p2[i-1]+p2[i])%M;
+	}
+	while(t--){
+		cin>>k;
+		cout<<fuck(k)<<'\n';
+	}
+}

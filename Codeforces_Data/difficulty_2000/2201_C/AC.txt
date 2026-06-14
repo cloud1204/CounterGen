@@ -1,0 +1,22 @@
+MOD = 998244353
+
+for _ in range(int(input())):
+	n = int(input())
+	s = input()
+	
+	res, sum_0, sum_1, pre, pow_2 = 0, 0, 0, 0, 1
+	for ch in s:
+		if pre < 2:
+			sum_0 = 0
+
+		if ch == '(':
+			pre += 1
+			res = (res + pow_2) % MOD
+			sum_0 = (sum_0 + sum_0 + sum_1 + 1) % MOD
+		else:
+			pre -= 1
+			res = (res + 1 + sum_0 + sum_1) % MOD
+			sum_1 = (sum_1 + sum_0 + sum_1 + 1) % MOD
+		pow_2 = pow_2 * 2 % MOD
+	
+	print(res)

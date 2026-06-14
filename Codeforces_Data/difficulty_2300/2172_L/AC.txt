@@ -1,0 +1,64 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int solve(string S, int n, int m, int k) {
+    vector<vector<int>> L(k);
+    int sum = 0;
+    for (int i = 1; i < n; ++i) {
+        int v = S[i] != S[i - 1] ? 1 : 0;
+        L[i % k].push_back(v);
+        sum += v;
+    }
+    int dp[3005] = {};
+    for (auto V : L) {
+        vector<int> P;
+        for (int i = 0; i < int(V.size()); ++i) {
+            if (V[i] == 0) P.push_back(i);
+        }
+        vector<int> D;
+        for (int i = 1; i < int(P.size()); ++i) D.push_back(P[i] - P[i - 1]);
+        vector<int> C(1, 0);
+        int sum = 0;
+        while (!D.empty()) {
+            int mnv = 1e8, mni = -1;
+            for (int i = 0; i < int(D.size()); ++i) {
+                if (D[i] < mnv) {
+                    mnv = D[i];
+                    mni = i;
+                }
+            }
+            C.push_back(sum += mnv);
+            if (mni == 0) {
+                D.erase(D.begin());
+                if (!D.empty()) D.erase(D.begin());
+            } else if (mni == int(D.size()) - 1) {
+                D.pop_back();
+                if (!D.empty()) D.pop_back();
+            } else {
+                D[mni - 1] += D[mni + 1] - D[mni];
+                D.erase(D.begin() + mni);
+                D.erase(D.begin() + mni);
+            }
+        }
+        for (int i = m; i >= 0; --i) {
+            for (int j = 1; j < int(C.size()); ++j) {
+                if (i >= C[j]) dp[i] = max(dp[i], dp[i - C[j]] + j + j);
+            }
+        }
+    }
+    return dp[m] + sum;
+}
+
+int main() {
+    ios_base::sync_with_stdio(0), cin.tie(0);
+    int n, m, k;
+    string S;
+    cin >> n >> m >> k >> S;
+    int ans = 0;
+    for (int i = 0; i < 4; ++i) {
+        ans = max(ans, solve("RB"[i / 2] + S + "RB"[i % 2], n + 2, m, k));
+    }
+    cout << ans - 1 << endl;
+    return 0;
+}

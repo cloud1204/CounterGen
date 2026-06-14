@@ -1,0 +1,33 @@
+#include<bits/stdc++.h> 
+const int N=5e5+5;
+int n,T,x,k,f[N];
+std::vector<int> e[N];
+void dfs(int x,int fa){
+	if(e[x].size()==1){
+		f[x]=0; return;
+	}
+	int m1=N,m2=N;
+	for(auto v:e[x]) if(v^fa){
+		dfs(v,x);
+		if(f[v]<=m1){
+			m2=m1;
+			m1=f[v];
+		}else if(f[v]<m2) m2=f[v];
+	}
+	if(m1+m2<=k-1) f[x]=0;
+	else f[x]=m1+1;
+}
+int main(){
+	std::ios::sync_with_stdio(0);
+	std::cin.tie(0);
+	std::cin>>T;while(T--){
+		std::cin>>n>>k>>x;
+		for(int i=1;i<=n;i++) e[i].clear();
+		for(int i=1,u,v;i<n;i++){
+			std::cin>>u>>v;
+			e[u].push_back(v); e[v].push_back(u);
+		}
+		dfs(x,0);
+		std::cout<<(f[x]?"NO":"YES")<<"\n";
+	}
+}
